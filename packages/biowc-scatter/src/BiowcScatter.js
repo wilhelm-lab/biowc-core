@@ -161,7 +161,7 @@ export class BiowcScatter extends LitElement {
     });
     let x1 = minValueX;
     const x2 = maxValueX;
-    const equation = this.linearRegression(YaxisData, XaxisData);
+    const equation = BiowcScatter.linearRegression(YaxisData, XaxisData);
     let y1 = equation.slope * x1 + equation.intercept;
     const y2 = equation.slope * x2 + equation.intercept;
 

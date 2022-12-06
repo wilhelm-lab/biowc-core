@@ -15,15 +15,19 @@
     import { html, render } from 'lit';
     import '../biowc-scatter.js';
 
+    const identifier1 = 'Gene_X'
     const expressions1 = [{'Sample name': 'sample1', 'Z-score': 1}, 
                           {'Sample name': 'sample2', 'Z-score': 3}, 
                           {'Sample name': 'sample3', 'Z-score': 3}];
+    const identifier2 = 'Gene_Y'
     const expressions2 = [{'Sample name': 'sample1', 'Z-score': 1}, 
                           {'Sample name': 'sample2', 'Z-score': 2}, 
                           {'Sample name': 'sample3', 'Z-score': 3}];
     render(
       html`
         <biowc-scatter
+            .identifier1=${identifier1}
+            .identifier2=${identifier2}
             .expressions1=${expressions1}
             .expressions2=${expressions2}>
           some light-dom
