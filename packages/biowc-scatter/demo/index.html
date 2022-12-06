@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div id="demo"></div>
+
+  <script type="module">
+    import { html, render } from 'lit';
+    import '../biowc-scatter.js';
+
+    const expressions1 = [{'Sample name': 'sample1', 'Z-score': 1}, 
+                          {'Sample name': 'sample2', 'Z-score': 3}, 
+                          {'Sample name': 'sample3', 'Z-score': 3}];
+    const expressions2 = [{'Sample name': 'sample1', 'Z-score': 1}, 
+                          {'Sample name': 'sample2', 'Z-score': 2}, 
+                          {'Sample name': 'sample3', 'Z-score': 3}];
+    render(
+      html`
+        <biowc-scatter
+            .expressions1=${expressions1}
+            .expressions2=${expressions2}>
+          some light-dom
+        </biowc-scatter>
+      `,
+      document.querySelector('#demo')
+    );
+  </script>
+</body>
+</html>
