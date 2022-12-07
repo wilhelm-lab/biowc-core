@@ -1,4 +1,12 @@
-# How to use a component in a Vue.js project
+# Bio web components (Biowc)
+
+This monorepo contains several plotting components that can easily be integrated
+in your web tools. This can either be done directly in the HTML, or through a
+JavaScript such as Vue.js.
+
+## How to use
+
+### Vue.js
 
 In your `<MyComponent>.vue` file, add this import statement (note the curly brackets!):
 
@@ -23,7 +31,7 @@ In the template section (note the `.prop` suffix after each attribute!):
 />
 ```
 
-# How this repo was initialized
+## How this repo was initialized
 
 - Initialize [lerna](https://lerna.js.org/) for managing the monorepo
   ```bash
@@ -48,32 +56,44 @@ In the template section (note the `.prop` suffix after each attribute!):
   cd ../../
   npx lerna run start
   ```
-- Copied methods from `ScatterPlot.vue` below the `render` method
+- Copy methods from `ScatterPlot.vue` below the `render` method
   - Remove commas between methods
   - Change some function definitions from `getExpressionInCommonSamples: function ()` to `getExpressionInCommonSamples()`
-- Copied props into `static get properties()`
-- Copied css into `static get styles()`
-- Copied template into `render()`
-- Added import of d3:
+- Copy props into `static get properties()`
+- Copy css into `static get styles()`
+- Copy template into `render()`
+- Add import of d3:
   ```
   import * as d3 from "d3";
   ```
-- Added initialization and passing of properties to `demo/index.html`:
+- Add initialization and passing of properties in `demo/index.html`:
   ```
+  const identifier1 = 'Gene_X'
   const expressions1 = [{'Sample name': 'sample1', 'Z-score': 1}, 
-                        {'Sample name': 'sample2', 'Z-score': 2}, 
+                        {'Sample name': 'sample2', 'Z-score': 3}, 
                         {'Sample name': 'sample3', 'Z-score': 3}];
+  const identifier2 = 'Gene_Y'
   const expressions2 = [{'Sample name': 'sample1', 'Z-score': 1}, 
                         {'Sample name': 'sample2', 'Z-score': 2}, 
                         {'Sample name': 'sample3', 'Z-score': 3}];
 
-  <biowc-scatter .title=${title}
-          .expressions1=${expressions1}
-          .expressions2=${expressions2}>
+  render(
+      html`
+        <biowc-scatter
+            .identifier1=${identifier1}
+            .identifier2=${identifier2}
+            .expressions1=${expressions1}
+            .expressions2=${expressions2}>
+          some light-dom
+        </biowc-scatter>
+      `,
+      document.querySelector('#demo')
+    );
   ```
-- Specify the `firstUpdated()` method of the Lit element to start the drawing
+- Remove `constructor()` method
+- Specify the `updated()` method of the Lit element to start the drawing
   ```
-  firstUpdated() {
+  updated() {
     this.updateScatterPlot()
   }
   ```
@@ -83,8 +103,25 @@ In the template section (note the `.prop` suffix after each attribute!):
     return d3.select(this.shadowRoot).select('#scatterplot')
   }
   ```
-- Removed `constructor()` method
-- Create a file `index.js` with the following content:
+- Create a file `index.js` with the following content to allow importing `BiowcScatter` in other packages
   ```
   export { BiowcScatter } from './BiowcScatter.js';
+  ```
+
+## Other tips
+
+- Emitting messages to the parent component can be done as follows:
+  ```
+  private _dispatchSelectEvent() {
+    const selectEvent: ScatterSelectEvent = new CustomEvent(
+      'biowc-scatter-select',
+      {
+        detail: {
+          selectedPoints: this.selectedPoints,
+        },
+      }
+    );
+
+    this.dispatchEvent(selectEvent);
+  }
   ```
