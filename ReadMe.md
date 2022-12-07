@@ -20,14 +20,16 @@ if (window.customElements.get('biowc-scatter') === undefined) {
 
 You don't need to add `BiowcScatter` to the components section.
 
-In the template section (note the `.prop` suffix after each attribute!):
+In the template section (note the `.prop` suffix after each calculated attribute and the camel case for regular attributes!):
 
 ```
 <biowc-scatter
-  :identifier1.prop="identifier1"
-  :identifier2.prop="identifier2"
-  :expressions1.prop="expressionData1"
-  :expressions2.prop="expressionData2"
+  idKey="Sample name"
+  valueKey="Z-score"
+  :x-label.prop="identifier1"
+  :y-label.prop="identifier2"
+  :x-values.prop="expressionData1"
+  :y-values.prop="expressionData2"
 />
 ```
 
@@ -68,27 +70,30 @@ In the template section (note the `.prop` suffix after each attribute!):
   ```
 - Add initialization and passing of properties in `demo/index.html`:
   ```
-  const identifier1 = 'Gene_X'
-  const expressions1 = [{'Sample name': 'sample1', 'Z-score': 1}, 
-                        {'Sample name': 'sample2', 'Z-score': 3}, 
-                        {'Sample name': 'sample3', 'Z-score': 3}];
-  const identifier2 = 'Gene_Y'
-  const expressions2 = [{'Sample name': 'sample1', 'Z-score': 1}, 
-                        {'Sample name': 'sample2', 'Z-score': 2}, 
-                        {'Sample name': 'sample3', 'Z-score': 3}];
-
+  const idKey = 'Sample name';
+  const valueKey = 'abundance';
+  const xLabel = 'abundance Gene_X'
+  const xValues = [{'Sample name': 'sample1', 'abundance': 1}, 
+                    {'Sample name': 'sample2', 'abundance': 3}, 
+                    {'Sample name': 'sample3', 'abundance': 3}];
+  const yLabel = 'abundance Gene_Y'
+  const yValues = [{'Sample name': 'sample1', 'abundance': 1}, 
+                    {'Sample name': 'sample2', 'abundance': 2}, 
+                    {'Sample name': 'sample3', 'abundance': 3}];
   render(
-      html`
-        <biowc-scatter
-            .identifier1=${identifier1}
-            .identifier2=${identifier2}
-            .expressions1=${expressions1}
-            .expressions2=${expressions2}>
-          some light-dom
-        </biowc-scatter>
-      `,
-      document.querySelector('#demo')
-    );
+    html`
+      <biowc-scatter
+          .idKey=${idKey}
+          .valueKey=${valueKey}
+          .xLabel=${xLabel}
+          .yLabel=${yLabel}
+          .xValues=${xValues}
+          .yValues=${yValues}>
+        some light-dom
+      </biowc-scatter>
+    `,
+    document.querySelector('#demo')
+  );
   ```
 - Remove `constructor()` method
 - Specify the `updated()` method of the Lit element to start the drawing

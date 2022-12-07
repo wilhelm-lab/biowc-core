@@ -23,19 +23,27 @@ export class BiowcScatter extends LitElement {
 
   static get properties() {
     return {
-      identifier1: {
+      idKey: {
+        type: String,
+        default: 'id',
+      },
+      valueKey: {
+        type: String,
+        default: 'value',
+      },
+      xLabel: {
         type: String,
         default: '',
       },
-      identifier2: {
+      yLabel: {
         type: String,
         default: '',
       },
-      expressions1: {
+      xValues: {
         type: Array,
         default: () => [],
       },
-      expressions2: {
+      yValues: {
         type: Array,
         default: () => [],
       },
@@ -51,30 +59,32 @@ export class BiowcScatter extends LitElement {
   }
 
   updateScatterPlot() {
-    this.expressionsCommon = this.getExpressionInCommonSamples();
-    this.plotExpression();
+    this.valuesInCommon = this.getValuesInCommon();
+    this.plotScatter();
   }
 
-  getExpressionInCommonSamples() {
-    const expressionsBySampleId1 = Object.assign(
+  getValuesInCommon() {
+    const xValuesById = Object.assign(
       {},
-      ...this.expressions1.map(x => ({ [x['Sample name']]: x['Z-score'] }))
+      ...this.xValues.map(x => ({ [x[this.idKey]]: x[this.valueKey] }))
     );
-    const expressionsBySampleId2 = Object.assign(
+    console.log(this.idKey);
+    console.log(this.valueKey);
+    const yValuesById = Object.assign(
       {},
-      ...this.expressions2.map(x => ({ [x['Sample name']]: x['Z-score'] }))
+      ...this.yValues.map(x => ({ [x[this.idKey]]: x[this.valueKey] }))
     );
-    const expressionsInCommonSamples = [];
-    for (const [key, value] of Object.entries(expressionsBySampleId1)) {
-      if (key in expressionsBySampleId2) {
-        expressionsInCommonSamples.push({
-          sampleId: key,
-          expression1: value,
-          expression2: expressionsBySampleId2[key],
+    const valuesInCommon = [];
+    for (const [key, value] of Object.entries(xValuesById)) {
+      if (key in yValuesById) {
+        valuesInCommon.push({
+          id: key,
+          xValue: value,
+          yValue: yValuesById[key],
         });
       }
     }
-    return expressionsInCommonSamples;
+    return valuesInCommon;
   }
 
   static linearRegression(y, x) {
@@ -109,7 +119,7 @@ export class BiowcScatter extends LitElement {
     return d3.select(this.shadowRoot).select('#scatterplot');
   }
 
-  plotExpression() {
+  plotScatter() {
     // set the dimensions and margins of the graph
     const margin = { top: 10, right: 30, bottom: 30, left: 60 };
     const width = 460 - margin.left - margin.right;
@@ -130,11 +140,11 @@ export class BiowcScatter extends LitElement {
     // Add X axis
     const minValueX = Math.min(
       -3.0,
-      Math.min(...this.expressionsCommon.map(d => d.expression1))
+      Math.min(...this.valuesInCommon.map(d => d.xValue))
     );
     const maxValueX = Math.max(
       3.0,
-      Math.max(...this.expressionsCommon.map(d => d.expression1))
+      Math.max(...this.valuesInCommon.map(d => d.xValue))
     );
     const x = d3.scaleLinear().domain([minValueX, maxValueX]).range([0, width]);
     svg
@@ -145,19 +155,19 @@ export class BiowcScatter extends LitElement {
     // Add Y axis
     const minValueY = Math.min(
       -3.0,
-      Math.min(...this.expressionsCommon.map(d => d.expression2))
+      Math.min(...this.valuesInCommon.map(d => d.yValue))
     );
     const maxValueY = Math.max(
       3.0,
-      Math.max(...this.expressionsCommon.map(d => d.expression2))
+      Math.max(...this.valuesInCommon.map(d => d.yValue))
     );
 
     // trendline parameters
     const XaxisData = [];
     const YaxisData = [];
-    Object.entries(this.expressionsCommon).forEach(Element => {
-      XaxisData.push(Element[1].expression1);
-      YaxisData.push(Element[1].expression2);
+    Object.entries(this.valuesInCommon).forEach(Element => {
+      XaxisData.push(Element[1].xValue);
+      YaxisData.push(Element[1].yValue);
     });
     let x1 = minValueX;
     const x2 = maxValueX;
@@ -186,11 +196,11 @@ export class BiowcScatter extends LitElement {
 
     // tooltip mouseover event handler
     const tipMouseover = (e, d) => {
-      const htmlElement = d.sampleId;
+      const htmlElement = d.id;
       tooltip
         .html(htmlElement)
         .style('left', `${e.pageX + 10}px`)
-        .style('top', `${e.pageY - 50}px`)
+        .style('top', `${e.pageY - 10}px`)
         .transition()
         .duration(200) // ms
         .style('opacity', 0.9); // started as 0!
@@ -207,11 +217,11 @@ export class BiowcScatter extends LitElement {
     svg
       .append('g')
       .selectAll('dot')
-      .data(this.expressionsCommon)
+      .data(this.valuesInCommon)
       .enter()
       .append('circle')
-      .attr('cx', d => x(d.expression1))
-      .attr('cy', d => y(d.expression2))
+      .attr('cx', d => x(d.xValue))
+      .attr('cy', d => y(d.yValue))
       .attr('r', 4)
       .style('fill', '#69b3a2')
       .on('mousemove', tipMouseover)
@@ -231,7 +241,7 @@ export class BiowcScatter extends LitElement {
       .append('text')
       .attr('transform', `translate(${width / 2} ,${height + margin.top + 30})`)
       .style('text-anchor', 'middle')
-      .text(`${this.identifier1} Z-score`);
+      .text(`${this.xLabel}`);
 
     // add the y Axis
     svg
@@ -241,17 +251,6 @@ export class BiowcScatter extends LitElement {
       .attr('x', 0 - height / 2)
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
-      .text(`${this.identifier2} Z-score`);
-
-    /*
-    let line = d3.line()
-      .x((d) => x(d[0]))
-      .y((d) => y(d[1]));
-    svg
-    .append("path")
-    .datum(res)
-    .attr("class", "line")
-    .attr("d", line)
-*/
+      .text(`${this.yLabel}`);
   }
 }

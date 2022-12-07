@@ -15,21 +15,25 @@
     import { html, render } from 'lit';
     import '../biowc-scatter.js';
 
-    const identifier1 = 'Gene_X'
-    const expressions1 = [{'Sample name': 'sample1', 'Z-score': 1}, 
-                          {'Sample name': 'sample2', 'Z-score': 3}, 
-                          {'Sample name': 'sample3', 'Z-score': 3}];
-    const identifier2 = 'Gene_Y'
-    const expressions2 = [{'Sample name': 'sample1', 'Z-score': 1}, 
-                          {'Sample name': 'sample2', 'Z-score': 2}, 
-                          {'Sample name': 'sample3', 'Z-score': 3}];
+    const idKey = 'Sample name';
+    const valueKey = 'abundance';
+    const xLabel = 'abundance Gene_X'
+    const xValues = [{'Sample name': 'sample1', 'abundance': 1}, 
+                      {'Sample name': 'sample2', 'abundance': 3}, 
+                      {'Sample name': 'sample3', 'abundance': 3}];
+    const yLabel = 'abundance Gene_Y'
+    const yValues = [{'Sample name': 'sample1', 'abundance': 1}, 
+                      {'Sample name': 'sample2', 'abundance': 2}, 
+                      {'Sample name': 'sample3', 'abundance': 3}];
     render(
       html`
         <biowc-scatter
-            .identifier1=${identifier1}
-            .identifier2=${identifier2}
-            .expressions1=${expressions1}
-            .expressions2=${expressions2}>
+            .idKey=${idKey}
+            .valueKey=${valueKey}
+            .xLabel=${xLabel}
+            .yLabel=${yLabel}
+            .xValues=${xValues}
+            .yValues=${yValues}>
           some light-dom
         </biowc-scatter>
       `,
