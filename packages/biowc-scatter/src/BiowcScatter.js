@@ -68,8 +68,6 @@ export class BiowcScatter extends LitElement {
       {},
       ...this.xValues.map(x => ({ [x[this.idKey]]: x[this.valueKey] }))
     );
-    console.log(this.idKey);
-    console.log(this.valueKey);
     const yValuesById = Object.assign(
       {},
       ...this.yValues.map(x => ({ [x[this.idKey]]: x[this.valueKey] }))
