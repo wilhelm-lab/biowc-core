@@ -1,8 +1,36 @@
+# How to use a component in a Vue.js project
+
+In your `<MyComponent>.vue` file, add this import statement (note the curly brackets!):
+
+```
+import { BiowcScatter } from 'biowc-scatter'
+
+if (window.customElements.get('biowc-scatter') === undefined) {
+  window.customElements.define('biowc-scatter', BiowcScatter)
+}
+```
+
+You don't need to add `BiowcScatter` to the components section.
+
+In the template section (note the `.prop` suffix after each attribute!):
+
+```
+<biowc-scatter
+  :identifier1.prop="identifier1"
+  :identifier2.prop="identifier2"
+  :expressions1.prop="expressionData1"
+  :expressions2.prop="expressionData2"
+/>
+```
+
 # How this repo was initialized
 
-- Initialize [lerna](https://lerna.js.org/) for managing the monorepo and a first web component called `biowc-scatter` using [open-wc](https://open-wc.org/)
+- Initialize [lerna](https://lerna.js.org/) for managing the monorepo
   ```bash
   npx lerna@latest init
+  ```
+- Add a first web component called `biowc-scatter` using [open-wc](https://open-wc.org/)
+  ```bash
   cd packages
   npm init @open-wc
   # What would you like to do today? › Scaffold a new project
@@ -14,12 +42,13 @@
   # Do you want to install dependencies? › Yes, with npm
   cd biowc-scatter
   npm install d3
+  ```
+- Start the web server to test if everything works
+  ```bash
   cd ../../
   npx lerna run start
   ```
-
-
-- Copied methods below the `render` method
+- Copied methods from `ScatterPlot.vue` below the `render` method
   - Remove commas between methods
   - Change some function definitions from `getExpressionInCommonSamples: function ()` to `getExpressionInCommonSamples()`
 - Copied props into `static get properties()`
@@ -55,3 +84,7 @@
   }
   ```
 - Removed `constructor()` method
+- Create a file `index.js` with the following content:
+  ```
+  export { BiowcScatter } from './BiowcScatter.js';
+  ```
