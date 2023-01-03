@@ -12,7 +12,10 @@ export class BiowcScatter extends LitElement {
       }
       .tooltip {
         position: absolute;
-        font-size: 12px;
+        font-size:
+
+
+          13px;
         width: auto;
         height: auto;
         pointer-events: none;
