@@ -25,29 +25,33 @@ export class BiowcScatter extends LitElement {
     return {
       idKey: {
         type: String,
-        default: 'id',
       },
       valueKey: {
         type: String,
-        default: 'value',
       },
       xLabel: {
         type: String,
-        default: '',
       },
       yLabel: {
         type: String,
-        default: '',
       },
       xValues: {
         type: Array,
-        default: () => [],
       },
       yValues: {
         type: Array,
-        default: () => [],
       },
     };
+  }
+
+  constructor() {
+    super();
+    this.idKey = 'id';
+    this.valueKey = 'value';
+    this.xLabel = '';
+    this.yLabel = '';
+    this.xValues = [];
+    this.yValues = [];
   }
 
   render() {
