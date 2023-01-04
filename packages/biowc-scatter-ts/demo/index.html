@@ -14,12 +14,51 @@
     <script type="module">
       import { html, render } from 'lit';
       import '../dist/src/biowc-scatter-ts.js';
+      import 'biowc-scatter';
 
-      const title = 'Hello owc World!';
+      const idKey = 'Sample name';
+      const valueKey = 'abundance';
+      const xLabel = 'abundance Gene_X';
+      const xValues = [
+        { 'Sample name': 'sample1', abundance: 1 },
+        { 'Sample name': 'sample2', abundance: 3 },
+        { 'Sample name': 'sample4', abundance: 3 },
+        { 'Sample name': 'sample5', abundance: 2 },
+      ];
+      const yLabel = 'abundance Gene_Y';
+      const yValues = [
+        { 'Sample name': 'sample1', abundance: 1 },
+        { 'Sample name': 'sample2', abundance: 2 },
+        { 'Sample name': 'sample4', abundance: 3 },
+        { 'Sample name': 'sample5', abundance: -2.5 },
+      ];
+
       render(
         html`
-          <biowc-scatter-ts .title=${title}> some light-dom </biowc-scatter-ts>
+          <div>Hi, I am the typescript version!</div>
+          <biowc-scatter-ts
+            .idKey="${idKey}"
+            .valueKey="${valueKey}"
+            .xLabel="${xLabel}"
+            .yLabel="${yLabel}"
+            .xValues="${xValues}"
+            .yValues="${yValues}"
+          >
+            some light-dom
+          </biowc-scatter-ts>
+          <div>Hi, I am the javascript version!</div>
+          <biowc-scatter
+            .idKey="${idKey}"
+            .valueKey="${valueKey}"
+            .xLabel="${xLabel}"
+            .yLabel="${yLabel}"
+            .xValues="${xValues}"
+            .yValues="${yValues}"
+          >
+            some light-dom
+          </biowc-scatter>
         `,
+
         document.querySelector('#demo')
       );
     </script>

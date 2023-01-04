@@ -23,12 +23,14 @@
     "storybook:build": "tsc && npm run analyze -- --exclude dist && build-storybook"
   },
   "dependencies": {
+    "d3": "^7.7.0",
     "lit": "^2.0.2"
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.4.17",
     "@open-wc/eslint-config": "^9.0.0",
     "@open-wc/testing": "^3.1.6",
+    "@types/d3": "^7.4.0",
     "@typescript-eslint/eslint-plugin": "^5.48.0",
     "@typescript-eslint/parser": "^5.48.0",
     "@web/dev-server": "^0.1.34",
