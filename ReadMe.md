@@ -33,6 +33,15 @@ In the template section (note the `.prop` suffix after each calculated attribute
 />
 ```
 
+## How to publish
+
+Make sure you have an account on npmjs.com and are listed as a maintainer for the biowc packages, then run:
+
+```
+npm login
+npx lerna publish [major|minor|patch]
+```
+
 ## How this repo was initialized
 
 - Initialize [lerna](https://lerna.js.org/) for managing the monorepo
