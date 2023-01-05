@@ -14,7 +14,6 @@
     <script type="module">
       import { html, render } from 'lit';
       import '../dist/src/biowc-scatter-ts.js';
-      import 'biowc-scatter';
 
       const idKey = 'Sample name';
       const valueKey = 'abundance';
@@ -35,7 +34,6 @@
 
       render(
         html`
-          <div>Hi, I am the typescript version!</div>
           <biowc-scatter-ts
             .idKey="${idKey}"
             .valueKey="${valueKey}"
@@ -46,17 +44,6 @@
           >
             some light-dom
           </biowc-scatter-ts>
-          <div>Hi, I am the javascript version!</div>
-          <biowc-scatter
-            .idKey="${idKey}"
-            .valueKey="${valueKey}"
-            .xLabel="${xLabel}"
-            .yLabel="${yLabel}"
-            .xValues="${xValues}"
-            .yValues="${yValues}"
-          >
-            some light-dom
-          </biowc-scatter>
         `,
 
         document.querySelector('#demo')

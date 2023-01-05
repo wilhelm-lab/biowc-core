@@ -224,6 +224,7 @@ export class BiowcScatterTs extends LitElement {
     // adding trendline to the plot
     svg
       .append('line')
+      .attr('class', 'regression-line')
       .attr('x1', x(x1))
       .attr('x2', x(x2))
       .attr('y1', y(y1))
