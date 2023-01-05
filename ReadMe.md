@@ -33,6 +33,15 @@ In the template section (note the `.prop` suffix after each calculated attribute
 />
 ```
 
+## How to publish
+
+Make sure you have an account on npmjs.com and are listed as a maintainer for the biowc packages, then run:
+
+```
+npm login
+npx lerna publish [major|minor|patch]
+```
+
 ## How this repo was initialized
 
 - Initialize [lerna](https://lerna.js.org/) for managing the monorepo
@@ -58,75 +67,7 @@ In the template section (note the `.prop` suffix after each calculated attribute
   cd ../../
   npx lerna run start
   ```
-- Copy methods from `ScatterPlot.vue` below the `render` method
-  - Remove commas between methods
-  - Change some function definitions from `getExpressionInCommonSamples: function ()` to `getExpressionInCommonSamples()`
-- Copy props into `static get properties()`
-- Copy css into `static get styles()`
-- Copy template into `render()`
-- Add import of d3:
-  ```
-  import * as d3 from "d3";
-  ```
-- Add initialization and passing of properties in `demo/index.html`:
-  ```
-  const idKey = 'Sample name';
-  const valueKey = 'abundance';
-  const xLabel = 'abundance Gene_X'
-  const xValues = [{'Sample name': 'sample1', 'abundance': 1}, 
-                    {'Sample name': 'sample2', 'abundance': 3}, 
-                    {'Sample name': 'sample3', 'abundance': 3}];
-  const yLabel = 'abundance Gene_Y'
-  const yValues = [{'Sample name': 'sample1', 'abundance': 1}, 
-                    {'Sample name': 'sample2', 'abundance': 2}, 
-                    {'Sample name': 'sample3', 'abundance': 3}];
-  render(
-    html`
-      <biowc-scatter
-          .idKey=${idKey}
-          .valueKey=${valueKey}
-          .xLabel=${xLabel}
-          .yLabel=${yLabel}
-          .xValues=${xValues}
-          .yValues=${yValues}>
-        some light-dom
-      </biowc-scatter>
-    `,
-    document.querySelector('#demo')
-  );
-  ```
-- Remove `constructor()` method
-- Specify the `updated()` method of the Lit element to start the drawing
-  ```
-  updated() {
-    this.updateScatterPlot()
-  }
-  ```
-- Replace `d3.select('#scatterplot')` by method `this.getMainDiv()`
-  ```
-  getMainDiv() {
-    return d3.select(this.shadowRoot).select('#scatterplot')
-  }
-  ```
-- Create a file `index.js` with the following content to allow importing `BiowcScatter` in other packages
-  ```
-  export { BiowcScatter } from './BiowcScatter.js';
-  ```
 
-## Other tips
+## How to port Vue.js components to Web Components
 
-- Emitting messages to the parent component can be done as follows:
-  ```
-  private _dispatchSelectEvent() {
-    const selectEvent: ScatterSelectEvent = new CustomEvent(
-      'biowc-scatter-select',
-      {
-        detail: {
-          selectedPoints: this.selectedPoints,
-        },
-      }
-    );
-
-    this.dispatchEvent(selectEvent);
-  }
-  ```
+https://github.com/wilhelm-lab/biowc-core/wiki/Porting-Vue.js-component-to-Web-Components

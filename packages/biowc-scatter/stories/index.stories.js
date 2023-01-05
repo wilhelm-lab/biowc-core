@@ -5,40 +5,62 @@ export default {
   title: 'BiowcScatter',
   component: 'biowc-scatter',
   argTypes: {
-    title: { control: 'text' },
-    counter: { control: 'number' },
-    textColor: { control: 'color' },
+    idKey: { control: 'text' },
+    valueKey: { control: 'text' },
+    xLabel: { control: 'text' },
+    yLabel: { control: 'text' },
+    xValues: { control: 'object' },
+    yValues: { control: 'object' },
   },
 };
 
-function Template({ title = 'Hello world', counter = 5, textColor, slot }) {
+function Template({
+  idKey = 'Sample name',
+  valueKey = 'abundance',
+  xLabel = 'abundance Gene_X',
+  yLabel = 'abundance Gene_Y',
+  xValues = [
+    { 'Sample name': 'sample1', abundance: 1 },
+    { 'Sample name': 'sample2', abundance: 3 },
+    { 'Sample name': 'sample3', abundance: 3 },
+  ],
+  yValues = [
+    { 'Sample name': 'sample1', abundance: 1 },
+    { 'Sample name': 'sample2', abundance: 2 },
+    { 'Sample name': 'sample3', abundance: 3 },
+  ],
+}) {
   return html`
     <biowc-scatter
-      style="--biowc-scatter-text-color: ${textColor || 'black'}"
-      .title=${title}
-      .counter=${counter}
+      .idKey=${idKey}
+      .valueKey=${valueKey}
+      .xLabel=${xLabel}
+      .yLabel=${yLabel}
+      .xValues=${xValues}
+      .yValues=${yValues}
     >
-      ${slot}
     </biowc-scatter>
   `;
 }
 
 export const Regular = Template.bind({});
 
-export const CustomTitle = Template.bind({});
-CustomTitle.args = {
-  title: 'My title',
+export const CustomLabels = Template.bind({});
+CustomLabels.args = {
+  xLabel: 'xLabel',
+  yLabel: 'yLabel',
 };
 
-export const CustomCounter = Template.bind({});
-CustomCounter.args = {
-  counter: 123456,
-};
-
-export const SlottedContent = Template.bind({});
-SlottedContent.args = {
-  slot: html`<p>Slotted content</p>`,
-};
-SlottedContent.argTypes = {
-  slot: { table: { disable: true } },
+export const CustomData = Template.bind({});
+CustomData.args = {
+  xValues: [
+    { 'Sample name': 'sample1', abundance: 1 },
+    { 'Sample name': 'sample2', abundance: 3 },
+    { 'Sample name': 'sample3', abundance: 3 },
+  ],
+  yValues: [
+    { 'Sample name': 'sample1', abundance: 1 },
+    { 'Sample name': 'sample2', abundance: 2 },
+    { 'Sample name': 'sample3', abundance: 3 },
+  ],
 };
