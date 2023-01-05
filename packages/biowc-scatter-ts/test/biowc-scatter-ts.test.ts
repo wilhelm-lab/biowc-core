@@ -32,6 +32,70 @@ describe('BiowcScatterTs', async () => {
     />`
   );
 
+  it('has empty x and y labels by default', async () => {
+    const el = await fixture<BiowcScatterTs>(
+      html`<biowc-scatter-ts></biowc-scatter-ts>`
+    );
+
+    expect(el.xLabel).to.equal('');
+    expect(el.yLabel).to.equal('');
+  });
+
+  it('has empty x and y values by default', async () => {
+    const el = await fixture<BiowcScatterTs>(
+      html`<biowc-scatter-ts></biowc-scatter-ts>`
+    );
+
+    expect(el.xValues.length).to.equal(0);
+    expect(el.yValues.length).to.equal(0);
+  });
+
+  it('can override the x and y labels via attribute', async () => {
+    const el = await fixture<BiowcScatterTs>(
+      html`<biowc-scatter-ts
+        .xLabel=${'x label'}
+        .yLabel=${'y label'}
+      ></biowc-scatter-ts>`
+    );
+
+    expect(el.xLabel).to.equal('x label');
+    expect(el.yLabel).to.equal('y label');
+  });
+
+  it('can override the x and y values via attribute', async () => {
+    const el = await fixture<BiowcScatterTs>(
+      html`<biowc-scatter-ts
+        .xValues=${[{ id: 1, value: 3 }]}
+        .yValues=${[{ id: 1, value: 1 }]}
+      ></biowc-scatter-ts>`
+    );
+
+    expect(el.xValues.length).to.equal(1);
+    expect(el.yValues.length).to.equal(1);
+  });
+
+  it('can find values in common', async () => {
+    const el = await fixture<BiowcScatterTs>(
+      html`<biowc-scatter-ts
+        .xValues=${[{ id: 1, value: 3 }]}
+        .yValues=${[{ id: 1, value: 1 }]}
+      ></biowc-scatter-ts>`
+    );
+
+    expect(el.valuesInCommon.length).to.equal(1);
+  });
+
+  it('reports non-overlap if keys do not match', async () => {
+    const el = await fixture<BiowcScatterTs>(
+      html`<biowc-scatter-ts
+        .xValues=${[{ id: 1, value: 3 }]}
+        .yValues=${[{ id: 2, value: 1 }]}
+      ></biowc-scatter-ts>`
+    );
+
+    expect(el.valuesInCommon.length).to.equal(0);
+  });
+
   it('renders 4 circles and 1 line', async () => {
     const circles = scatterplot.shadowRoot!.querySelectorAll('circle');
     expect(circles.length).to.equal(4);
@@ -54,5 +118,11 @@ describe('BiowcScatterTs', async () => {
       '.tooltip'
     ) as HTMLElement;
     expect(tooltip!.style.opacity).to.equal('0.9');
+  });
+
+  it('passes the a11y audit', async () => {
+    const el = await fixture(html`<biowc-scatter></biowc-scatter>`);
+
+    await expect(el).shadowDom.to.be.accessible();
   });
 });
