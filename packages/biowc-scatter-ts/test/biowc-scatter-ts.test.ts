@@ -1,8 +1,20 @@
+// TODO: Get this rolling
+
 // import { html } from 'lit';
-// import { fixture, expect } from '@open-wc/testing';
+import { expect } from '@open-wc/testing';
 // import { BiowcScatterTs } from '../src/BiowcScatterTs.js';
 // import '../src/biowc-scatter-ts.js';
-//
+
+const sum = (a: number, b: number) => {
+  console.log({ a, b });
+  return a + b;
+};
+
+it('sums up 2 numbers', () => {
+  expect(sum(1, 1)).to.equal(2);
+  expect(sum(3, 12)).to.equal(15);
+});
+
 // describe('BiowcScatterTs', () => {
 //   it('has a default title "Hey there" and counter 5', async () => {
 //     const el = await fixture<BiowcScatterTs>(
