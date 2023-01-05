@@ -9,7 +9,7 @@ export default css`
 
   .tooltip {
     position: absolute;
-    font-size: 13px;
+    font-size: 12px;
     width: auto;
     height: auto;
     pointer-events: none;
