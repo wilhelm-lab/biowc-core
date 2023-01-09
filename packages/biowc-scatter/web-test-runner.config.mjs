@@ -1,10 +1,15 @@
 // import { playwrightLauncher } from '@web/test-runner-playwright';
+import { esbuildPlugin } from '@web/dev-server-esbuild';
 
 const filteredLogs = ['Running in dev mode', 'lit-html is in dev mode'];
 
 export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
-  /** Test files to run */
-  files: 'test/**/*.test.js',
+  // /** Test files to run */
+  files: 'dist/test/**/*.test.js',
+
+  //Transform TS Sources on the fly without need for tsc - can be problematic
+  // files: ['test/*.test.ts', 'test/*.spec.ts'],
+  // plugins: [esbuildPlugin({ ts: true })],
 
   /** Resolve bare module imports */
   nodeResolve: {

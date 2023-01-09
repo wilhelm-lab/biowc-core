@@ -1,5 +1,5 @@
-import { html } from 'lit';
-import '../biowc-scatter.js';
+import { html, TemplateResult } from 'lit';
+import '../src/biowc-scatter.js';
 
 export default {
   title: 'BiowcScatter',
@@ -14,7 +14,22 @@ export default {
   },
 };
 
-function Template({
+interface Story<T> {
+  (args: T): TemplateResult;
+  args?: Partial<T>;
+  argTypes?: Record<string, unknown>;
+}
+
+interface ArgTypes {
+  idKey: string;
+  valueKey: string;
+  xLabel: string;
+  yLabel: string;
+  xValues: { [key: string]: number | string }[];
+  yValues: { [key: string]: number | string }[];
+}
+
+const Template: Story<ArgTypes> = ({
   idKey = 'Sample name',
   valueKey = 'abundance',
   xLabel = 'abundance Gene_X',
@@ -29,19 +44,17 @@ function Template({
     { 'Sample name': 'sample2', abundance: 2 },
     { 'Sample name': 'sample3', abundance: 3 },
   ],
-}) {
-  return html`
-    <biowc-scatter
-      .idKey=${idKey}
-      .valueKey=${valueKey}
-      .xLabel=${xLabel}
-      .yLabel=${yLabel}
-      .xValues=${xValues}
-      .yValues=${yValues}
-    >
-    </biowc-scatter>
-  `;
-}
+}: ArgTypes) => html`
+  <biowc-scatter
+    .idKey=${idKey}
+    .valueKey=${valueKey}
+    .xLabel=${xLabel}
+    .yLabel=${yLabel}
+    .xValues=${xValues}
+    .yValues=${yValues}
+  >
+  </biowc-scatter>
+`;
 
 export const Regular = Template.bind({});
 

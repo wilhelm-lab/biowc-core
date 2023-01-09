@@ -1,44 +1,53 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-GB">
-<head>
-  <meta charset="utf-8">
-  <style>
-    body {
-      background: #fafafa;
-    }
-  </style>
-</head>
-<body>
-  <div id="demo"></div>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        background: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="demo"></div>
 
-  <script type="module">
-    import { html, render } from 'lit';
-    import '../biowc-scatter.js';
+    <script type="module">
+      import { html, render } from 'lit';
+      import '../dist/src/biowc-scatter.js';
 
-    const idKey = 'Sample name';
-    const valueKey = 'abundance';
-    const xLabel = 'abundance Gene_X'
-    const xValues = [{'Sample name': 'sample1', 'abundance': 1}, 
-                      {'Sample name': 'sample2', 'abundance': 3}, 
-                      {'Sample name': 'sample3', 'abundance': 3}];
-    const yLabel = 'abundance Gene_Y'
-    const yValues = [{'Sample name': 'sample1', 'abundance': 1}, 
-                      {'Sample name': 'sample2', 'abundance': 2}, 
-                      {'Sample name': 'sample3', 'abundance': 3}];
-    render(
-      html`
-        <biowc-scatter
-            .idKey=${idKey}
-            .valueKey=${valueKey}
-            .xLabel=${xLabel}
-            .yLabel=${yLabel}
-            .xValues=${xValues}
-            .yValues=${yValues}>
-          some light-dom
-        </biowc-scatter>
-      `,
-      document.querySelector('#demo')
-    );
-  </script>
-</body>
+      const idKey = 'Sample name';
+      const valueKey = 'abundance';
+      const xLabel = 'abundance Gene_X';
+      const xValues = [
+        { 'Sample name': 'sample1', abundance: 1 },
+        { 'Sample name': 'sample2', abundance: 3 },
+        { 'Sample name': 'sample4', abundance: 3 },
+        { 'Sample name': 'sample5', abundance: 2 },
+      ];
+      const yLabel = 'abundance Gene_Y';
+      const yValues = [
+        { 'Sample name': 'sample1', abundance: 1 },
+        { 'Sample name': 'sample2', abundance: 2 },
+        { 'Sample name': 'sample4', abundance: 3 },
+        { 'Sample name': 'sample5', abundance: -2.5 },
+      ];
+
+      render(
+        html`
+          <biowc-scatter
+            .idKey="${idKey}"
+            .valueKey="${valueKey}"
+            .xLabel="${xLabel}"
+            .yLabel="${yLabel}"
+            .xValues="${xValues}"
+            .yValues="${yValues}"
+          >
+            some light-dom
+          </biowc-scatter>
+        `,
+
+        document.querySelector('#demo')
+      );
+    </script>
+  </body>
 </html>
