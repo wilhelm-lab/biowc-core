@@ -1,6 +1,6 @@
 import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import * as d3v7 from 'd3';
+import * as d3v6 from 'd3';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import styles from './biowc-scatter.css';
 
@@ -107,7 +107,7 @@ export class BiowcScatter extends LitElement {
   private _getMainDiv() {
     // TODO: Fix without ignore
     // @ts-ignore
-    return d3v7.select(this.shadowRoot).select('#scatterplot');
+    return d3v6.select(this.shadowRoot).select('#scatterplot');
   }
 
   private _plotScatter() {
@@ -137,14 +137,14 @@ export class BiowcScatter extends LitElement {
       3.0,
       Math.max(...this.valuesInCommon.map(d => d.xValue))
     );
-    const x = d3v7
+    const x = d3v6
       .scaleLinear()
       .domain([minValueX, maxValueX])
       .range([0, width]);
     svg
       .append('g')
       .attr('transform', `translate(0,${height})`)
-      .call(d3v7.axisBottom(x));
+      .call(d3v6.axisBottom(x));
 
     // Add Y axis
     const minValueY = Math.min(
@@ -175,11 +175,11 @@ export class BiowcScatter extends LitElement {
       x1 = (y1 - equation.intercept) / equation.slope;
     }
 
-    const y = d3v7
+    const y = d3v6
       .scaleLinear()
       .domain([minValueY, maxValueY])
       .range([height, 0]);
-    svg.append('g').call(d3v7.axisLeft(y));
+    svg.append('g').call(d3v6.axisLeft(y));
 
     // Add the tooltip container to the vis container
     // it's invisible and its position/contents are defined during mouseover
