@@ -41,10 +41,10 @@ Enter the directory and edit the `packages.json` file:
   ```
 
 Install `d3.js`, the package we use to create visualizations:  
-`npm i d3@6.2.0`
+```npm i d3@6.2.0```
 
 Install `playwright`for development. Playwright will simulate your tests in different browsers to make sure your component runs on all of them:  
-`npm i -D playwright @playwright/test`
+```npm i -D playwright @playwright/test```
 
 Commit your initialized package using `git commit -m "Initial commit"`.
 
