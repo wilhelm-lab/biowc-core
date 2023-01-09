@@ -21,29 +21,29 @@ interface Story<T> {
 }
 
 interface ArgTypes {
-  idKey: string,
-  valueKey: string,
-  xLabel: string,
-  yLabel: string,
-  xValues: { [key: string]: number|string }[],
-  yValues: { [key: string]: number|string }[],
+  idKey: string;
+  valueKey: string;
+  xLabel: string;
+  yLabel: string;
+  xValues: { [key: string]: number | string }[];
+  yValues: { [key: string]: number | string }[];
 }
 
 const Template: Story<ArgTypes> = ({
-                                     idKey = 'Sample name',
-                                     valueKey = 'abundance',
-                                     xLabel = 'abundance Gene_X',
-                                     yLabel = 'abundance Gene_Y',
-                                     xValues = [
-                                       { 'Sample name': 'sample1', abundance: 1 },
-                                       { 'Sample name': 'sample2', abundance: 3 },
-                                       { 'Sample name': 'sample3', abundance: 3 },
-                                     ],
-                                     yValues = [
-                                       { 'Sample name': 'sample1', abundance: 1 },
-                                       { 'Sample name': 'sample2', abundance: 2 },
-                                       { 'Sample name': 'sample3', abundance: 3 },
-                                     ],
+  idKey = 'Sample name',
+  valueKey = 'abundance',
+  xLabel = 'abundance Gene_X',
+  yLabel = 'abundance Gene_Y',
+  xValues = [
+    { 'Sample name': 'sample1', abundance: 1 },
+    { 'Sample name': 'sample2', abundance: 3 },
+    { 'Sample name': 'sample3', abundance: 3 },
+  ],
+  yValues = [
+    { 'Sample name': 'sample1', abundance: 1 },
+    { 'Sample name': 'sample2', abundance: 2 },
+    { 'Sample name': 'sample3', abundance: 3 },
+  ],
 }: ArgTypes) => html`
   <biowc-scatter
     .idKey=${idKey}
