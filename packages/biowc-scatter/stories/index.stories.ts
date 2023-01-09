@@ -1,9 +1,9 @@
 import { html, TemplateResult } from 'lit';
-import '../src/biowc-scatter-ts.js';
+import '../src/biowc-scatter.js';
 
 export default {
-  title: 'BiowcScatterTs',
-  component: 'biowc-scatter-ts',
+  title: 'BiowcScatter',
+  component: 'biowc-scatter',
   argTypes: {
     idKey: { control: 'text' },
     valueKey: { control: 'text' },
@@ -45,7 +45,7 @@ const Template: Story<ArgTypes> = ({
                                        { 'Sample name': 'sample3', abundance: 3 },
                                      ],
 }: ArgTypes) => html`
-  <biowc-scatter-ts
+  <biowc-scatter
     .idKey=${idKey}
     .valueKey=${valueKey}
     .xLabel=${xLabel}
@@ -53,7 +53,7 @@ const Template: Story<ArgTypes> = ({
     .xValues=${xValues}
     .yValues=${yValues}
   >
-  </biowc-scatter-ts>
+  </biowc-scatter>
 `;
 
 export const Regular = Template.bind({});

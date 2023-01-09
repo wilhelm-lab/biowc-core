@@ -1,9 +1,9 @@
 import { html } from 'lit';
 import { fixture, expect, aTimeout } from '@open-wc/testing';
-import { BiowcScatterTs } from '../src/BiowcScatterTs.js';
-import '../src/biowc-scatter-ts.js';
+import { BiowcScatter } from '../src/BiowcScatter.js';
+import '../src/biowc-scatter.js';
 
-describe('BiowcScatterTs', async () => {
+describe('BiowcScatter', async () => {
   const idKey = 'Sample name';
   const valueKey = 'abundance';
   const xLabel = 'abundance Gene_X';
@@ -21,8 +21,8 @@ describe('BiowcScatterTs', async () => {
     { 'Sample name': 'sample5', abundance: -2.5 },
   ];
 
-  const scatterplot = await fixture<BiowcScatterTs>(
-    html` <biowc-scatter-ts
+  const scatterplot = await fixture<BiowcScatter>(
+    html` <biowc-scatter
       .idKey="${idKey}"
       .valueKey="${valueKey}"
       .xLabel="${xLabel}"
@@ -33,8 +33,8 @@ describe('BiowcScatterTs', async () => {
   );
 
   it('has empty x and y labels by default', async () => {
-    const el = await fixture<BiowcScatterTs>(
-      html`<biowc-scatter-ts></biowc-scatter-ts>`
+    const el = await fixture<BiowcScatter>(
+      html`<biowc-scatter></biowc-scatter>`
     );
 
     expect(el.xLabel).to.equal('');
@@ -42,8 +42,8 @@ describe('BiowcScatterTs', async () => {
   });
 
   it('has empty x and y values by default', async () => {
-    const el = await fixture<BiowcScatterTs>(
-      html`<biowc-scatter-ts></biowc-scatter-ts>`
+    const el = await fixture<BiowcScatter>(
+      html`<biowc-scatter></biowc-scatter>`
     );
 
     expect(el.xValues.length).to.equal(0);
@@ -51,11 +51,11 @@ describe('BiowcScatterTs', async () => {
   });
 
   it('can override the x and y labels via attribute', async () => {
-    const el = await fixture<BiowcScatterTs>(
-      html`<biowc-scatter-ts
+    const el = await fixture<BiowcScatter>(
+      html`<biowc-scatter
         .xLabel=${'x label'}
         .yLabel=${'y label'}
-      ></biowc-scatter-ts>`
+      ></biowc-scatter>`
     );
 
     expect(el.xLabel).to.equal('x label');
@@ -63,11 +63,11 @@ describe('BiowcScatterTs', async () => {
   });
 
   it('can override the x and y values via attribute', async () => {
-    const el = await fixture<BiowcScatterTs>(
-      html`<biowc-scatter-ts
+    const el = await fixture<BiowcScatter>(
+      html`<biowc-scatter
         .xValues=${[{ id: 1, value: 3 }]}
         .yValues=${[{ id: 1, value: 1 }]}
-      ></biowc-scatter-ts>`
+      ></biowc-scatter>`
     );
 
     expect(el.xValues.length).to.equal(1);
@@ -75,22 +75,22 @@ describe('BiowcScatterTs', async () => {
   });
 
   it('can find values in common', async () => {
-    const el = await fixture<BiowcScatterTs>(
-      html`<biowc-scatter-ts
+    const el = await fixture<BiowcScatter>(
+      html`<biowc-scatter
         .xValues=${[{ id: 1, value: 3 }]}
         .yValues=${[{ id: 1, value: 1 }]}
-      ></biowc-scatter-ts>`
+      ></biowc-scatter>`
     );
 
     expect(el.valuesInCommon.length).to.equal(1);
   });
 
   it('reports non-overlap if keys do not match', async () => {
-    const el = await fixture<BiowcScatterTs>(
-      html`<biowc-scatter-ts
+    const el = await fixture<BiowcScatter>(
+      html`<biowc-scatter
         .xValues=${[{ id: 1, value: 3 }]}
         .yValues=${[{ id: 2, value: 1 }]}
-      ></biowc-scatter-ts>`
+      ></biowc-scatter>`
     );
 
     expect(el.valuesInCommon.length).to.equal(0);

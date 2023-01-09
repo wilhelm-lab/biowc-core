@@ -3,18 +3,24 @@
   "description": "Webcomponent biowc-scatter following open-wc recommendations",
   "license": "MIT",
   "author": "biowc-scatter",
-  "version": "0.1.2",
-  "main": "index.js",
-  "module": "index.js",
+  "version": "0.0.0",
+  "main": "dist/src/index.js",
+  "module": "dist/src/index.js",
+  "exports": {
+    ".": "./dist/src/index.js",
+    "./biowc-scatter.js": "./dist/src/biowc-scatter.js"
+  },
   "scripts": {
     "analyze": "cem analyze --litelement",
-    "start": "web-dev-server",
-    "lint": "eslint --ext .js,.html . --ignore-path .gitignore && prettier \"**/*.js\" --check --ignore-path .gitignore",
-    "format": "eslint --ext .js,.html . --fix --ignore-path .gitignore && prettier \"**/*.js\" --write --ignore-path .gitignore",
-    "test": "web-test-runner --coverage",
-    "test:watch": "web-test-runner --watch",
-    "storybook": "npm run analyze -- --exclude dist && web-dev-server -c .storybook/server.mjs",
-    "storybook:build": "npm run analyze -- --exclude dist && build-storybook"
+    "start": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\"",
+    "build": "tsc && npm run analyze -- --exclude dist",
+    "prepublish": "tsc && npm run analyze -- --exclude dist",
+    "lint": "eslint --ext .ts,.html . --ignore-path .gitignore && prettier \"**/*.ts\" --check --ignore-path .gitignore",
+    "format": "eslint --ext .ts,.html . --fix --ignore-path .gitignore && prettier \"**/*.ts\" --write --ignore-path .gitignore",
+    "test": "tsc && wtr --coverage --node-resolve --playwright --browsers chromium firefox",
+    "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\"",
+    "storybook": "tsc && npm run analyze -- --exclude dist && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds -c .storybook/server.mjs\"",
+    "storybook:build": "tsc && npm run analyze -- --exclude dist && build-storybook"
   },
   "dependencies": {
     "d3": "^7.7.0",
@@ -22,23 +28,49 @@
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.4.17",
-    "@open-wc/eslint-config": "^8.0.2",
+    "@open-wc/eslint-config": "^9.0.0",
     "@open-wc/testing": "^3.1.6",
+    "@types/d3": "^7.4.0",
+    "@typescript-eslint/eslint-plugin": "^5.48.0",
+    "@typescript-eslint/parser": "^5.48.0",
     "@web/dev-server": "^0.1.34",
+    "@web/dev-server-esbuild": "^0.3.3",
     "@web/dev-server-storybook": "^0.5.4",
     "@web/test-runner": "^0.14.0",
-    "eslint": "^7.32.0",
+    "@web/test-runner-playwright": "^0.8.8",
+    "concurrently": "^5.3.0",
+    "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.3.0",
     "husky": "^4.3.8",
     "lint-staged": "^10.5.4",
-    "prettier": "^2.4.1"
+    "prettier": "^2.4.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.2"
   },
   "customElements": "custom-elements.json",
   "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
     "extends": [
       "@open-wc",
       "prettier"
-    ]
+    ],
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "rules": {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error"
+      ],
+      "import/no-unresolved": "off",
+      "import/extensions": [
+        "error",
+        "always",
+        {
+          "ignorePackages": true
+        }
+      ]
+    }
   },
   "prettier": {
     "singleQuote": true,
@@ -46,14 +78,13 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged && npm test"
     }
   },
   "lint-staged": {
-    "*.js": [
+    "*.ts|*.html": [
       "eslint --fix",
       "prettier --write"
     ]
-  },
-  "gitHead": "18b2d71f75502e84d7510e662437b0041e7469bd"
+  }
 }

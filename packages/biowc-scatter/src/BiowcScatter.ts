@@ -1,78 +1,58 @@
-import { html, css, LitElement } from 'lit';
-
-import * as d3 from 'd3';
+import { html, LitElement } from 'lit';
+import { property } from 'lit/decorators.js';
+import * as d3v7 from 'd3';
+import { HTMLTemplateResult, PropertyValues } from 'lit/development';
+import styles from './biowc-scatter.css';
 
 export class BiowcScatter extends LitElement {
-  static get styles() {
-    return css`
-      :host {
-        display: block;
-        padding: 25px;
-        color: var(--biowc-scatter-text-color, #000);
-      }
-      .tooltip {
-        position: absolute;
-        font-size: 12px;
-        width: auto;
-        height: auto;
-        pointer-events: none;
-        background-color: white;
-      }
-    `;
-  }
+  static styles = styles;
 
-  static get properties() {
-    return {
-      idKey: {
-        type: String,
-      },
-      valueKey: {
-        type: String,
-      },
-      xLabel: {
-        type: String,
-      },
-      yLabel: {
-        type: String,
-      },
-      xValues: {
-        type: Array,
-      },
-      yValues: {
-        type: Array,
-      },
-    };
-  }
+  @property({ attribute: false })
+  valuesInCommon: { id: string; xValue: number; yValue: number }[] = [];
 
-  constructor() {
-    super();
-    this.idKey = 'id';
-    this.valueKey = 'value';
-    this.xLabel = '';
-    this.yLabel = '';
-    this.xValues = [];
-    this.yValues = [];
-  }
+  @property({ attribute: false })
+  idKey: string = 'id';
 
-  render() {
+  @property({ attribute: false })
+  valueKey: string = 'value';
+
+  @property({ attribute: false })
+  xValues: { [key: string]: number|string }[] = [];
+
+  @property({ attribute: false })
+  yValues: { [key: string]: number|string }[] = [];
+
+  @property({ attribute: false })
+  xLabel: string = '';
+
+  @property({ attribute: false })
+  yLabel: string = '';
+
+  render(): HTMLTemplateResult {
+    this.valuesInCommon = this._getValuesInCommon();
     return html` <div id="scatterplot"></div> `;
   }
 
-  updated() {
-    this.updateScatterPlot();
+  protected firstUpdated(_changedProperties: PropertyValues) {
+    this._plotScatter();
+
+    super.firstUpdated(_changedProperties);
   }
 
-  updateScatterPlot() {
-    this.valuesInCommon = this.getValuesInCommon();
-    this.plotScatter();
-  }
+  private _getValuesInCommon(): {
+    id: string;
+    xValue: number;
+    yValue: number;
+  }[] {
+    interface valuesById {
+      [key: string]: number;
+    }
 
-  getValuesInCommon() {
-    const xValuesById = Object.assign(
+    const xValuesById: valuesById = Object.assign(
       {},
       ...this.xValues.map(x => ({ [x[this.idKey]]: x[this.valueKey] }))
     );
-    const yValuesById = Object.assign(
+    const yValuesById: valuesById = Object.assign(
       {},
       ...this.yValues.map(x => ({ [x[this.idKey]]: x[this.valueKey] }))
     );
@@ -89,8 +69,15 @@ export class BiowcScatter extends LitElement {
     return valuesInCommon;
   }
 
-  static linearRegression(y, x) {
-    const lr = {};
+  private static _linearRegression(
+    y: number[],
+    x: number[]
+  ): { slope: number; intercept: number; correlation: number } {
+    const lr: { slope: number; intercept: number; correlation: number } = {
+      slope: 0,
+      intercept: 0,
+      correlation: 0,
+    };
     const n = y.length;
     let sumX = 0;
     let sumY = 0;
@@ -117,17 +104,19 @@ export class BiowcScatter extends LitElement {
     return lr;
   }
 
-  getMainDiv() {
-    return d3.select(this.shadowRoot).select('#scatterplot');
+  private _getMainDiv() {
+    // TODO: Fix without ignore
+    // @ts-ignore
+    return d3v7.select(this.shadowRoot).select('#scatterplot');
   }
 
-  plotScatter() {
+  private _plotScatter() {
     // set the dimensions and margins of the graph
     const margin = { top: 10, right: 30, bottom: 30, left: 60 };
     const width = 460 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
 
-    const mainDiv = this.getMainDiv();
+    const mainDiv = this._getMainDiv();
 
     mainDiv.select('svg').remove();
 
@@ -148,11 +137,14 @@ export class BiowcScatter extends LitElement {
       3.0,
       Math.max(...this.valuesInCommon.map(d => d.xValue))
     );
-    const x = d3.scaleLinear().domain([minValueX, maxValueX]).range([0, width]);
+    const x = d3v7
+      .scaleLinear()
+      .domain([minValueX, maxValueX])
+      .range([0, width]);
     svg
       .append('g')
       .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(x));
+      .call(d3v7.axisBottom(x));
 
     // Add Y axis
     const minValueY = Math.min(
@@ -165,15 +157,15 @@ export class BiowcScatter extends LitElement {
     );
 
     // trendline parameters
-    const XaxisData = [];
-    const YaxisData = [];
+    const XaxisData: number[] = [];
+    const YaxisData: number[] = [];
     Object.entries(this.valuesInCommon).forEach(Element => {
       XaxisData.push(Element[1].xValue);
       YaxisData.push(Element[1].yValue);
     });
     let x1 = minValueX;
     const x2 = maxValueX;
-    const equation = BiowcScatter.linearRegression(YaxisData, XaxisData);
+    const equation = BiowcScatter._linearRegression(YaxisData, XaxisData);
     let y1 = equation.slope * x1 + equation.intercept;
     const y2 = equation.slope * x2 + equation.intercept;
 
@@ -183,11 +175,11 @@ export class BiowcScatter extends LitElement {
       x1 = (y1 - equation.intercept) / equation.slope;
     }
 
-    const y = d3
+    const y = d3v7
       .scaleLinear()
       .domain([minValueY, maxValueY])
       .range([height, 0]);
-    svg.append('g').call(d3.axisLeft(y));
+    svg.append('g').call(d3v7.axisLeft(y));
 
     // Add the tooltip container to the vis container
     // it's invisible and its position/contents are defined during mouseover
@@ -197,7 +189,7 @@ export class BiowcScatter extends LitElement {
       .style('opacity', 0);
 
     // tooltip mouseover event handler
-    const tipMouseover = (e, d) => {
+    const tipMouseover = (e: MouseEvent, d: { id: any }) => {
       const htmlElement = d.id;
       tooltip
         .html(htmlElement)
@@ -232,6 +224,7 @@ export class BiowcScatter extends LitElement {
     // adding trendline to the plot
     svg
       .append('line')
+      .attr('class', 'regression-line')
       .attr('x1', x(x1))
       .attr('x2', x(x2))
       .attr('y1', y(y1))
