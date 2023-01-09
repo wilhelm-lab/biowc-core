@@ -17,10 +17,10 @@ export class BiowcScatterTs extends LitElement {
   valueKey: string = 'value';
 
   @property({ attribute: false })
-  xValues: { [key: string]: number }[] = [];
+  xValues: { [key: string]: number|string }[] = [];
 
   @property({ attribute: false })
-  yValues: { [key: string]: number }[] = [];
+  yValues: { [key: string]: number|string }[] = [];
 
   @property({ attribute: false })
   xLabel: string = '';
