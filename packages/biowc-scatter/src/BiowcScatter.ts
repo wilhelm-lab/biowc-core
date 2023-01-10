@@ -163,17 +163,15 @@ export class BiowcScatter extends LitElement {
       XaxisData.push(Element[1].xValue);
       YaxisData.push(Element[1].yValue);
     });
-    let x1 = minValueX;
-    const x2 = maxValueX;
     const equation = BiowcScatter._linearRegression(YaxisData, XaxisData);
-    let y1 = equation.slope * x1 + equation.intercept;
-    const y2 = equation.slope * x2 + equation.intercept;
+    let y1 = equation.slope * minValueX + equation.intercept;
+    let y2 = equation.slope * maxValueX + equation.intercept;
 
-    if (y1 < minValueY) {
-      // if overflow it updates the two vlaues
-      y1 = minValueY;
-      x1 = (y1 - equation.intercept) / equation.slope;
-    }
+    y1 = Math.min(Math.max(y1, minValueY), maxValueY);
+    const x1 = (y1 - equation.intercept) / equation.slope;
+
+    y2 = Math.min(Math.max(y2, minValueY), maxValueY);
+    const x2 = (y2 - equation.intercept) / equation.slope;
 
     const y = d3v6
       .scaleLinear()
