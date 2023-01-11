@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "matrix-js": "^1.6.1",
+    "venn.js": "^0.2.20",
     "vue": "^2.6.11",
     "vuetify": "^2.6.0"
   },
