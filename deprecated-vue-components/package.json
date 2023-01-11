@@ -12,7 +12,8 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
-    "d3v4": "^4.2.2"
+    "d3v4": "^4.2.2",
+    "d3": "^6.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",

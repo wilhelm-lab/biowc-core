@@ -1,0 +1,20 @@
+
+.HistogramContainer {
+    font: 12px sans-serif;
+}
+
+HistogramContainer .axis path,
+HistogramContainer .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.Title{
+  font-size: 18px;
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+.highlightLines {
+  stroke-width: 3px !important ;
+}
