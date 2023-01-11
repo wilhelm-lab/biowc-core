@@ -6,22 +6,6 @@
 const d3v4 = require("d3v4");
 export default {
   props: {
-    width: {
-      type: String,
-      default: "40%",
-    },
-    height: {
-      type: String,
-      default: "40%",
-    },
-    minWidthCSS: {
-      type: [String, Number],
-      default: "100",
-    },
-    minHeightCSS: {
-      type: [String, Number],
-      default: "100",
-    },
     minWidth: {
       type: Number,
       default: 500,
@@ -34,10 +18,6 @@ export default {
       type: Array,
       default: undefined,
     },
-    busy: {
-      type: Boolean,
-      default: false,
-    },
     xAxis: {
       type: String,
       default: "x-axis",
@@ -45,18 +25,6 @@ export default {
     yAxis: {
       type: String,
       default: "y-axis",
-    },
-    mirroredSelection: {
-      type: Boolean,
-      default: true,
-    },
-    aSelectedGeneNamesUp: {
-      type: Object,
-      default: undefined,
-    },
-    aSelectedGeneNamesDown: {
-      type: Object,
-      default: undefined,
     },
   },
   data: function () {

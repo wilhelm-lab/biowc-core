@@ -13,7 +13,7 @@ export default {
 const Template = (args, { argTypes }) => ({
     components: { VolcanoPlot },
     props: Object.keys(argTypes),
-    template: '<volcano-plot v-bind="$props" />',
+    template: '<div>I add nothing on top of the scatter plot. Delete me!<volcano-plot v-bind="$props" /></div>',
 })
 
 export const ExampleVolcanoPlot = Template.bind({})
