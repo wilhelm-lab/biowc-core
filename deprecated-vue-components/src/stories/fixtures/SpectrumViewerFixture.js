@@ -1,22 +1,22 @@
 export default {
     spectrumViewer: {
       plotdata: {
-        x: [123.12, 234.23],
-        y: [10.0, 100.0],
-        id: [0, 1],
+        x: [123.12, 234.23], // sets the x-values in the spectrum plot
+        y: [10.0, 100.0], // not sure where this is used...
+        id: [0, 1], // used to link mass errors bubbles to peaks in the spectrum plot
         color: ["#0d75bc", "#a6a6a6"],
         label: ["b1", ""],
         labelCharge: [1, 0],
         neutralLosses: ["", ""],
         barwidth: [3, 1],
-        massError: ["", 2.5],
-        theoMz: [0, 0],
-        percentBasePeak: [100, 50],
+        theoMz: [0, 0], // not sure where this is used...
+        percentBasePeak: [100, 50], // sets the y-values in the spectrum plot
         TIC: 110.0,
-        massErrorX: [123.12, 234.23],
-        intensityError: [5, 4],
-        intensityErrorIdsTop: [0, 1],
-        intensityErrorIdsBottom: [0, 1],
+        massError: ["", 2.5], // sets the y-values in the mass errors plot
+        massErrorX: [123.12, 234.23], // sets the x-values in the mass errors plot
+        intensityError: [5, 4], // determines bubble size in the mass errors plot
+        intensityErrorIdsTop: [0, 1], // refers to the id field of plotdata to know which peak belongs to the mass error bubble
+        intensityErrorIdsBottom: [0, 1], // refers to the id field of mirrorplotdata
       },
       peptide: {
         sequence: "TESTPEPTIDE",
@@ -100,7 +100,6 @@ export default {
         labelCharge: [0, 0],
         neutralLosses: ["", ""],
         barwidth: [1, 1],
-        massError: ["", ""],
         theoMz: [0, 0],
         percentBasePeak: [50, 100],
         TIC: 110.0,
@@ -184,8 +183,8 @@ export default {
         ionizationMode: "+",
       },
       score: {
-        sa: 0.5,
-        corr: 0.6,
+        sa: 0.5, // spectral angle
+        corr: 0.6, // pearson correlation
       },
       scoreTop: {
         sa: 0.2,
