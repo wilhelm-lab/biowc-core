@@ -96,5 +96,6 @@ npx lerna publish [major|minor|patch]
   ```
 
 ## How to port Vue.js components to Web Components
-
+All existing components in ProteomicsDB are embedded into Vue.js (they live in `deprecated-vue-components`).  
+We wrote down a summary of the main steps when translating a Vue component into a framework-independent web component: 
 https://github.com/wilhelm-lab/biowc-core/wiki/Porting-Vue.js-component-to-Web-Components
