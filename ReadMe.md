@@ -1,7 +1,7 @@
 # Bio web components (Biowc)
 
 This monorepo contains several plotting components that can easily be integrated in your web tools. This can either be
-done directly in the HTML, or through a JavaScript such as Vue.js.
+done directly in the HTML, or through a JavaScript framework such as Vue, React, or Angular.
 
 ## How to add components
 
@@ -53,34 +53,12 @@ Commit your initialized package using `git commit -m "Initial commit"`.
 Happy hacking :-)
 
 ## How to use
-
-### Vue.js
-
-In your `<MyComponent>.vue` file, add this import statement (note the curly brackets!):
-
-```
-import { BiowcScatter } from 'biowc-scatter'
-
-if (window.customElements.get('biowc-scatter') === undefined) {
-  window.customElements.define('biowc-scatter', BiowcScatter)
-}
-```
-
-You don't need to add `BiowcScatter` to the components section.
-
-In the template section (note the `.prop` suffix after each calculated attribute and the camel case for regular
-attributes!):
-
-```
-<biowc-scatter
-  idKey="Sample name"
-  valueKey="Z-score"
-  :x-label.prop="identifier1"
-  :y-label.prop="identifier2"
-  :x-values.prop="expressionData1"
-  :y-values.prop="expressionData2"
-/>
-```
+See here:  
+https://www.webcomponents.org/introduction  
+https://github.com/WICG/webcomponents#web-components  
+Vue.js: https://vuejs.org/guide/extras/web-components.html#using-custom-elements-in-vue  
+React: https://reactjs.org/docs/web-components.html  
+Angular: https://angular.io/guide/elements  
 
 ## How to publish
 
