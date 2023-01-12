@@ -20,7 +20,7 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "storybook": "start-storybook",
+    "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
   "dependencies": {}
