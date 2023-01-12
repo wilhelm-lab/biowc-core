@@ -14,33 +14,17 @@
     <script type="module">
       import { html, render } from 'lit';
       import '../dist/src/biowc-scatter.js';
-
-      const idKey = 'Sample name';
-      const valueKey = 'abundance';
-      const xLabel = 'abundance Gene_X';
-      const xValues = [
-        { 'Sample name': 'sample1', abundance: 1 },
-        { 'Sample name': 'sample2', abundance: 3 },
-        { 'Sample name': 'sample4', abundance: 3 },
-        { 'Sample name': 'sample5', abundance: 2 },
-      ];
-      const yLabel = 'abundance Gene_Y';
-      const yValues = [
-        { 'Sample name': 'sample1', abundance: 1 },
-        { 'Sample name': 'sample2', abundance: 2 },
-        { 'Sample name': 'sample4', abundance: 3 },
-        { 'Sample name': 'sample5', abundance: -2.5 },
-      ];
+      import ScatterPlotFixture from '../dist/test/fixtures/ScatterPlotFixture.js';
 
       render(
         html`
           <biowc-scatter
-            .idKey="${idKey}"
-            .valueKey="${valueKey}"
-            .xLabel="${xLabel}"
-            .yLabel="${yLabel}"
-            .xValues="${xValues}"
-            .yValues="${yValues}"
+            .idKey="${ScatterPlotFixture.scatterPlot.idKey}"
+            .valueKey="${ScatterPlotFixture.scatterPlot.valueKey}"
+            .xLabel="${ScatterPlotFixture.scatterPlot.xLabel}"
+            .yLabel="${ScatterPlotFixture.scatterPlot.yLabel}"
+            .xValues="${ScatterPlotFixture.scatterPlot.xValues}"
+            .yValues="${ScatterPlotFixture.scatterPlot.yValues}"
           >
             some light-dom
           </biowc-scatter>

@@ -3,6 +3,13 @@ import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import styles from './biowc-scatter.css';
+import '../../../download-button/dist/src/download-button.js';
+
+declare global {
+  interface Navigator {
+    msSaveBlob?: (blob: any, defaultName?: string) => boolean;
+  }
+}
 
 export class BiowcScatter extends LitElement {
   static styles = styles;
@@ -28,14 +35,27 @@ export class BiowcScatter extends LitElement {
   @property({ attribute: false })
   yLabel: string = '';
 
+  private readonly downloadableSvgId: string;
+
+  constructor() {
+    super();
+    // We might use this component multiple times on the same page.
+    // To avoid conflicts we add a random unique identifier
+    this.downloadableSvgId = `biowcscatter-svg-${crypto.randomUUID()}`;
+  }
+
   render(): HTMLTemplateResult {
     this.valuesInCommon = this._getValuesInCommon();
-    return html` <div id="scatterplot"></div> `;
+    return html` <div id="scatterplot"></div>
+      <download-button
+        .downloadablesvgid="${this.downloadableSvgId}"
+      ></download-button>`;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
     this._plotScatter();
 
+    this._renderDownloadButton();
     super.firstUpdated(_changedProperties);
   }
 
@@ -123,6 +143,7 @@ export class BiowcScatter extends LitElement {
     // append the svg object to the body of the page
     const svg = mainDiv
       .append('svg')
+      .attr('id', this.downloadableSvgId)
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom + 30)
       .append('g')
@@ -163,17 +184,15 @@ export class BiowcScatter extends LitElement {
       XaxisData.push(Element[1].xValue);
       YaxisData.push(Element[1].yValue);
     });
-    let x1 = minValueX;
-    const x2 = maxValueX;
     const equation = BiowcScatter._linearRegression(YaxisData, XaxisData);
-    let y1 = equation.slope * x1 + equation.intercept;
-    const y2 = equation.slope * x2 + equation.intercept;
+    let y1 = equation.slope * minValueX + equation.intercept;
+    let y2 = equation.slope * maxValueX + equation.intercept;
 
-    if (y1 < minValueY) {
-      // if overflow it updates the two vlaues
-      y1 = minValueY;
-      x1 = (y1 - equation.intercept) / equation.slope;
-    }
+    y1 = Math.min(Math.max(y1, minValueY), maxValueY);
+    const x1 = (y1 - equation.intercept) / equation.slope;
+
+    y2 = Math.min(Math.max(y2, minValueY), maxValueY);
+    const x2 = (y2 - equation.intercept) / equation.slope;
 
     const y = d3v6
       .scaleLinear()
@@ -247,5 +266,50 @@ export class BiowcScatter extends LitElement {
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
       .text(`${this.yLabel}`);
+  }
+
+  private _renderDownloadButton() {
+    const mainDiv = this._getMainDiv();
+    mainDiv.select('button').remove();
+    mainDiv
+      .append('button')
+      .attr('class', 'btn')
+      .text('Downlooooad')
+      .on('click', () => {
+        const svgNode = mainDiv.select('svg').node() as Node;
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svgNode);
+
+        if (
+          !source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)
+        ) {
+          source = source.replace(
+            /^<svg/,
+            '<svg xmlns="http://www.w3.org/2000/svg"'
+          );
+        }
+        if (!source.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)) {
+          source = source.replace(
+            /^<svg/,
+            '<svg xmlns:xlink="http://www.w3.org/1999/xlink"'
+          );
+        }
+
+        source = `<?xml version="1.0" standalone="no"?>\r\n${source}`;
+
+        const oBlob = new Blob([source], {
+          type: 'image/svg+xml',
+        });
+        if (window.navigator.msSaveBlob) {
+          window.navigator.msSaveBlob(oBlob);
+        } else {
+          const oLink = document.createElement('a');
+          oLink.download = 'scatterplot.svg';
+          oLink.href = URL.createObjectURL(oBlob);
+          document.body.appendChild(oLink);
+          oLink.click();
+          document.body.removeChild(oLink);
+        }
+      });
   }
 }

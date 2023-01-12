@@ -1,4 +1,5 @@
 import { html, TemplateResult } from 'lit';
+import ScatterPlotFixture from '../test/fixtures/ScatterPlotFixture.js';
 import '../src/biowc-scatter.js';
 
 export default {
@@ -29,51 +30,39 @@ interface ArgTypes {
   yValues: { [key: string]: number | string }[];
 }
 
-const Template: Story<ArgTypes> = ({
-  idKey = 'Sample name',
-  valueKey = 'abundance',
-  xLabel = 'abundance Gene_X',
-  yLabel = 'abundance Gene_Y',
-  xValues = [
-    { 'Sample name': 'sample1', abundance: 1 },
-    { 'Sample name': 'sample2', abundance: 3 },
-    { 'Sample name': 'sample3', abundance: 3 },
-  ],
-  yValues = [
-    { 'Sample name': 'sample1', abundance: 1 },
-    { 'Sample name': 'sample2', abundance: 2 },
-    { 'Sample name': 'sample3', abundance: 3 },
-  ],
-}: ArgTypes) => html`
+const Template: Story<ArgTypes> = (args: ArgTypes) => html`
   <biowc-scatter
-    .idKey=${idKey}
-    .valueKey=${valueKey}
-    .xLabel=${xLabel}
-    .yLabel=${yLabel}
-    .xValues=${xValues}
-    .yValues=${yValues}
+    .idKey="${args.idKey}"
+    .valueKey="${args.valueKey}"
+    .xLabel="${args.xLabel}"
+    .yLabel="${args.yLabel}"
+    .xValues="${args.xValues}"
+    .yValues="${args.yValues}"
   >
   </biowc-scatter>
 `;
 
 export const Regular = Template.bind({});
+Regular.args = ScatterPlotFixture.scatterPlot;
 
 export const CustomLabels = Template.bind({});
 CustomLabels.args = {
+  ...Regular.args,
   xLabel: 'xLabel',
   yLabel: 'yLabel',
 };
 
 export const CustomData = Template.bind({});
 CustomData.args = {
+  ...Regular.args,
   xValues: [
-    { 'Sample name': 'sample1', abundance: 1 },
-    { 'Sample name': 'sample2', abundance: 3 },
-    { 'Sample name': 'sample3', abundance: 3 },
+    { 'Sample name': 'sample1', abundance: 0 },
+    { 'Sample name': 'sample2', abundance: 1 },
+    { 'Sample name': 'sample3', abundance: 2 },
   ],
   yValues: [
-    { 'Sample name': 'sample1', abundance: 1 },
-    { 'Sample name': 'sample2', abundance: 2 },
-    { 'Sample name': 'sample3', abundance: 3 },
+    { 'Sample name': 'sample1', abundance: 10 },
+    { 'Sample name': 'sample2', abundance: 8 },
+    { 'Sample name': 'sample3', abundance: -2 },
   ],
 };
