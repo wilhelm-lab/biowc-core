@@ -3,6 +3,7 @@ import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import styles from './biowc-scatter.css';
+import '../../../download-button/dist/src/download-button.js';
 
 declare global {
   interface Navigator {
@@ -34,9 +35,21 @@ export class BiowcScatter extends LitElement {
   @property({ attribute: false })
   yLabel: string = '';
 
+  private readonly downloadableSvgId: string;
+
+  constructor() {
+    super();
+    // We might use this component multiple times on the same page.
+    // To avoid conflicts we add a random unique identifier
+    this.downloadableSvgId = `biowcscatter-svg-${crypto.randomUUID()}`;
+  }
+
   render(): HTMLTemplateResult {
     this.valuesInCommon = this._getValuesInCommon();
-    return html` <div id="scatterplot"></div> `;
+    return html` <div id="scatterplot"></div>
+      <download-button
+        .downloadablesvgid="${this.downloadableSvgId}"
+      ></download-button>`;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
@@ -130,7 +143,7 @@ export class BiowcScatter extends LitElement {
     // append the svg object to the body of the page
     const svg = mainDiv
       .append('svg')
-      .attr('id', 'svg')
+      .attr('id', this.downloadableSvgId)
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom + 30)
       .append('g')
@@ -261,7 +274,7 @@ export class BiowcScatter extends LitElement {
     mainDiv
       .append('button')
       .attr('class', 'btn')
-      .text('Download')
+      .text('Downlooooad')
       .on('click', () => {
         const svgNode = mainDiv.select('svg').node() as Node;
         const serializer = new XMLSerializer();
