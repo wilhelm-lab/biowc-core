@@ -97,7 +97,15 @@ Replace the contents of the file `tsconfig.json` by the following:
 
 That's it! Commit your initialized package using `git commit -m "Initial commit"`.
 
-Happy hacking :-)
+Happy hacking :-)  
+Here are some tutorials to get you started:  
+- Typescript: https://radixweb.com/blog/typescript-vs-javascript
+- Web Components & Lit: https://open-wc.org/guides/developing-components/codelabs/
+- D3.js: https://www.tutorialsteacher.com/d3js
+- Testing Web Components: https://open-wc.org/docs/testing/testing-package/
+- Storybook: https://storybook.js.org/docs/web-components/get-started/introduction
+
+However, we recommend that as soon as you have a vague idea of the concepts, you start playing around with the example biowc-scatter component. That should get you up to speed quickly. 
 
 ## How to use web components
 See here:  
