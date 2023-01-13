@@ -1,6 +1,6 @@
 import { html, TemplateResult } from 'lit';
-import ScatterPlotFixture from '../test/fixtures/ScatterPlotFixture.js';
-import '../src/biowc-scatter.js';
+import '../packages/biowc-scatter/dist/src/biowc-scatter';
+import ScatterPlotFixture from '../packages/biowc-scatter/test/fixtures/ScatterPlotFixture';
 
 export default {
   title: 'BiowcScatter',
