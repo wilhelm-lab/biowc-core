@@ -20,8 +20,9 @@ npm i
 ```
 Then you can run
 ```
-npm run storybook
+npm run storybook  
 ```
+from there to check out demos of the deprecated components. 
 
 ## How to add components
 
@@ -98,7 +99,7 @@ That's it! Commit your initialized package using `git commit -m "Initial commit"
 
 Happy hacking :-)
 
-## How to use
+## How to use web components
 See here:  
 https://www.webcomponents.org/introduction  
 https://github.com/WICG/webcomponents#web-components  
