@@ -3,6 +3,26 @@
 This monorepo contains several plotting components that can easily be integrated in your web tools. This can either be
 done directly in the HTML, or through a JavaScript framework such as Vue, React, or Angular.
 
+## How to get started
+
+Clone the repository and `cd` into it. Then run:   
+```npm i```  
+This will install the dependencies for the monorepo as well as for all subpackages specified in `package.json`. So whenever you add a new package, you'll need to add its location to this file (see below).  
+Next, run:  
+```npm run storybook```  
+This will first build all existing components (using `lerna run build`) and then start the 'Storybook' where their features are demonstrated.
+
+## How to view the deprecated Vue components
+They are in the same monorepo, but are managed independently. Therefore you need to install dependencies separately. Run:
+```
+cd deprecated-vue-components
+npm i
+```
+Then you can run
+```
+npm run storybook
+```
+
 ## How to add components
 
 ### On Github
@@ -27,7 +47,13 @@ npm init @open-wc
 
 Do **not** check `Demoing (storybook)` when asked `What would you like to add?`. Storybook is already managed on the root level of the monorepo, you don't need to set it up individually.
 
-Enter the directory and edit the `packages.json` file:
+When the initial setup is done, first open the root `package.json` file (the one directly in `biowc-core`, *not* the one in the package you just created!) and extend the `"dependencies"` by the path to your package. For example, if your new package is called `biowc-mycomponent`, add the following line: 
+```
+"biowc-mycomponent": "file:packages/biowc-mycomponent",
+```
+As mentioned above, this will allow the monorepo manager `lerna` to install all dependencies at once when the repository is cloned again. 
+
+Next, enter the directory of the component and edit the `packages.json` file there:
 
 - **Add** the following line to the `"scripts"` section:  
   `"precommit": "lint-staged && npm test"`
