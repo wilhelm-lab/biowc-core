@@ -1,7 +1,6 @@
 {
   "name": "root",
   "dependencies": {
-    "deprecated-vue-components": "file:deprecated-vue-components",
     "biowc-scatter": "file:packages/biowc-scatter",
     "download-button": "file:packages/download-button"
   },
@@ -43,6 +42,12 @@
   "scripts": {
     "prepare": "husky install",
     "storybook": "lerna run build && start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "postinstall": "link-parent-bin",
+    "build": "lerna run build",
+    "lint": "lerna run lint",
+    "lint:fix": "lerna run lint",
+    "clean": "lerna run clean",
+    "test": "lerna run test"
   }
 }
