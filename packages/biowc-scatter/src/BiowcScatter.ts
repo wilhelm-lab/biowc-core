@@ -35,27 +35,24 @@ export class BiowcScatter extends LitElement {
   @property({ attribute: false })
   yLabel: string = '';
 
-  private readonly downloadableSvgId: string;
-
-  constructor() {
-    super();
-    // We might use this component multiple times on the same page.
-    // To avoid conflicts we add a random unique identifier
-    this.downloadableSvgId = `biowcscatter-svg-${crypto.randomUUID()}`;
-  }
-
   render(): HTMLTemplateResult {
     this.valuesInCommon = this._getValuesInCommon();
-    return html` <div id="scatterplot"></div>
+    return html` <div style="display: flex">
+      <div id="scatterplot"></div>
       <download-button
-        .downloadablesvgid="${this.downloadableSvgId}"
-      ></download-button>`;
+        .svgComponent="${this}"
+        style="margin-left: 20px;"
+      ></download-button>
+    </div>`;
+  }
+
+  public exportSvg() {
+    return this.shadowRoot?.querySelector('svg')?.outerHTML;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
     this._plotScatter();
 
-    this._renderDownloadButton();
     super.firstUpdated(_changedProperties);
   }
 
@@ -143,7 +140,6 @@ export class BiowcScatter extends LitElement {
     // append the svg object to the body of the page
     const svg = mainDiv
       .append('svg')
-      .attr('id', this.downloadableSvgId)
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom + 30)
       .append('g')
@@ -266,50 +262,5 @@ export class BiowcScatter extends LitElement {
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
       .text(`${this.yLabel}`);
-  }
-
-  private _renderDownloadButton() {
-    const mainDiv = this._getMainDiv();
-    mainDiv.select('button').remove();
-    mainDiv
-      .append('button')
-      .attr('class', 'btn')
-      .text('Downlooooad')
-      .on('click', () => {
-        const svgNode = mainDiv.select('svg').node() as Node;
-        const serializer = new XMLSerializer();
-        let source = serializer.serializeToString(svgNode);
-
-        if (
-          !source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)
-        ) {
-          source = source.replace(
-            /^<svg/,
-            '<svg xmlns="http://www.w3.org/2000/svg"'
-          );
-        }
-        if (!source.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)) {
-          source = source.replace(
-            /^<svg/,
-            '<svg xmlns:xlink="http://www.w3.org/1999/xlink"'
-          );
-        }
-
-        source = `<?xml version="1.0" standalone="no"?>\r\n${source}`;
-
-        const oBlob = new Blob([source], {
-          type: 'image/svg+xml',
-        });
-        if (window.navigator.msSaveBlob) {
-          window.navigator.msSaveBlob(oBlob);
-        } else {
-          const oLink = document.createElement('a');
-          oLink.download = 'scatterplot.svg';
-          oLink.href = URL.createObjectURL(oBlob);
-          document.body.appendChild(oLink);
-          oLink.click();
-          document.body.removeChild(oLink);
-        }
-      });
   }
 }

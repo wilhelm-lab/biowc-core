@@ -1,0 +1,1 @@
+{"version":3,"file":"ExportSvgComponent.js","sourceRoot":"","sources":["ExportSvgComponent.ts"],"names":[],"mappings":"","sourcesContent":["export interface ExportSvgComponent {\n  exportSvg: () => string | undefined;\n}"]}
