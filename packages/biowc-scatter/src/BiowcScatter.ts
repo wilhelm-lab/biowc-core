@@ -3,6 +3,13 @@ import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import styles from './biowc-scatter.css';
+import '../../../download-button/dist/src/download-button.js';
+
+declare global {
+  interface Navigator {
+    msSaveBlob?: (blob: any, defaultName?: string) => boolean;
+  }
+}
 
 export class BiowcScatter extends LitElement {
   static styles = styles;
@@ -30,7 +37,17 @@ export class BiowcScatter extends LitElement {
 
   render(): HTMLTemplateResult {
     this.valuesInCommon = this._getValuesInCommon();
-    return html` <div id="scatterplot"></div> `;
+    return html` <div style="display: flex">
+      <div id="scatterplot"></div>
+      <download-button
+        .svgComponent="${this}"
+        style="margin-left: 20px;"
+      ></download-button>
+    </div>`;
+  }
+
+  public exportSvg() {
+    return this.shadowRoot?.querySelector('svg')?.outerHTML;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
@@ -163,17 +180,15 @@ export class BiowcScatter extends LitElement {
       XaxisData.push(Element[1].xValue);
       YaxisData.push(Element[1].yValue);
     });
-    let x1 = minValueX;
-    const x2 = maxValueX;
     const equation = BiowcScatter._linearRegression(YaxisData, XaxisData);
-    let y1 = equation.slope * x1 + equation.intercept;
-    const y2 = equation.slope * x2 + equation.intercept;
+    let y1 = equation.slope * minValueX + equation.intercept;
+    let y2 = equation.slope * maxValueX + equation.intercept;
 
-    if (y1 < minValueY) {
-      // if overflow it updates the two vlaues
-      y1 = minValueY;
-      x1 = (y1 - equation.intercept) / equation.slope;
-    }
+    y1 = Math.min(Math.max(y1, minValueY), maxValueY);
+    const x1 = (y1 - equation.intercept) / equation.slope;
+
+    y2 = Math.min(Math.max(y2, minValueY), maxValueY);
+    const x2 = (y2 - equation.intercept) / equation.slope;
 
     const y = d3v6
       .scaleLinear()

@@ -1,34 +1,19 @@
 import { html } from 'lit';
 import { fixture, expect, aTimeout } from '@open-wc/testing';
 import { BiowcScatter } from '../src/BiowcScatter.js';
-import '../src/biowc-scatter.js';
+import ScatterPlotFixture from './fixtures/ScatterPlotFixture.js';
+
+window.customElements.define('biowc-scatter', BiowcScatter);
 
 describe('BiowcScatter', async () => {
-  const idKey = 'Sample name';
-  const valueKey = 'abundance';
-  const xLabel = 'abundance Gene_X';
-  const xValues = [
-    { 'Sample name': 'sample1', abundance: 1 },
-    { 'Sample name': 'sample2', abundance: 3 },
-    { 'Sample name': 'sample4', abundance: 3 },
-    { 'Sample name': 'sample5', abundance: 2 },
-  ];
-  const yLabel = 'abundance Gene_Y';
-  const yValues = [
-    { 'Sample name': 'sample1', abundance: 1 },
-    { 'Sample name': 'sample2', abundance: 2 },
-    { 'Sample name': 'sample4', abundance: 3 },
-    { 'Sample name': 'sample5', abundance: -2.5 },
-  ];
-
   const scatterplot = await fixture<BiowcScatter>(
     html` <biowc-scatter
-      .idKey="${idKey}"
-      .valueKey="${valueKey}"
-      .xLabel="${xLabel}"
-      .yLabel="${yLabel}"
-      .xValues="${xValues}"
-      .yValues="${yValues}"
+      .idKey="${ScatterPlotFixture.scatterPlot.idKey}"
+      .valueKey="${ScatterPlotFixture.scatterPlot.valueKey}"
+      .xLabel="${ScatterPlotFixture.scatterPlot.xLabel}"
+      .yLabel="${ScatterPlotFixture.scatterPlot.yLabel}"
+      .xValues="${ScatterPlotFixture.scatterPlot.xValues}"
+      .yValues="${ScatterPlotFixture.scatterPlot.yValues}"
     />`
   );
 
@@ -122,7 +107,6 @@ describe('BiowcScatter', async () => {
 
   it('passes the a11y audit', async () => {
     const el = await fixture(html`<biowc-scatter></biowc-scatter>`);
-
     await expect(el).shadowDom.to.be.accessible();
   });
 });
