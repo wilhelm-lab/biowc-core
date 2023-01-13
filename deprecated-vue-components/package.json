@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "vue": "^2.6.11",
+    "d3v4": "^4.2.2",
+    "d3": "^6.2.0",
     "d3-tip": "^0.9.1",
     "d3v3": "^1.0.3",
     "matrix-js": "^1.6.1",
     "parcoord-es": "^2.2.10",
     "venn.js": "^0.2.20",
-    "vue": "^2.6.11",
     "vuetify": "^2.6.0"
   },
   "devDependencies": {

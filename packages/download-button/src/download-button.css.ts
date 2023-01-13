@@ -1,8 +1,7 @@
 import { css } from 'lit';
 
 export default css`
-    #downloadbutton {
-    //margin-left: 25px;
+    #btn {
     height: 25px;
     background-color: #207cb9;
     border: none;
@@ -13,7 +12,7 @@ export default css`
     border-radius: 6px;
   }
 
-  #downloadbutton:hover {
+  #btn:hover {
     background-color: #175a81;
   }
 `;
