@@ -70,29 +70,8 @@ npx lerna publish [major|minor|patch]
 ```
 
 ## How this repo was initialized
-
-- Initialize [lerna](https://lerna.js.org/) for managing the monorepo
   ```bash
   npx lerna@latest init
-  ```
-- Add a first web component called `biowc-scatter` using [open-wc](https://open-wc.org/)
-  ```bash
-  cd packages
-  npm init @open-wc
-  # What would you like to do today? › Scaffold a new project
-  # What would you like to scaffold? › Web Component
-  # What would you like to add? › Linting (eslint & prettier), Testing (web-test-runner), Demoing (storybook)
-  # Would you like to use typescript? › No
-  # What is the tag name of your web component? … biowc-scatter
-  # Do you want to write this file structure to disk? › Yes
-  # Do you want to install dependencies? › Yes, with npm
-  cd biowc-scatter
-  npm install d3
-  ```
-- Start the web server to test if everything works
-  ```bash
-  cd ../../
-  npx lerna run start
   ```
 
 ## How to port Vue.js components to Web Components
