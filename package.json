@@ -1,7 +1,6 @@
 {
   "name": "root",
   "dependencies": {
-    "deprecated-vue-components": "file:deprecated-vue-components",
     "biowc-scatter": "file:packages/biowc-scatter",
     "download-button": "file:packages/download-button"
   },
