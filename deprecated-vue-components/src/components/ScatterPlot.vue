@@ -38,6 +38,10 @@ export default {
       this.updateScatterPlot()
     }
   },
+  mounted() {
+    this.expressionsCommon = this.getExpressionInCommonSamples()
+    this.plotExpression()
+  },
   methods: {
     updateScatterPlot () {
       this.expressionsCommon = this.getExpressionInCommonSamples()

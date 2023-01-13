@@ -1,33 +1,61 @@
 <template>
-  <div id="app">
-    <h1>Scatter plot</h1>
-    <scatter-plot
-        identifier1="gene_X"
-        identifier2="gene_Y"
-        :expressions1="[ { 'Sample name': 1, 'Z-score' : 3 }, { 'Sample name': 2, 'Z-score' : 1 }, { 'Sample name': 3, 'Z-score' : 3 } ]"
-        :expressions2="[ { 'Sample name': 1, 'Z-score' : 2 }, { 'Sample name': 2, 'Z-score' : 1 }, { 'Sample name': 3, 'Z-score' : 5 } ]"
-      />
-  </div>
+  <v-app>
+    <v-app-bar
+      app
+      color='primary'
+      dark
+    >
+      <div class='d-flex align-center'>
+        <v-img
+          alt='Vuetify Logo'
+          class='shrink mr-2'
+          contain
+          src='https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png'
+          transition='scale-transition'
+          width='40'
+        />
+
+        <v-img
+          alt='Vuetify Name'
+          class='shrink mt-1 hidden-sm-and-down'
+          contain
+          min-width='100'
+          src='https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png'
+          width='100'
+        />
+      </div>
+
+      <v-spacer></v-spacer>
+
+      <v-btn
+        href='https://github.com/vuetifyjs/vuetify/releases/latest'
+        target='_blank'
+        text
+      >
+        <span class='mr-2'>Latest Release</span>
+        <v-icon>mdi-open-in-new</v-icon>
+      </v-btn>
+    </v-app-bar>
+
+    <v-main>
+      <HelloWorld />
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import ScatterPlot from './components/ScatterPlot.vue'
+import HelloWorld from './components/HelloWorld';
 
 export default {
   name: 'App',
-  components: {
-    ScatterPlot
-  }
-}
-</script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  components: {
+
+    HelloWorld
+  },
+
+  data: () => ({
+    //
+  })
+};
+</script>

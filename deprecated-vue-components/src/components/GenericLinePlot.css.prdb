@@ -1,0 +1,68 @@
+.lineplotClass {
+  height: inherit;
+  width: inherit;
+}
+
+.LinePlot .axis text {
+  font: 12px sans-serif;
+}
+
+.LinePlot .errorbox text {
+  font: 12px sans-serif;
+}
+
+.LinePlot .axis path,
+.LinePlot .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.LinePlot line,
+.LinePlot .lines {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.LinePlot .invisibleLines {
+  fill: none;
+  stroke-width: 10px;
+  stroke: red; /* It doesn't work if I put 'none' here */
+  opacity: 0;
+}
+
+.LinePlot .highlightLines,
+.LinePlot .highlightLines {
+  fill: none;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.LinePlot .Title{
+  font-size: 18px;
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+.LinePlot .x_label,
+.LinePlot .y_label {
+  font-family: Arial,Helvetica,sans-serif;
+  font: 12px sans-serif;
+  text-anchor: middle;
+}
+
+.LinePlot .legendText {
+  font-family: Arial,Helvetica,sans-serif;
+  font: 12px sans-serif;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+  color-rendering: optimizeQuality !important;
+  shape-rendering: crispEdges !important;
+  text-rendering: geometricPrecision !important;
+}

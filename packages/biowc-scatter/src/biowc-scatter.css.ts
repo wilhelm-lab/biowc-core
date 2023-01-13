@@ -7,6 +7,10 @@ export default css`
     color: var(--biowc-scatter-text-color, #000);
   }
 
+  #scatterplot {
+    display: flex;
+  }
+
   .tooltip {
     position: absolute;
     font-size: 12px;
