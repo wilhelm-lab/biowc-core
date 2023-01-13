@@ -5,12 +5,6 @@ import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import styles from './biowc-scatter.css';
 import '../../../download-button/dist/src/download-button.js';
 
-declare global {
-  interface Navigator {
-    msSaveBlob?: (blob: any, defaultName?: string) => boolean;
-  }
-}
-
 export class BiowcScatter extends LitElement {
   static styles = styles;
 
