@@ -60,7 +60,7 @@ Next, enter the directory of the component and edit the `package.json` file ther
 - **Add** the following line to the `"scripts"` section:  
   `"precommit": "lint-staged && npm test"`
 - **Modify** the `"test"` script inside the `"scripts"` section:  
-  `"test": "tsc && wtr --coverage --node-resolve --playwright --browsers chromium firefox webkit"`
+  `"test": "tsc && wtr --coverage --node-resolve --playwright --browsers chromium firefox"`
 - **Remove** the `"husky"` section (we do use husky, but we control it at the repository root):
   ```
   "husky": {
