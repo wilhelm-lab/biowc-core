@@ -10,7 +10,8 @@ Clone the repository and `cd` into it. Then run:
 This will install the dependencies for the monorepo as well as for all subpackages specified in `package.json`. So whenever you add a new package, you'll need to add its location to this file (see below).  
 Next, run:  
 ```npm run storybook```  
-This will first build all existing components (using `lerna run build`) and then start the 'Storybook' where their features are demonstrated.
+This will first build all existing components (using `lerna run build`) and then start the 'Storybook' where their features are demonstrated.  
+If you get an error message at this time, it is probably related to your `node` version. Try this to solve it: https://github.com/wilhelm-lab/biowc-core/wiki/Storybook#troubleshooting.
 
 ## How to view the deprecated Vue components
 They are in the same monorepo, but are managed independently. Therefore you need to install dependencies separately. Run:
