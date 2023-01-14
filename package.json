@@ -43,7 +43,6 @@
     "prepare": "husky install",
     "storybook": "lerna run build && start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "postinstall": "link-parent-bin",
     "build": "lerna run build",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint",
