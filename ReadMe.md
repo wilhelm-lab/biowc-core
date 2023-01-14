@@ -55,7 +55,7 @@ When the initial setup is done, first open the root `package.json` file (the one
 ```
 As mentioned above, this will allow the monorepo manager `lerna` to install all dependencies at once when the repository is cloned again. 
 
-Next, enter the directory of the component and edit the `packages.json` file there:
+Next, enter the directory of the component and edit the `package.json` file there:
 
 - **Add** the following line to the `"scripts"` section:  
   `"precommit": "lint-staged && npm test"`
