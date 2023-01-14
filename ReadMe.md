@@ -99,7 +99,8 @@ That's it! Commit your initialized package using `git commit -m "Initial commit"
 
 Happy hacking :-)  
 Here are some tutorials to get you started:  
-- Typescript: https://radixweb.com/blog/typescript-vs-javascript
+- Javascript: https://learnxinyminutes.com/docs/javascript/
+- Typescript: https://learnxinyminutes.com/docs/typescript/ (focuses only on the specialties of TS, so read the JS tutorial first!) 
 - Web Components & Lit: https://open-wc.org/guides/developing-components/codelabs/
 - D3.js: https://www.tutorialsteacher.com/d3js
 - Testing Web Components: https://open-wc.org/docs/testing/testing-package/
