@@ -1,21 +1,21 @@
-# \<bio-wc-swarmplot>
+# \<biowc-swarmplot>
 
 This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
 
 ## Installation
 
 ```bash
-npm i bio-wc-swarmplot
+npm i biowc-swarmplot
 ```
 
 ## Usage
 
 ```html
 <script type="module">
-  import 'bio-wc-swarmplot/bio-wc-swarmplot.js';
+  import 'biowc-swarmplot/biowc-swarmplot.js';
 </script>
 
-<bio-wc-swarmplot></bio-wc-swarmplot>
+<biowc-swarmplot></biowc-swarmplot>
 ```
 
 ## Linting and formatting

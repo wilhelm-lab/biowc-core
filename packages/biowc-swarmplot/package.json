@@ -1,15 +1,15 @@
 {
-  "name": "bio-wc-swarmplot",
-  "description": "Webcomponent bio-wc-swarmplot following open-wc recommendations",
+  "name": "biowc-swarmplot",
+  "description": "Webcomponent biowc-swarmplot following open-wc recommendations",
   "license": "MIT",
-  "author": "bio-wc-swarmplot",
+  "author": "biowc-swarmplot",
   "version": "0.0.0",
   "type": "module",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "exports": {
     ".": "./dist/src/index.js",
-    "./bio-wc-swarmplot.js": "./dist/src/bio-wc-swarmplot.js"
+    "./biowc-swarmplot.js": "./dist/src/biowc-swarmplot.js"
   },
   "scripts": {
     "analyze": "cem analyze --litelement",

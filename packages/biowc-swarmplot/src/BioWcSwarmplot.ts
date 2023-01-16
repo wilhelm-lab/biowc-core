@@ -6,7 +6,7 @@ export class BioWcSwarmplot extends LitElement {
     :host {
       display: block;
       padding: 25px;
-      color: var(--bio-wc-swarmplot-text-color, #000);
+      color: var(--biowc-swarmplot-text-color, #000);
     }
   `;
 
