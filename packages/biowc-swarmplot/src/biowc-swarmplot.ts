@@ -1,3 +1,3 @@
-import { BioWcSwarmplot } from './BioWcSwarmplot.js';
+import { BiowcSwarmplot } from './BiowcSwarmplot.js';
 
-window.customElements.define('biowc-swarmplot', BioWcSwarmplot);
+window.customElements.define('biowc-swarmplot', BiowcSwarmplot);

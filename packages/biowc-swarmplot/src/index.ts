@@ -1,1 +1,1 @@
-export { BioWcSwarmplot } from './BioWcSwarmplot.js';
+export { BiowcSwarmplot } from './BiowcSwarmplot.js';
