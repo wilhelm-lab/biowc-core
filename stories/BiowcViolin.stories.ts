@@ -1,7 +1,7 @@
 import { BiowcViolinplot } from 'biowc-violinplot';
 import { html, TemplateResult } from 'lit';
-import '../packages/biowc-violinplot/dist/src/biowc-violinplot.js';
-import ViolinPlotFixture from '../packages/biowc-violinplot/test/fixtures/ViolinPlotFixture.js';
+import '../packages/biowc-violinplot/dist/src/biowc-violinplot';
+import ViolinPlotFixture from '../packages/biowc-violinplot/test/fixtures/ViolinPlotFixture';
 
 export default {
   title: 'BiowcViolinplot',
