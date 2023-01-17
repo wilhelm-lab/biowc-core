@@ -14,12 +14,11 @@
   <script type="module">
     import { html, render } from 'lit';
     import '../dist/src/biowc-lineplot.js';
+    import LinePlotFixture from "../dist/test/fixtures/LinePlotFixture.js";
 
-    const title = 'Hello owc World!';
     render(
       html`
-        <biowc-lineplot .title=${title}>
-          some light-dom
+        <biowc-lineplot .dataPoints=${LinePlotFixture.basicLineplot.dataPoints}>
         </biowc-lineplot>
       `,
       document.querySelector('#demo')
