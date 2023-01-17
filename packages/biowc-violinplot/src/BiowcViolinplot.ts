@@ -241,7 +241,7 @@ export class BiowcViolinplot extends LitElement {
     const plotWidth = this.violinWidth;
     const plotSpacing = 10;
 
-    const svg = d3.select('.sapProteomicsdbViolinPlot').append('svg:svg');
+    const svg = d3.select('.sapProteomicsdbViolinPlot').append('svg');
     this.oChartObjects.svg = svg;
 
     // const resolution = this.resolution
