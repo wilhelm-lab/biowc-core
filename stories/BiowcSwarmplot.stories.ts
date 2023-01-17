@@ -20,18 +20,21 @@ interface Story<T> {
 }
 
 interface ArgTypes {
-  idKey: string;
-  valueKey: string;
-  xLabel: string;
-  xValues: { [key: string]: number | string }[];
+  swarmTitle: string;
+  fieldName: string;
+  fieldValues: string;
+  swarmTitlePrefix: string;
+  swarmData: { 'Z-score': number; "Sample name": string; "colorID": string; "sizeR": number;
+  }[]
 }
 
 const Template: Story<ArgTypes> = (args: ArgTypes) => html`
   <biowc-swarmplot
-    .idKey="${args.idKey}"
-    .valueKey="${args.valueKey}"
-    .xLabel="${args.xLabel}"
-    .xValues="${args.xValues}"
+    .swarmTitle=${SwarmPlotFixture.swarmPlot.swarmTitle}
+    .fieldName="${SwarmPlotFixture.swarmPlot.fieldName}"
+    .fieldValues="${SwarmPlotFixture.swarmPlot.fieldValues}"
+    .swarmTitlePrefix="${SwarmPlotFixture.swarmPlot.swarmTitlePrefix}"
+    .swarmData="${SwarmPlotFixture.swarmPlot.swarmData}"
   >
   </biowc-swarmplot>
 `;
@@ -42,15 +45,17 @@ Regular.args = SwarmPlotFixture.swarmPlot;
 export const CustomLabels = Template.bind({});
 CustomLabels.args = {
   ...Regular.args,
-  xLabel: 'xLabel',
+  swarmTitle: 'new title',
 };
 
 export const CustomData = Template.bind({});
 CustomData.args = {
   ...Regular.args,
-  xValues: [
-    { 'Sample name': 'sample1', abundance: 0 },
-    { 'Sample name': 'sample2', abundance: 1 },
-    { 'Sample name': 'sample3', abundance: 2 },
+  swarmData: [
+    {"Z-score": 3.6, "Sample name": "sample1", "colorID": 'grey', "sizeR": 3},
+    {"Z-score": 3.0, "Sample name": "sample2", "colorID": 'grey', "sizeR": 3},
+    {"Z-score": 2.5, "Sample name": "sample3", "colorID": 'grey', "sizeR": 3},
+    {"Z-score": 2.3, "Sample name": "sample4", "colorID": 'grey', "sizeR": 3},
+    {"Z-score": 2.3, "Sample name": "sample5", "colorID": 'grey', "sizeR": 3},
   ],
 };

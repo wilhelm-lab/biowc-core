@@ -23,13 +23,13 @@ describe('BiowcSwarmplot', async () => {
     expect(el.xLabel).to.equal('');
   });
 
-  it('has empty x values by default', async () => {
-    const el = await fixture<BiowcSwarmplot>(
-      html`<biowc-swarmplot></biowc-swarmplot>`
-    );
-
-    expect(el.xValues.length).to.equal(0);
-  });
+  // it('has empty x values by default', async () => {
+  //   const el = await fixture<BiowcSwarmplot>(
+  //     html`<biowc-swarmplot></biowc-swarmplot>`
+  //   );
+  //
+  //   expect(el.xValues.length).to.equal(0);
+  // });
 
   it('can override the x label via attribute', async () => {
     const el = await fixture<BiowcSwarmplot>(
@@ -39,15 +39,15 @@ describe('BiowcSwarmplot', async () => {
     expect(el.xLabel).to.equal('x label');
   });
 
-  it('can override the x values via attribute', async () => {
-    const el = await fixture<BiowcSwarmplot>(
-      html`<biowc-swarmplot
-        .xValues=${[{ id: 1, value: 3 }]}
-      ></biowc-swarmplot>`
-    );
-
-    expect(el.xValues.length).to.equal(1);
-  });
+  // it('can override the x values via attribute', async () => {
+  //   const el = await fixture<BiowcSwarmplot>(
+  //     html`<biowc-swarmplot
+  //       .xValues=${[{ id: 1, value: 3 }]}
+  //     ></biowc-swarmplot>`
+  //   );
+  //
+  //   expect(el.xValues.length).to.equal(1);
+  // });
 
   // it('renders 4 circles ', async () => {
   //   const circles = swarmplot.shadowRoot!.querySelectorAll('circle');

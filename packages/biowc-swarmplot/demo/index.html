@@ -14,11 +14,18 @@
   <script type="module">
     import { html, render } from 'lit';
     import '../dist/src/biowc-swarmplot.js';
+    import SwarmPlotFixture from "../dist/test/fixtures/SwarmPlotFixture.js";
 
     const title = 'Hello owc World!';
     render(
       html`
-        <biowc-swarmplot .title=${title}>
+        <biowc-swarmplot
+          .swarmTitle=${title}
+          .fieldName="${SwarmPlotFixture.swarmPlot.fieldName}"
+          .fieldValues="${SwarmPlotFixture.swarmPlot.fieldValues}"
+          .swarmTitlePrefix="${SwarmPlotFixture.swarmPlot.swarmTitlePrefix}"
+          .swarmData="${SwarmPlotFixture.swarmPlot.swarmData}"
+         >
           some light-dom
         </biowc-swarmplot>
       `,
