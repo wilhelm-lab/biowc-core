@@ -1,5 +1,6 @@
 import { html, css, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
+import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import * as d3 from 'd3';
 
 type ExpressionData = {
@@ -120,7 +121,7 @@ export class BiowcViolinplot extends LitElement {
     d3YScale: any;
   } = { svg: {}, oSelections: {}, oSortedData: [], d3YScale: d3.scaleLinear };
 
-  render() {
+  render(): HTMLTemplateResult {
     return html`
       <div class="analytics-selectivity violin-plot-container">
         <div class="sapProteomicsdbViolinPlot">
@@ -837,7 +838,13 @@ export class BiowcViolinplot extends LitElement {
     return this._getMainDiv().selectAll('svg').node();
   }
 
-  protected updated(changedProperties: Map<string, any>) {
+  protected firstUpdated(changedProperties: PropertyValues) {
+    this.drawChart();
+
+    super.firstUpdated(changedProperties);
+  }
+
+  protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has('chartData')) {
       this.drawChart();
     }
