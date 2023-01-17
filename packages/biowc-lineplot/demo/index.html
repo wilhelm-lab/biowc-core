@@ -18,7 +18,9 @@
 
     render(
       html`
-        <biowc-lineplot .dataPoints=${LinePlotFixture.basicLineplot.dataPoints}>
+        <biowc-lineplot .dataPoints=${LinePlotFixture.basicLineplot.dataPoints}
+                        .width="${LinePlotFixture.basicLineplot.width}"
+                        .height="${LinePlotFixture.basicLineplot.height}">
         </biowc-lineplot>
       `,
       document.querySelector('#demo')

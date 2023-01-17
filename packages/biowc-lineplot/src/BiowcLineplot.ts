@@ -7,10 +7,14 @@ import styles from './biowc-lineplot.css';
 export class BiowcLineplot extends LitElement {
   static styles = styles;
 
-  @property({ type: String }) mytitle = 'Hey there';
-
   @property({ attribute: false })
   dataPoints: number[][][] = [];
+
+  @property({ attribute: false })
+  width: number = 400;
+
+  @property({ attribute: false })
+  height: number = 400;
 
   render() {
     return html`<div id="lineplot"></div>`;
@@ -29,17 +33,20 @@ export class BiowcLineplot extends LitElement {
   }
 
   private _plotDots() {
-    const margin = { top: 10, right: 30, bottom: 30, left: 60 };
-    const width = 460 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    // The D3 axes will exceed the width & height a bit, so we define a hard-coded margin
+    // https://gist.github.com/mbostock/3019563
+    const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+
+    const widthRelativeToMargin = this.width - margin.left - margin.right;
+    const heightRelativeToMargin = this.height - margin.top - margin.bottom;
 
     const mainDiv = this._getMainDiv();
 
     // append the svg object to the body of the page
     const svg = mainDiv
       .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom + 30)
+      .attr('width', this.width)
+      .attr('height', this.height)
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -65,14 +72,20 @@ export class BiowcLineplot extends LitElement {
         .flat()
     );
 
-    const xAxis = d3v6.scaleLinear().domain([minX, maxX]).range([0, width]);
+    const xAxis = d3v6
+      .scaleLinear()
+      .domain([minX, maxX])
+      .range([0, widthRelativeToMargin]);
 
     svg
       .append('g')
-      .attr('transform', `translate(0,${height})`)
+      .attr('transform', `translate(0,${heightRelativeToMargin})`)
       .call(d3v6.axisBottom(xAxis));
 
-    const yAxis = d3v6.scaleLinear().domain([minY, maxY]).range([height, 0]);
+    const yAxis = d3v6
+      .scaleLinear()
+      .domain([minY, maxY])
+      .range([heightRelativeToMargin, 0]);
 
     svg.append('g').call(d3v6.axisLeft(yAxis));
 

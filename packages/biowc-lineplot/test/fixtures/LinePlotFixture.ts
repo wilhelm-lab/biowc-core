@@ -15,6 +15,8 @@ const basicLineplot = {
       [-2, -2],
     ],
   ],
+  width: 500,
+  height: 500,
 };
 
 export default { basicLineplot };
