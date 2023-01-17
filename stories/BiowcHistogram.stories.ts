@@ -1,17 +1,18 @@
 import { html, TemplateResult } from 'lit';
-import '../packages/biowc-scatter/dist/src/biowc-scatter';
-import ScatterPlotFixture from '../packages/biowc-scatter/test/fixtures/ScatterPlotFixture';
+import '../packages/biowc-histogram/dist/src/biowc-histogram';
+import HistogramFixture from '../packages/biowc-histogram/test/fixtures/HistogramFixture';
 
 export default {
-  title: 'BiowcScatter',
-  component: 'biowc-scatter',
+  title: 'BiowcHistogram',
+  component: 'biowc-histogram',
   argTypes: {
     idKey: { control: 'text' },
     valueKey: { control: 'text' },
     xLabel: { control: 'text' },
     yLabel: { control: 'text' },
     xValues: { control: 'object' },
-    yValues: { control: 'object' },
+    barColor: { control: 'text'},
+    numBins: { control: 'number'},
   },
 };
 
@@ -27,29 +28,37 @@ interface ArgTypes {
   xLabel: string;
   yLabel: string;
   xValues: { [key: string]: number | string }[];
-  yValues: { [key: string]: number | string }[];
+  barColor: string;
+  numBins: number;
 }
 
 const Template: Story<ArgTypes> = (args: ArgTypes) => html`
-  <biowc-scatter
+  <biowc-histogram
     .idKey="${args.idKey}"
     .valueKey="${args.valueKey}"
     .xLabel="${args.xLabel}"
     .yLabel="${args.yLabel}"
     .xValues="${args.xValues}"
-    .yValues="${args.yValues}"
+    .barColor="${args.barColor}"
+    .numBins="${args.numBins}"
   >
-  </biowc-scatter>
+  </biowc-histogram>
 `;
 
 export const Regular = Template.bind({});
-Regular.args = ScatterPlotFixture.scatterPlot;
+Regular.args = HistogramFixture.histogram;
 
 export const CustomLabels = Template.bind({});
 CustomLabels.args = {
   ...Regular.args,
   xLabel: 'xLabel',
   yLabel: 'yLabel',
+};
+
+export const CustomColor = Template.bind({});
+CustomColor.args = {
+  ...Regular.args,
+  barColor: '#bd282c',
 };
 
 export const CustomData = Template.bind({});
@@ -60,9 +69,10 @@ CustomData.args = {
     { 'Sample name': 'sample2', abundance: 1 },
     { 'Sample name': 'sample3', abundance: 2 },
   ],
-  yValues: [
-    { 'Sample name': 'sample1', abundance: 10 },
-    { 'Sample name': 'sample2', abundance: 8 },
-    { 'Sample name': 'sample3', abundance: -2 },
-  ],
 };
+
+export const LargeHistogram = Template.bind({});
+LargeHistogram.args = HistogramFixture.largeHistogram;
+
+export const NaHistogram = Template.bind({});
+NaHistogram.args = HistogramFixture.naHistogram;

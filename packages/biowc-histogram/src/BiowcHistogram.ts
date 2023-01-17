@@ -5,15 +5,6 @@ import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import styles from './biowc-histogram.css';
 import '../../../download-button/dist/src/download-button.js';
 
-export namespace Types {
-  export type Data = { [key: string]: number | string };
-  export type BarsNode = {
-    x0: number;
-    x1: number;
-    length: number;
-  };
-}
-
 export class BiowcHistogram extends LitElement {
   static styles = styles;
 
@@ -24,7 +15,7 @@ export class BiowcHistogram extends LitElement {
   valueKey: string = 'value';
 
   @property({ attribute: false })
-  xValues: { [key: string]: number | string }[] = [];
+  xValues: { [key: string]: number | string | undefined }[] = [];
 
   @property({ attribute: false })
   xLabel: string = '';
@@ -37,6 +28,15 @@ export class BiowcHistogram extends LitElement {
 
   @property({ attribute: false })
   barColor: string = '#69b3a2';
+
+  @property({ attribute: false })
+  width = 460;
+
+  @property({ attribute: false })
+  height = 400;
+
+  @property({ attribute: false })
+  margin = { top: 10, right: 30, bottom: 30, left: 60 };
 
   render(): HTMLTemplateResult {
     return html` <div style="display: flex">
@@ -66,9 +66,9 @@ export class BiowcHistogram extends LitElement {
 
   private _plotHistogram() {
     // set the dimensions and margins of the graph
-    const margin = { top: 10, right: 30, bottom: 30, left: 60 };
-    const width = 460 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    const { margin } = this;
+    const width = this.width - margin.left - margin.right;
+    const height = this.height - margin.top - margin.bottom;
 
     const mainDiv = this._getMainDiv();
 
@@ -82,20 +82,36 @@ export class BiowcHistogram extends LitElement {
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    const data = this.xValues.map(
-      entry => entry[this.valueKey] as unknown as number
-    );
+    const data = this.xValues.map(entry => {
+      const value = entry[this.valueKey];
+      switch (typeof value) {
+        case 'number':
+          return value;
+        default:
+          return NaN;
+      }
+    });
+
+    // count number of NaN to report in messagebox
+    // const nanCount = data.filter(x => Number.isNaN(x)).length
 
     // X axis: scale and draw:
     const x = d3v6
       .scaleLinear()
-      .domain([Math.min(...data), d3v6.max(data) as number]) // can use this instead of 1000 to have the max of data: d3v6.max(data, function(d) { return +d.price })
+      .domain(d3v6.extent(data) as [number, number]) // can use this instead of 1000 to have the max of data: d3v6.max(data, function(d) { return +d.price })
       .range([0, width]);
 
     svg
       .append('g')
       .attr('transform', `translate(0, ${height})`)
       .call(d3v6.axisBottom(x));
+
+    // add the x Axis label
+    svg
+      .append('text')
+      .attr('transform', `translate(${width / 2} ,${height + margin.top + 30})`)
+      .style('text-anchor', 'middle')
+      .text(`${this.xLabel}`);
 
     // set the parameters for the histogram
     const histogram = d3v6
@@ -117,16 +133,35 @@ export class BiowcHistogram extends LitElement {
     y.domain([0, d3v6.max(bins, d => d.length)] as [number, number]); // d3v6.hist has to be called before the Y axis obviously
     svg.append('g').call(d3v6.axisLeft(y));
 
+    // add the y Axis
+    svg
+      .append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', 0 - margin.left)
+      .attr('x', 0 - height / 2)
+      .attr('dy', '1em')
+      .style('text-anchor', 'middle')
+      .text(`${this.yLabel}`);
+
     // Add the tooltip container to the vis container
     // it's invisible and its position/contents are defined during mouseover
     const tooltip = mainDiv
       .append('div')
       .attr('class', 'tooltip')
-      .style('opacity', 0);
+      .style('opacity', 0)
+      .style('background-color', 'black')
+      .style('color', 'white')
+      .style('border-radius', '5px')
+      .style('padding', '10px');
 
     // tooltip mouseover event handler
-    const tipMouseover = (e: MouseEvent, d: { length: any }) => {
-      const htmlElement = d.length;
+    const tipMouseover = (
+      e: MouseEvent,
+      d: { length: any; x0: any; x1: any }
+    ) => {
+      const htmlElement = `${this.yLabel}: ${
+        d.length
+      }<br>range: ${d.x0.toPrecision(3)} to ${d.x1.toPrecision(3)}`;
       tooltip
         .html(htmlElement)
         .style('left', `${e.pageX + 10}px`)
