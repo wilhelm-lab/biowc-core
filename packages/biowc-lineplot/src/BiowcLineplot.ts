@@ -1,6 +1,7 @@
 import { html, LitElement, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
+import { ValueFn } from 'd3';
 
 export class BiowcLineplot extends LitElement {
   @property({ type: String }) mytitle = 'Hey there';
@@ -9,8 +10,7 @@ export class BiowcLineplot extends LitElement {
   dataPoints: number[][][] = [];
 
   render() {
-    return html` <p>${JSON.stringify(this.dataPoints)}</p>
-      <div id="lineplot"></div>`;
+    return html`<div id="lineplot"></div>`;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
@@ -86,6 +86,23 @@ export class BiowcLineplot extends LitElement {
         .attr('cy', point => yAxis((<Number[]>point)[1]))
         .attr('r', 4)
         .style('fill', d3v6.schemeSet2[i]);
+
+      // Connect dots with a line
+      dotlistGroup
+        .append('path')
+        // Sort ascending by x value
+        .datum(this.dataPoints[i].sort((a, b) => a[0] - b[0]))
+        .attr('stroke-width', 1.5)
+        // .attr('d', <ValueFn<SVGPathElement, number[][], number>><unknown>d3v6.line()
+        .attr(
+          'd',
+          <ValueFn<SVGPathElement, number[][], null>>d3v6
+            .line()
+            .x(d => xAxis(d[0]))
+            .y(d => yAxis(d[1]))
+        )
+        .style('stroke', d3v6.schemeSet2[i])
+        .style('fill', 'none');
     }
   }
 }
