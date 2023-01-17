@@ -2,8 +2,11 @@ import { html, LitElement, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
 import { ValueFn } from 'd3';
+import styles from './biowc-lineplot.css';
 
 export class BiowcLineplot extends LitElement {
+  static styles = styles;
+
   @property({ type: String }) mytitle = 'Hey there';
 
   @property({ attribute: false })
@@ -73,6 +76,29 @@ export class BiowcLineplot extends LitElement {
 
     svg.append('g').call(d3v6.axisLeft(yAxis));
 
+    // Define tooltip
+    const tooltip = mainDiv
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0);
+
+    // Define tooltip event handlers
+    const showTooltip = (e: MouseEvent, d: number[]) => {
+      tooltip
+        .html(`<p>x=${d[0]}, y=${d[1]}</p>`)
+        .style('left', `${e.pageX + 10}px`)
+        .style('top', `${e.pageY - 10}px`)
+        .transition()
+        .duration(100) // ms
+        .style('opacity', 0.9); // started as 0!
+    };
+    const hideTooltip = () => {
+      tooltip
+        .transition()
+        .duration(100) // ms
+        .style('opacity', 0);
+    };
+
     // Add dots
     const dotlistGroup = svg.append('g').attr('id', 'dotlistGroup');
 
@@ -85,7 +111,9 @@ export class BiowcLineplot extends LitElement {
         .attr('cx', point => xAxis((<Number[]>point)[0]))
         .attr('cy', point => yAxis((<Number[]>point)[1]))
         .attr('r', 4)
-        .style('fill', d3v6.schemeSet2[i]);
+        .style('fill', d3v6.schemeSet2[i])
+        .on('mousemove', showTooltip)
+        .on('mouseout', hideTooltip);
 
       // Connect dots with a line
       dotlistGroup
