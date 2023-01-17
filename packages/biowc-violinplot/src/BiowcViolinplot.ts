@@ -234,14 +234,14 @@ export class BiowcViolinplot extends LitElement {
   drawChartWithData() {
     const oControl = this;
     // Create SVG element. Remove old ones.
-    const svgs = d3.select('.sapProteomicsdbViolinPlot').selectAll('svg');
+    const svgs = this._getMainDiv().selectAll('svg');
     svgs.remove();
 
     const plotHeight = this.height;
     const plotWidth = this.violinWidth;
     const plotSpacing = 10;
 
-    const svg = d3.select('.sapProteomicsdbViolinPlot').append('svg');
+    const svg = this._getMainDiv().append('svg');
     this.oChartObjects.svg = svg;
 
     // const resolution = this.resolution
