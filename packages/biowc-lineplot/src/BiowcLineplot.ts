@@ -3,6 +3,7 @@ import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
 import { ValueFn } from 'd3';
 import styles from './biowc-lineplot.css';
+// import * as scale from "d3-scale";
 
 export class BiowcLineplot extends LitElement {
   static styles = styles;
@@ -119,6 +120,11 @@ export class BiowcLineplot extends LitElement {
     // Add dots
     const dotlistGroup = svg.append('g').attr('id', 'dotlistGroup');
 
+    // const colors = scale
+    // .scaleLinear<string>()
+    // .domain([0, this.dataPoints.length])
+    // .range(["#f44336", "#3b73b4"]);
+
     for (let i = 0; i < this.dataPoints.length; i += 1) {
       dotlistGroup
         .append('g')
@@ -128,6 +134,7 @@ export class BiowcLineplot extends LitElement {
         .attr('cx', point => xAxis((<Number[]>point)[0]))
         .attr('cy', point => yAxis((<Number[]>point)[1]))
         .attr('r', 4)
+        // .style('fill', colors(i))
         .style('fill', d3v6.schemeSet2[i])
         .on('mousemove', showTooltip)
         .on('mouseout', hideTooltip);
@@ -146,6 +153,7 @@ export class BiowcLineplot extends LitElement {
             .x(d => xAxis(d[0]))
             .y(d => yAxis(d[1])) as ValueFn<SVGPathElement, number[][], null>
         )
+        // .style('stroke', colors(i))
         .style('stroke', d3v6.schemeSet2[i])
         .style('fill', 'none');
     }

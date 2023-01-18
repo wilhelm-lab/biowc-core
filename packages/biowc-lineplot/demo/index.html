@@ -18,10 +18,10 @@
 
     render(
       html`
-        <biowc-lineplot .dataPoints=${LinePlotFixture.emptyLineplot.dataPoints}
+        <biowc-lineplot .dataPoints="${LinePlotFixture.complexLineplot.dataPoints}"
                         .formulas="${LinePlotFixture.parabola.formulas}"
-                        .width="${LinePlotFixture.basicLineplot.width}"
-                        .height="${LinePlotFixture.basicLineplot.height}">
+                        .width="${LinePlotFixture.complexLineplot.width}"
+                        .height="${LinePlotFixture.complexLineplot.height}">
         </biowc-lineplot>
       `,
       document.querySelector('#demo')
