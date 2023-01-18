@@ -1,7 +1,6 @@
 import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
-// import * as d3v6 from 'd3';
 import * as d3 from 'd3';
 import styles from './biowc-swarmplot.css';
 
@@ -18,9 +17,6 @@ export class BiowcSwarmplot extends LitElement {
 
   @property({ type: String }) mytitle = 'Hey there';
 
-  // @property({ attribute: false })
-  // xValues: xValueType = [];
-
   @property({ attribute: false })
   xLabel: string = '';
 
@@ -32,9 +28,6 @@ export class BiowcSwarmplot extends LitElement {
 
   @property({ attribute: false })
   swarmData: swarmDataType[] = [];
-
-  // @property({attribute: false})
-  // swarmSelIds: string[]
 
   @property({ attribute: false })
   swarmId: string = 'SwarmPlot';
@@ -62,12 +55,6 @@ export class BiowcSwarmplot extends LitElement {
 
   @property({ attribute: false })
   LegendY: number = 40;
-
-  // @property({attribute: false})
-  // scatterPoints: number[];
-  //
-  // @property({attribute: false})
-  // legendArray: string[];
 
   render(): HTMLTemplateResult {
     return html`
@@ -171,7 +158,6 @@ export class BiowcSwarmplot extends LitElement {
       .force('collide', d3.forceCollide(4))
       // .force('center', d3.forceCenter(width / 2, height / 2))
       .stop();
-    // console.log('test')
     const fakeFn = function fakeFn() {
       return simulation.tick(10);
     };
@@ -192,48 +178,7 @@ export class BiowcSwarmplot extends LitElement {
       .duration(1)
       .attr('cx', (d: any) => d.x)
       .attr('cy', (d: any) => d.y);
-    // const scatterData: number[] = []
-    //
-    // const elementList = this.shadowRoot!.querySelectorAll('.names') as NodeList
-    //
-    // // @ts-ignore
-    // elementList.forEach( (element: SVGElement) => {
-    //   console.log(element)   // getAttribute('fill')
-    // })
-    // // type PointType = {'colorID': string; 'x': number; 'y': number;}
-    // // @ts-ignore
-    // elementList.forEach((element: SVGElement) => {
-    //   // const point: PointType = {}
-    //   console.log(element.getAttributeNames())
-    //   console.log(element.getAttribute('fill'))
-    //   // console.log(element.getAttribute('fill'))
-    //   console.log(element.getAttribute('cx'))
-    //   console.log(element.getAttribute('cy'))
-    // point[fieldOfTable] = element.__data__[fieldOfTable]
-    // point[nominalField] = element.__data__[nominalField]
-    // point.colorID = element.getAttribute('fill')
-    //   point.sizeR = element.__data__.sizeR
-    //   point.x = element.getAttribute('cx')
-    // point.y = element.getAttribute('cy')
-    // scatterData.push(point)
-    // })
-    // this.scatterPoints = scatterData
   }
-
-  // manualLegendAdd (svg: any) {
-  //   if (this.patientGroup.length > 0 & this.colorCode.length > 0) {
-  //     const legend = {}
-  //     legend.color = this.colorCode
-  //     legend.group = this.patientGroup
-  //     legend.Y = this.LegendY
-  //     this.legendArray.push(legend)
-  //     this.LegendY += 20
-  //     this.legendArray.forEach(element => {
-  //       svg.append('circle').attr('cx', 90).attr('cy', element.Y).attr('r', 6).style('fill', element.color)
-  //       svg.append('text').attr('x', 100).attr('y', element.Y).text(element.group).style('font-size', '15px').attr('alignment-baseline', 'middle')
-  //     })
-  //   }
-  // }
 
   mouseHover(
     fieldName: string,
@@ -246,9 +191,6 @@ export class BiowcSwarmplot extends LitElement {
     svg
       .selectAll('.names')
       .on('mousemove', (event: any, circle: any) => {
-        console.log('hoverMouse');
-        console.log(circle);
-        console.log(event);
         tooltip
           .html(
             `<strong>${circle[nominalField as keyof swarmDataType]}</strong>
@@ -304,7 +246,6 @@ export class BiowcSwarmplot extends LitElement {
       .attr('transform', `translate(${margin.left},01)`)
       // @ts-ignore
       .call(yAxis);
-    // .attr('x', -10)
 
     return { tooltip, xLine };
   }
@@ -323,8 +264,6 @@ export class BiowcSwarmplot extends LitElement {
       .attr('class', 'd3')
       .attr('width', width)
       .attr('height', height);
-    // this.manualLegendAdd(svg) // adding element of the legends
-    // console.log(dataSet);
     const yScale = d3
       .scaleLinear()
       .range([height - margin.bottom, margin.top])
@@ -336,82 +275,6 @@ export class BiowcSwarmplot extends LitElement {
       );
     return { yScale, svg };
   }
-
-  // reDrawPlot () {
-  //   const resetPlot = false
-  //   this.rePlot(resetPlot)
-  // }
-
-  // resetPlot () {
-  //   const resetPlot = true
-  //   this.rePlot(resetPlot)
-  // }
-
-  // private _rePlot (resetPlot) {
-  //   const fieldOfTable = this.fieldValues // Data field for the y position values
-  //   const nominalField = this.fieldName // Identifier of the data on the table
-  //   const dataSet = this.scatterPoints
-  //
-  //   const selectedCells: CellSelectedEvent = new CustomEvent(
-  //     'selectedCells',
-  //     {
-  //       detail: {
-  //         colorCode: this.colorCode,
-  //         selectedPatiens: this.swarmSelIds
-  //       },
-  //     }
-  //   );
-  //   this.dispatchEvent(selectedCells)
-  //
-  //
-  //   if (this.swarmSelIds.length > 0) {
-  //     this.swarmSelIds.forEach(element => {
-  //       dataSet[element].colorID = this.colorCode
-  //       dataSet[element].sizeR = 4
-  //     })
-  //   }
-  //
-  //   if (resetPlot) {
-  //     this.disposeLabels()
-  //     for (let i = 0; i < dataSet.length; i++) {
-  //       dataSet[i].colorID = 'grey'
-  //       dataSet[i].sizeR = 3
-  //     }
-  //   }
-  //
-  //   this.scatterPoints = dataSet // using scatter points instead of simulation
-  //   const pltobj = this.initaxes(this.width, this.height, this.margin, dataSet, fieldOfTable)
-  //   const svg = pltobj.svg
-  //   const yScale = pltobj.yScale
-  //   this.boxPlot(dataSet, fieldOfTable, this.width, yScale, this.margin, svg) // draw boxplot
-  //   const plotObject = this.prepFunc(svg, this.margin, yScale)
-  //   const tooltip = plotObject.tooltip
-  //   const xLine = plotObject.xLine
-  //
-  //   // scatter plot
-  //   const scatterPoints = this.scatterPoints
-  //   svg.append('g')
-  //     .selectAll('dot')
-  //     .data(scatterPoints)
-  //     .enter()
-  //     .append('circle')
-  //     .attr('class', 'names')
-  //     .attr('cx', function (d) {
-  //       return d.x
-  //     })
-  //     .attr('cy', function (d) {
-  //       return d.y
-  //     })
-  //     .attr('r', function (d) {
-  //       return d.sizeR
-  //     })
-  //     .style('fill', function (d) {
-  //       return d.colorID
-  //     })
-  //
-  //   this.mouseHover(nominalField, fieldOfTable, tooltip, xLine) // at mouse  hover
-  //   this.patientGroup = ''
-  // }
 
   private _plotSwarm() {
     // set the dimensions and margins of the graph
@@ -438,8 +301,6 @@ export class BiowcSwarmplot extends LitElement {
     const plotObject = this.prepFunc(pltobj.svg, margin, pltobj.yScale); // {tooltip, xline}
     const { tooltip } = plotObject;
     const { xLine } = plotObject;
-    console.log(tooltip);
-    console.log(xLine);
     BiowcSwarmplot.simulationSwarm(
       this.swarmData,
       width,

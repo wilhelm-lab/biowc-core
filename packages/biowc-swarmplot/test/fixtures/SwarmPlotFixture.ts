@@ -19,7 +19,6 @@ export default {
       { 'Z-score': 1.8, 'Sample name': 'sample12', colorID: 'grey', sizeR: 3 },
       { 'Z-score': 0.5, 'Sample name': 'sample13', colorID: 'grey', sizeR: 3 },
     ],
-    swarmSelIds: [0],
     drawBoxPlot: true,
   },
 };
