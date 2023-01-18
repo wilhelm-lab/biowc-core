@@ -14,12 +14,19 @@
   <script type="module">
     import { html, render } from 'lit';
     import '../dist/src/biowc-barplot.js';
+    import BarPlotFixture from "../dist/test/fixtures/BarPlotFixture.js";
 
-    const title = 'Hello owc World!';
     render(
       html`
-        <biowc-barplot .title=${title}>
-          some light-dom
+        <biowc-barplot
+          .minWidth="${BarPlotFixture.barPlot.minWidth}"
+          .minHeight="${BarPlotFixture.barPlot.minHeight}"
+          .barWidth="${BarPlotFixture.barPlot.barWidth}"
+          .title="${BarPlotFixture.barPlot.title}"
+          .multiSelection="${BarPlotFixture.barPlot.multiSelection}"
+          .data="${BarPlotFixture.barPlot.data}"
+          .sSelectedModelIds="${BarPlotFixture.barPlot.sSelectedModelIds}"
+        >
         </biowc-barplot>
       `,
       document.querySelector('#demo')
