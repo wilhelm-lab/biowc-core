@@ -48,8 +48,8 @@ export class BiowcSwarmplot extends LitElement {
   @property({ attribute: false })
   drawBoxPlot: boolean = true;
 
-  // @property({attribute: false})
-  // fieldName: string;
+  @property({ attribute: false })
+  fieldName: string = 'Sample name';
 
   @property({ attribute: false })
   fieldValues: string = 'Z-score';
@@ -70,11 +70,7 @@ export class BiowcSwarmplot extends LitElement {
   // legendArray: string[];
 
   render(): HTMLTemplateResult {
-    // return html` <div style="display: flex">
-    //   <div id="swarmplot"></div>
-    // </div>`;
     return html`
-      <p>${JSON.stringify(this.swarmData)}</p>
       <div id="swarmplot"></div>
     </p>`;
   }
@@ -102,14 +98,9 @@ export class BiowcSwarmplot extends LitElement {
   ) {
     // Box plot display on the background
     if (this.drawBoxPlot) {
-      // const dataBoxplot: number[] = []
-      // dataSet.forEach(element => {
-      //   dataBoxplot.push(element[fieldOfTable])
-      // })
       const dataBoxplot = dataSet.map(
         entry => entry[fieldOfTable as keyof swarmDataType] as number
       );
-      console.log(dataBoxplot);
 
       const dataSorted: number[] = dataBoxplot.sort(d3.ascending);
       const q1: any = d3.quantile(dataSorted, 0.25); // might be a function
@@ -121,10 +112,11 @@ export class BiowcSwarmplot extends LitElement {
       const max: number | undefined = q1 + 1.5 * interQuantileRange;
       const recHeigth: number = yScale(q1) - yScale(q3);
       const center: number = width - margin.left;
-      console.log(dataSorted);
 
       svg
         .append('line')
+        // .attr('x1', center) // - 3 * margin.left)
+        // .attr('x2', center)
         .attr('x1', center - 3 * margin.left)
         .attr('x2', center - 3 * margin.left)
         .attr('y1', yScale(min))
@@ -153,49 +145,82 @@ export class BiowcSwarmplot extends LitElement {
     }
   }
 
-  // simulationSwarm (dataSet: swarmDataType[], height: number, margin: marginType, svg: any, fieldOfTable: string, yScale: any, fieldName: string) {
-  //   const nominalField: string = fieldName
-  //   const simulation = d3.forceSimulation(dataSet)
-  //     .force('y', d3.forceY(function (d) {
-  //       return yScale(+d[fieldOfTable])
-  //     }).strength(1)) // Increase velocity
-  //     .force('x', d3.forceX((height / 2) - margin.bottom / 2))
-  //     .force('collide', d3.forceCollide(4))
-  //     .stop()
-  //
-  //   for (let i = 0; i < dataSet.length; ++i) simulation.tick(10)
-  //
-  //   const namesCircles = svg.selectAll('.names')
-  //     .data(dataSet, function (d) {
-  //       return d[nominalField]
-  //     })
-  //   namesCircles.enter()
-  //     .append('circle')
-  //     .attr('class', 'names')
-  //     .attr('r', (d) => d.sizeR)
-  //     .attr('fill', (d) => d.colorID)
-  //     .merge(namesCircles)
-  //     .transition()
-  //     .duration(1)
-  //     .attr('cx', function (d) {
-  //       return d.x
-  //     })
-  //     .attr('cy', function (d) {
-  //       return d.y
-  //     })
-  //   const scatterData = []
-  //   d3.selectAll('.names')._groups[0].forEach(element => {
-  //     const point = {}
-  //     point[fieldOfTable] = element.__data__[fieldOfTable]
-  //     point[nominalField] = element.__data__[nominalField]
-  //     point.colorID = element.__data__.colorID
-  //     point.sizeR = element.__data__.sizeR
-  //     point.x = element.__data__.x
-  //     point.y = element.__data__.y
-  //     scatterData.push(point)
-  //   })
-  //   this.scatterPoints = scatterData
-  // }
+  static simulationSwarm(
+    dataSet: swarmDataType[],
+    width: number,
+    height: number,
+    margin: marginType,
+    svg: any,
+    fieldOfTable: string,
+    yScale: any,
+    fieldName: string
+  ) {
+    const nominalField: string = fieldName;
+
+    const simulation = d3
+      // @ts-ignore
+      .forceSimulation(dataSet)
+      .force(
+        'y',
+        d3
+          .forceY(d =>
+            // @ts-ignore
+            yScale(d[fieldOfTable as keyof swarmDataType] as number)
+          )
+          .strength(1)
+      ) // Increase velocity
+      .force('x', d3.forceX(height / 2 - margin.bottom / 2))
+      .force('collide', d3.forceCollide(4))
+      // .force('center', d3.forceCenter(width / 2, height / 2))
+      .stop();
+    // console.log('test')
+    const fakeFn = function fakeFn() {
+      return simulation.tick(10);
+    };
+
+    dataSet.forEach(fakeFn);
+
+    const namesCircles = svg
+      .selectAll('.names')
+      .data(dataSet, (d: any) => d[nominalField]);
+    namesCircles
+      .enter()
+      .append('circle')
+      .attr('class', 'names')
+      .attr('r', (d: any) => d.sizeR)
+      .attr('fill', (d: any) => d.colorID)
+      .merge(namesCircles)
+      .transition()
+      .duration(1)
+      .attr('cx', (d: any) => d.x)
+      .attr('cy', (d: any) => d.y);
+    // const scatterData: number[] = []
+    //
+    // const elementList = this.shadowRoot!.querySelectorAll('.names') as NodeList
+    //
+    // // @ts-ignore
+    // elementList.forEach( (element: SVGElement) => {
+    //   console.log(element)   // getAttribute('fill')
+    // })
+    // // type PointType = {'colorID': string; 'x': number; 'y': number;}
+    // // @ts-ignore
+    // elementList.forEach((element: SVGElement) => {
+    //   // const point: PointType = {}
+    //   console.log(element.getAttributeNames())
+    //   console.log(element.getAttribute('fill'))
+    //   // console.log(element.getAttribute('fill'))
+    //   console.log(element.getAttribute('cx'))
+    //   console.log(element.getAttribute('cy'))
+    // point[fieldOfTable] = element.__data__[fieldOfTable]
+    // point[nominalField] = element.__data__[nominalField]
+    // point.colorID = element.getAttribute('fill')
+    //   point.sizeR = element.__data__.sizeR
+    //   point.x = element.getAttribute('cx')
+    // point.y = element.getAttribute('cy')
+    // scatterData.push(point)
+    // })
+    // this.scatterPoints = scatterData
+  }
 
   // manualLegendAdd (svg: any) {
   //   if (this.patientGroup.length > 0 & this.colorCode.length > 0) {
@@ -232,41 +257,42 @@ export class BiowcSwarmplot extends LitElement {
   //   })
   // }
 
-  // prepFunc (svg: any, margin: marginType, yScale: number[]) {
-  //   svg.append('g')
-  //     .attr('class', 'y axis')
-  //
-  //   svg.append('g').attr('class', 'lines')
-  //   svg.append('g').attr('class', 'selcirc')
-  //
-  //   const titlePlot: string = this.swarmTitlePrefix + '(' + this.swarmTitle + ')'
-  //   svg.append('text')
-  //   // .attr("class", "y label")
-  //     .attr('transform', 'rotate(-90)')
-  //     .attr('text-anchor', 'middle')
-  //     .attr('x', -180)
-  //     .attr('y', 15)
-  //     .text(titlePlot)
-  //
-  //   const xLine: any = svg.append('line')
-  //     .attr('stroke', 'rgb(96,125,139)')
-  //     .attr('stroke-dasharray', '1,2')
-  //
-  //   const tooltip: any = d3.select(`#${this.swarmId}`)
-  //     .append('div')
-  //     .attr('class', 'tooltip')
-  //     .style('opacity', 1)
-  //
-  //   const yAxis: any = d3.axisRight(yScale)
-  //     .ticks(10, '.1f')
-  //     .tickSizeOuter(0)
-  //
-  //   d3.transition(svg).select('.y.axis')
-  //     .attr('transform', 'translate(' + (margin.left) + ',01)')
-  //     .call(yAxis)
-  //
-  //   return { tooltip, xLine }
-  // }
+  prepFunc(svg: any, margin: marginType, yScale: any) {
+    svg.append('g').attr('class', 'y axis');
+
+    svg.append('g').attr('class', 'lines');
+    svg.append('g').attr('class', 'selcirc');
+
+    const titlePlot: string = `${this.swarmTitlePrefix}(${this.swarmTitle})`;
+    svg
+      .append('text')
+      // .attr("class", "y label")
+      .attr('transform', 'rotate(-90)')
+      .attr('text-anchor', 'middle')
+      .attr('x', -180)
+      .attr('y', 15)
+      .text(titlePlot);
+
+    const xLine: any = svg
+      .append('line')
+      .attr('stroke', 'rgb(96,125,139)')
+      .attr('stroke-dasharray', '1,2');
+
+    const tooltip: any = d3
+      .select(`#${this.swarmId}`)
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 1);
+
+    const yAxis: any = d3.axisRight(yScale).ticks(10, '.1f').tickSizeOuter(0);
+
+    d3.transition(svg)
+      .select('.y.axis')
+      .attr('transform', `translate(${margin.left},01)`)
+      .call(yAxis);
+
+    return { tooltip, xLine };
+  }
 
   initaxes(
     width: number,
@@ -283,7 +309,7 @@ export class BiowcSwarmplot extends LitElement {
       .attr('width', width)
       .attr('height', height);
     // this.manualLegendAdd(svg) // adding element of the legends
-    console.log(dataSet);
+    // console.log(dataSet);
     const yScale = d3
       .scaleLinear()
       .range([height - margin.bottom, margin.top])
@@ -392,11 +418,23 @@ export class BiowcSwarmplot extends LitElement {
       pltobj.yScale,
       margin,
       pltobj.svg
-    ); // draw boxplot
+    );
+
     // const plotObject = this.prepFunc(pltobj.svg, margin, pltobj.yScale)
-    // const tooltip = plotObject.tooltip
-    // const xLine = plotObject.xLine
-    // this.simulationSwarm(this.swarmData, height, margin, pltobj.svg, this.fieldValues, pltobj.yScale, this.fieldName) // 1st simulation of the data on the plot
+    // const tooltip: any = plotObject.tooltip
+    // const xLine: any = plotObject.xLine
+    // console.log(tooltip)
+    BiowcSwarmplot.simulationSwarm(
+      this.swarmData,
+      width,
+      height,
+      margin,
+      pltobj.svg,
+      this.fieldValues,
+      pltobj.yScale,
+      this.fieldName
+    ); // 1st simulation of the data on the plot
+    // console.log(this._getMainDiv())
     // this.mouseHover(this.fieldName, this.fieldValues, tooltip, xLine) // at mouse hover
   }
 }
