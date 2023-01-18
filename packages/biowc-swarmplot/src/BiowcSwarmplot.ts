@@ -243,7 +243,6 @@ export class BiowcSwarmplot extends LitElement {
   ) {
     const nominalField: string = fieldName;
     const svg = this._getMainDiv();
-    console.log(xLine);
     svg
       .selectAll('.names')
       .on('mousemove', (event: any, circle: any) => {
@@ -258,16 +257,16 @@ export class BiowcSwarmplot extends LitElement {
           .style('top', `${event.pageY - 50}px`)
           .style('left', `${event.pageX}px`)
           .style('opacity', 0.9);
-        // xLine.attr('x1', event.target.attr('cx'))
-        //   .attr('y1', event.target.attr('cy'))
-        //   .attr('y2', event.target.attr('cy'))
-        //   .attr('x2', 0)
-        //   .attr('opacity', 1)
+        xLine
+          .attr('x1', circle.x)
+          .attr('y1', circle.y)
+          .attr('y2', circle.y)
+          .attr('x2', 0)
+          .attr('opacity', 1);
       })
       .on('mouseout', () => {
-        // console.log(_.target.__data__[fieldOfTable])
         tooltip.style('opacity', 0);
-        // xLine.attr('opacity', 0)
+        xLine.attr('opacity', 0);
       });
   }
 
