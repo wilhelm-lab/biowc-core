@@ -18,7 +18,8 @@
 
     render(
       html`
-        <biowc-lineplot .dataPoints=${LinePlotFixture.basicLineplot.dataPoints}
+        <biowc-lineplot .dataPoints=${LinePlotFixture.emptyLineplot.dataPoints}
+                        .formulas="${LinePlotFixture.parabola.formulas}"
                         .width="${LinePlotFixture.basicLineplot.width}"
                         .height="${LinePlotFixture.basicLineplot.height}">
         </biowc-lineplot>

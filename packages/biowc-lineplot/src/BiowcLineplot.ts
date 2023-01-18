@@ -11,6 +11,9 @@ export class BiowcLineplot extends LitElement {
   dataPoints: number[][][] = [];
 
   @property({ attribute: false })
+  formulas: string[] = [];
+
+  @property({ attribute: false })
   width: number = 400;
 
   @property({ attribute: false })
@@ -22,6 +25,7 @@ export class BiowcLineplot extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues) {
     this._plotDots();
+    // this._plotCurves();
 
     super.firstUpdated(_changedProperties);
   }
@@ -131,19 +135,23 @@ export class BiowcLineplot extends LitElement {
       // Connect dots with a line
       dotlistGroup
         .append('path')
+        .attr('class', 'dotconnector')
         // Sort ascending by x value
         .datum(this.dataPoints[i].sort((a, b) => a[0] - b[0]))
         .attr('stroke-width', 1.5)
-        // .attr('d', <ValueFn<SVGPathElement, number[][], number>><unknown>d3v6.line()
         .attr(
           'd',
-          <ValueFn<SVGPathElement, number[][], null>>d3v6
+          d3v6
             .line()
             .x(d => xAxis(d[0]))
-            .y(d => yAxis(d[1]))
+            .y(d => yAxis(d[1])) as ValueFn<SVGPathElement, number[][], null>
         )
         .style('stroke', d3v6.schemeSet2[i])
         .style('fill', 'none');
     }
   }
+
+  // private _plotCurves() {
+  // console.log(this.formulas)
+  // }
 }

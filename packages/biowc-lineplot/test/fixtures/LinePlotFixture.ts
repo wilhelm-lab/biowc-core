@@ -19,4 +19,17 @@ const basicLineplot = {
   height: 500,
 };
 
-export default { basicLineplot };
+const oneDotLineplot = {
+  dataPoints: [[[1, 1]]],
+};
+
+const emptyLineplot = {
+  dataPoints: [[]],
+};
+
+const parabola = {
+  formulas: ['return x**2+abscissa', 'return (x+offset)**2'],
+  curveParameters: [{ abscissa: 0.5 }, { offset: -1 }],
+};
+
+export default { basicLineplot, oneDotLineplot, emptyLineplot, parabola };

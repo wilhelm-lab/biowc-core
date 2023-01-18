@@ -4,7 +4,7 @@ import { BiowcLineplot } from '../src/BiowcLineplot.js';
 import '../src/biowc-lineplot.js';
 import LinePlotFixture from './fixtures/LinePlotFixture.js';
 
-describe('BiowcLineplot', () => {
+describe('BiowcLineplot', async () => {
   it('consists only of 2-dimensional points', () => {
     expect(
       LinePlotFixture.basicLineplot.dataPoints[0]
@@ -12,6 +12,29 @@ describe('BiowcLineplot', () => {
         .every(len => len === 2)
     ).to.be.true;
   });
+
+  const simpleLineplot = await fixture<BiowcLineplot>(
+    html`
+      <biowc-lineplot .dataPoints=${LinePlotFixture.basicLineplot.dataPoints} />
+    `
+  );
+
+  it('renders every line with a different color', () => {
+    const connectingLines = simpleLineplot.shadowRoot!.querySelectorAll(
+      '.dotconnector'
+    ) as NodeList;
+    // @ts-ignore
+    const colors = [...connectingLines].map(
+      connectingLine => connectingLine.style.stroke
+    );
+    const colorSet = new Set(colors);
+    expect(colors.length).to.equal(colorSet.size);
+    // TODO: Test with >8 lines
+  });
+
+  // it('still renders axes if there is no data', () => {
+  //
+  //  })
 
   it('passes the a11y audit', async () => {
     const el = await fixture<BiowcLineplot>(
