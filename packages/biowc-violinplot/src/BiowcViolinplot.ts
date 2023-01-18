@@ -21,12 +21,6 @@ type DataEntry = {
   data: ExpressionData[];
 };
 
-type Metadata = {
-  DRUG_ID: number;
-  TREATMENT: string;
-  catds: number;
-};
-
 type ViolinPropertiesType = {
   svg: any;
   results: ExpressionData[];
@@ -122,12 +116,12 @@ export class BiowcViolinplot extends LitElement {
   oChartObjects: {
     svg: any;
     oSelections: any;
-    oSortedData: { data: ExpressionData[][]; meta: Metadata[] };
+    oSortedData: ExpressionData[][];
     d3YScale: any;
   } = {
     svg: {},
     oSelections: {},
-    oSortedData: { data: [], meta: [] },
+    oSortedData: [],
     d3YScale: d3.scaleLinear,
   };
 
@@ -178,69 +172,6 @@ export class BiowcViolinplot extends LitElement {
     }
   }
 
-  static _getElementFromDataEntry(object: DataEntry, aPath: string[]) {
-    // Separator is slash
-    let current: any;
-
-    switch (aPath[aPath.length - 1]) {
-      case 'DRUG_ID': {
-        current = object.DRUG_ID;
-        break;
-      }
-      case 'TREATMENT': {
-        current = object.TREATMENT;
-        break;
-      }
-      case 'catds': {
-        current = object.catds;
-        break;
-      }
-      case 'data': {
-        current = object.data;
-        break;
-      }
-      default: {
-        current = object.data;
-        break;
-      }
-    }
-
-    return current;
-  }
-
-  static _getElementFromExpressionData(
-    object: ExpressionData,
-    aPath: string[]
-  ) {
-    // Seperator is slash
-    let current: number;
-
-    switch (aPath[aPath.length - 1]) {
-      case 'VALUE': {
-        current = object.VALUE;
-        break;
-      }
-      case 'STD_ERROR': {
-        current = object.STD_ERROR;
-        break;
-      }
-      case 'COD': {
-        current = object.COD;
-        break;
-      }
-      case 'BIC': {
-        current = object.BIC;
-        break;
-      }
-      default: {
-        current = object.VALUE;
-        break;
-      }
-    }
-
-    return BiowcViolinplot.convertEC50topEC50(current);
-  }
-
   drawChartWithData() {
     const oControl = this;
     // Create SVG element. Remove old ones.
@@ -264,10 +195,13 @@ export class BiowcViolinplot extends LitElement {
     // this function is local, to access the path reference as fast as possible
     const aPath = path.split('/');
 
-    const compareValues = function compareValues(oSet1: any, oSet2: any) {
+    const compareValues = function compareValues(
+      oSet1: ExpressionData,
+      oSet2: ExpressionData
+    ) {
       return d3.ascending(
-        BiowcViolinplot._getElementFromExpressionData(oSet1, aPath),
-        BiowcViolinplot._getElementFromExpressionData(oSet2, aPath)
+        oSet1[aPath[aPath.length - 1] as keyof ExpressionData],
+        oSet2[aPath[aPath.length - 1] as keyof ExpressionData]
       );
     };
 
@@ -285,14 +219,12 @@ export class BiowcViolinplot extends LitElement {
       // slice to copy the array
       // replace data with parameter
       oSortedData[i] = e.data.slice().sort(compareValues);
-      const localMin = BiowcViolinplot._getElementFromExpressionData(
-        oSortedData[i][0],
-        aPath
-      );
-      const localMax = BiowcViolinplot._getElementFromExpressionData(
-        oSortedData[i][oSortedData[i].length - 1],
-        aPath
-      );
+      const localMin = oSortedData[i][0][
+        aPath[aPath.length - 1] as keyof ExpressionData
+      ] as number;
+      const localMax = oSortedData[i][oSortedData[i].length - 1][
+        aPath[aPath.length - 1] as keyof ExpressionData
+      ] as number;
       min = min ? Math.min(localMin, min) : localMin;
       max = max ? Math.max(localMax, max) : localMax;
       oDomains[i] = [localMin, localMax];
@@ -307,11 +239,11 @@ export class BiowcViolinplot extends LitElement {
     let j = 0;
     // store Objects needed for Selection
     this.oChartObjects.oSelections = {};
-    this.oChartObjects.oSortedData.data = oSortedData;
+    this.oChartObjects.oSortedData = oSortedData;
     this.oChartObjects.d3YScale = y;
 
     for (const [i, oSortedElement] of Object.entries(
-      this.oChartObjects.oSortedData.data
+      this.oChartObjects.oSortedData
     )) {
       const g = svg
         .append('g')
@@ -461,15 +393,15 @@ export class BiowcViolinplot extends LitElement {
     const { valuePath } = oControl;
     const aValuePath = valuePath.split('/');
 
-    for (const [plotId, plot] of Object.entries(
-      oChartObjects.oSortedData.data
-    )) {
+    for (const [plotId, plot] of Object.entries(oChartObjects.oSortedData)) {
       // find the Element with the Value of the Property
       let element;
       for (let i = 0; i < plot.length; i += 1) {
         if (
           parseInt(prop, 10) ===
-          BiowcViolinplot._getElementFromExpressionData(plot[i], aPropertyPath)
+          (plot[i][
+            aPropertyPath[aPropertyPath.length - 1] as keyof ExpressionData
+          ] as number)
         ) {
           element = plot[i];
           break;
@@ -478,7 +410,9 @@ export class BiowcViolinplot extends LitElement {
       if (element) {
         oControl.selectElementByValue(
           BiowcViolinplot.convertEC50topEC50(
-            BiowcViolinplot._getElementFromExpressionData(element, aValuePath)
+            element[
+              aValuePath[aValuePath.length - 1] as keyof ExpressionData
+            ] as number
           ),
           parseInt(plotId, 10)
         );
@@ -489,7 +423,7 @@ export class BiowcViolinplot extends LitElement {
   }
 
   selectElementByValue(value: number, plotValue: number) {
-    const aData = this.oChartObjects.oSortedData.data[plotValue];
+    const aData = this.oChartObjects.oSortedData[plotValue];
     const oSelection = this.oChartObjects.oSelections[plotValue];
     const d3Yscale = this.oChartObjects.d3YScale;
     const iElementIndex = this._binarySearch(value, aData);
@@ -534,7 +468,7 @@ export class BiowcViolinplot extends LitElement {
     const aPath = path.split('/');
 
     const prepareData = function prepareData(data: ExpressionData) {
-      return BiowcViolinplot._getElementFromExpressionData(data, aPath);
+      return data[aPath[aPath.length - 1] as keyof ExpressionData] as number;
     };
 
     const histData = results.map(prepareData);
@@ -707,7 +641,7 @@ export class BiowcViolinplot extends LitElement {
     // this function is local, to access the path reference
     const aPath = path.split('/');
     const prepareData = function prepareData(data: ExpressionData) {
-      return BiowcViolinplot._getElementFromExpressionData(data, aPath);
+      return data[aPath[aPath.length - 1] as keyof ExpressionData] as number;
     };
     const quantile = function quantile(values: ExpressionData[], p: number) {
       const H = (values.length - 1) * p + 1;
@@ -821,7 +755,9 @@ export class BiowcViolinplot extends LitElement {
       compareResult = d3.ascending(
         value,
         BiowcViolinplot.convertEC50topEC50(
-          BiowcViolinplot._getElementFromExpressionData(array[midIndex], aPath)
+          array[midIndex][
+            aPath[aPath.length - 1] as keyof ExpressionData
+          ] as number
         )
       );
       switch (compareResult) {
@@ -842,7 +778,9 @@ export class BiowcViolinplot extends LitElement {
       compareResult = d3.ascending(
         value,
         BiowcViolinplot.convertEC50topEC50(
-          BiowcViolinplot._getElementFromExpressionData(array[i - 1], aPath)
+          array[i - 1][
+            aPath[aPath.length - 1] as keyof ExpressionData
+          ] as number
         )
       );
       if (compareResult === 0) {
