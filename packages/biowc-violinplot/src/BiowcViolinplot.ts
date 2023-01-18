@@ -4,6 +4,7 @@ import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import * as d3 from 'd3';
 import { ScaleLinear } from 'd3';
 import styles from './biowc-violinplot.css';
+import '../../../download-button/dist/src/download-button.js';
 
 type ExpressionData = {
   PROTEIN_ID: number;
@@ -127,19 +128,12 @@ export class BiowcViolinplot extends LitElement {
 
   render(): HTMLTemplateResult {
     return html`
-      <div class="analytics-selectivity violin-plot-container">
-        <div class="sapProteomicsdbViolinPlot">
-          <!-- <div class="violinbuttonarea">
-        <template v-for="(plot, index) in chartData">
-          <label
-            v-if="!simpleLabel &amp;&amp; _dataObjectHasChilds()"
-            :key="plot[keyValue]"
-            class="violin-label"
-            :style="labelOffsetStyles[index]"
-          >{{ plot[plotLabelValueDrug] }}<br>{{ plot[plotLabelValueCatds] }}</label>
-        </template>
-      </div> -->
-        </div>
+      <div style="display: flex">
+        <div class="sapProteomicsdbViolinPlot"></div>
+        <download-button
+          .svgComponent="${this}"
+          style="margin-left: 20px;"
+        ></download-button>
       </div>
     `;
   }
@@ -807,23 +801,8 @@ export class BiowcViolinplot extends LitElement {
     return pEC50;
   }
 
-  getSVGgetSVG() {
-    return this._getMainDiv().selectAll('svg').node();
-  }
-
-  labelOffsetStyles() {
-    const offsets: { left: number; top: number }[] = [];
-    const plotHeight = this.height;
-    const plotWidth = this.violinWidth;
-    const plotSpacing = 10;
-    for (let index = 0; index < this.chartData.length; index += 1) {
-      offsets[index] = {
-        left:
-          index * (plotWidth + plotSpacing) + this.margin.left + plotWidth / 2,
-        top: plotHeight - this.margin.bottom + 5,
-      };
-    }
-    return offsets;
+  public exportSvg() {
+    return this.shadowRoot?.querySelector('svg')?.outerHTML;
   }
 
   protected firstUpdated(changedProperties: PropertyValues) {
