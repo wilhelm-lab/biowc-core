@@ -15,7 +15,7 @@ type ExpressionData = {
 type DataEntry = {
   idKey: number;
   sampleName: string;
-  score: number;
+  scores: { scoreName: string; scoreValue: number }[];
   data: ExpressionData[];
 };
 
@@ -46,7 +46,7 @@ export class BiowcViolinplot extends LitElement {
     {
       idKey: NaN,
       sampleName: '',
-      score: NaN,
+      scores: [],
       data: [
         {
           proteinId: NaN,
@@ -281,17 +281,35 @@ export class BiowcViolinplot extends LitElement {
         10
       );
 
-      this.plotLabelExtraFields.forEach((extraLabel: string, index: number) => {
-        this.addLabel(
-          g,
-          results[parseInt(i, 10)][extraLabel as keyof DataEntry] as string,
-          plotHeight + (index + 1) * 15,
-          plotWidth,
-          this.margin,
-          10
-        );
-      });
+      if (this.simpleLabel) {
+        this.plotLabelExtraFields.forEach(
+          (extraLabel: string, index: number) => {
+            // check if the label exists in the outer object or in scores
+            let tmpLabel = '';
+            if (Object.keys(results[parseInt(i, 10)]).includes(extraLabel)) {
+              tmpLabel = results[parseInt(i, 10)][
+                extraLabel as keyof DataEntry
+              ] as string;
+            } else {
+              // then possibly it is a score
+              const scores = results[parseInt(i, 10)].scores.filter(
+                d => d.scoreName === extraLabel
+              );
+              tmpLabel =
+                scores.length > 0 ? scores[0].scoreValue.toString() : '';
+            }
 
+            this.addLabel(
+              g,
+              tmpLabel,
+              plotHeight + (index + 1) * 15,
+              plotWidth,
+              this.margin,
+              10
+            );
+          }
+        );
+      }
       oControl.addSelectionBoundingBox(
         g,
         plotWidth,
@@ -325,19 +343,20 @@ export class BiowcViolinplot extends LitElement {
       .style('font-size', this.fontSize)
       .text(this.yAxisLabel);
 
-    this.plotLabelExtraFields.forEach((extraLabel: string, index: number) => {
-      svg
-        .append('text')
-        .attr('text-anchor', 'end')
-        .attr('x', this.margin.left)
-        .attr('y', plotHeight + (index + 1) * 15 - this.margin.bottom + 10)
-        .text(extraLabel)
-        .style('text-anchor', 'end')
-        .style('text-align', 'right')
-        .style('font-family', this.fontFamily)
-        .style('font-size', this.fontSize);
-    });
-
+    if (this.simpleLabel) {
+      this.plotLabelExtraFields.forEach((extraLabel: string, index: number) => {
+        svg
+          .append('text')
+          .attr('text-anchor', 'end')
+          .attr('x', this.margin.left)
+          .attr('y', plotHeight + (index + 1) * 15 - this.margin.bottom + 10)
+          .text(extraLabel)
+          .style('text-anchor', 'end')
+          .style('text-align', 'right')
+          .style('font-family', this.fontFamily)
+          .style('font-size', this.fontSize);
+      });
+    }
     if (oControl.selectedElement) {
       oControl.selectElement(oControl.selectedElement);
     }

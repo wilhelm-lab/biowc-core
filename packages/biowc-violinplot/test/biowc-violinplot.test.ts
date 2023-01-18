@@ -7,7 +7,6 @@ import ViolinPlotFixture from './fixtures/ViolinPlotFixture.js';
 describe('BiowcViolinplot', async () => {
   const violinplot = await fixture<BiowcViolinplot>(
     html` <biowc-violinplot
-      .plotLabelValueCatds="${ViolinPlotFixture.violinPlot.plotLabelValueCatds}"
       .chartData="${ViolinPlotFixture.violinPlot.chartData}"
     />`
   );
