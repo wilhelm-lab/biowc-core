@@ -74,7 +74,10 @@ describe('BiowcHistogram', async () => {
   });
 
   it('has 3 bars higher than 0', async () => {
-    const bars = histogram.shadowRoot!.querySelectorAll('rect');
+    const bars =
+      histogram.shadowRoot!.querySelectorAll<SVGRectElement>(
+        'rect.histogramBar'
+      );
     const visibleBars = Array.from(bars).filter(
       rect => rect.height.baseVal.value > 0
     );
@@ -82,7 +85,10 @@ describe('BiowcHistogram', async () => {
   });
 
   it('has max bar height double the height of the min bar height higher than 0', async () => {
-    const bars = histogram.shadowRoot!.querySelectorAll('rect');
+    const bars =
+      histogram.shadowRoot!.querySelectorAll<SVGRectElement>(
+        'rect.histogramBar'
+      );
     const visibleBars = Array.from(bars).filter(
       rect => rect.height.baseVal.value > 0
     );
@@ -91,6 +97,11 @@ describe('BiowcHistogram', async () => {
     const minBars = Math.min(...valueBars);
     const ratioBars = maxBars / minBars;
     expect(ratioBars).to.be.closeTo(2, 0.001);
+  });
+
+  it('does not show a modal warning box if NaN values are absent', async () => {
+    const modalboxes = histogram.shadowRoot!.querySelectorAll('.modalBox');
+    expect(modalboxes.length).to.equal(0);
   });
 
   const naHistogram = await fixture<BiowcHistogram>(
@@ -104,7 +115,10 @@ describe('BiowcHistogram', async () => {
   );
 
   it('has 2 bars higher than 0 for naHistogram fixture', async () => {
-    const bars = naHistogram.shadowRoot!.querySelectorAll('rect');
+    const bars =
+      naHistogram.shadowRoot!.querySelectorAll<SVGRectElement>(
+        'rect.histogramBar'
+      );
     const visibleBars = Array.from(bars).filter(
       rect => rect.height.baseVal.value > 0
     );
@@ -116,6 +130,13 @@ describe('BiowcHistogram', async () => {
     const extractedValues = naHistogram._extractValues() as number[]; // accessing private function: https://stackoverflow.com/questions/35987055/how-to-write-unit-testing-for-angular-typescript-for-private-methods-with-jasm
     const nanCount = extractedValues.filter(x => Number.isNaN(x)).length;
     expect(nanCount).to.equal(3);
+  });
+
+  it('shows a modal warning box if NaN values are present', async () => {
+    const modalbox = naHistogram.shadowRoot!.querySelector(
+      '.modalBox'
+    ) as HTMLElement;
+    expect(modalbox!.style.opacity).to.equal('0.9');
   });
 
   const kdeHistogram = await fixture<BiowcHistogram>(

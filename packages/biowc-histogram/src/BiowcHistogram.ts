@@ -216,6 +216,44 @@ export class BiowcHistogram extends LitElement {
       .attr('d', line);
   }
 
+  private _addModalBox(
+    htmlElement: string,
+    mainDiv: d3v6.Selection<d3v6.BaseType, unknown, HTMLElement, any>
+  ) {
+    // Add the modalBox container to the vis container
+    // it's invisible and its position/contents are defined during mouseover
+    const modalBox = mainDiv
+      .append('div')
+      .attr('class', 'modalBox')
+      .html(htmlElement)
+      .style('opacity', 0.9)
+      .style('background-color', 'black')
+      .style('color', 'white')
+      .style('border-radius', '5px')
+      .style('padding', '10px')
+      .style('margin-left', `${this.margin.left + 10}px`)
+      .style('margin-top', `${this.margin.top}px`);
+
+    const closeButtonMouseClick = () => {
+      modalBox
+        .transition()
+        .duration(300) // ms
+        .style('opacity', 0); // don't care about position!
+    };
+
+    // add close button
+    modalBox
+      .append('rect')
+      .style('background-color', 'red')
+      .style('border-radius', '2px')
+      .style('padding', '2px')
+      .text('X')
+      .style('margin-left', '8px')
+      .attr('font-family', 'sans-serif')
+      .style('cursor', 'pointer')
+      .on('click', closeButtonMouseClick);
+  }
+
   private _plotHistogram() {
     // set the dimensions and margins of the graph
     const { margin } = this;
@@ -237,7 +275,11 @@ export class BiowcHistogram extends LitElement {
     const data = this._extractValues();
 
     // count number of NaN to report in messagebox
-    // const nanCount = data.filter(x => Number.isNaN(x)).length
+    const nanCount = data.filter(x => Number.isNaN(x)).length;
+    if (nanCount > 0) {
+      const message = `${nanCount} NaN entries found in dataset`;
+      this._addModalBox(message, mainDiv);
+    }
 
     // X axis: scale and draw:
     const xAxis = this._drawXaxis(data, svg, plotWidth, plotHeight);
@@ -264,48 +306,12 @@ export class BiowcHistogram extends LitElement {
     // tooltip mouseover event handler
     const [tipMouseover, tipMouseout] = this._addTooltip(mainDiv);
 
-    /*
-
-    // Add the modalBox container to the vis container
-    // it's invisible and its position/contents are defined during mouseover
-    const modalBox = mainDiv
-      .append('div')
-      .attr('class', 'modalBox')
-      .style('opacity', 0)
-      .style('background-color', 'black')
-      .style('color', 'white')
-      .style('border-radius', '5px')
-      .style('padding', '10px');
-
-
-    if(nanCount > 0) {
-      const htmlElement = `<br><br>${nanCount} NaN entries found in dataset`
-      modalBox
-        .html(htmlElement)
-        .style('opacity', 0.9); // started as 0
-    }
-
-    const boxMouseclick = () => {
-      modalBox
-        .transition()
-        .duration(300) // ms
-        .style('opacity', 0); // don't care about position!
-    };
-
-    modalBox
-      .append('rect')
-      .text('X')
-      // .attr("y", 100)
-      // .attr("fill", "red")
-      .on('click', boxMouseclick)
-
-*/
-
     // append the bar rectangles to the svg element
     svg
       .selectAll('rect')
       .data(bins)
       .join('rect')
+      .attr('class', 'histogramBar')
       .attr('x', 1)
       .attr(
         'transform',

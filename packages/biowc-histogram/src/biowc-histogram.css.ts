@@ -25,7 +25,6 @@ export default css`
     font-size: 12px;
     width: auto;
     height: auto;
-    pointer-events: none;
     background-color: white;
   }
 `;
