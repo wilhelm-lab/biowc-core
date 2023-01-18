@@ -47,8 +47,20 @@ export class BiowcLineplot extends LitElement {
 
   curvePoints: number[][][] = [];
 
+  minX!: number;
+
+  maxX!: number;
+
+  minY!: number;
+
+  maxY!: number;
+
+  // The D3 axes will exceed the width & height a bit, so we define a hard-coded margin
+  // https://gist.github.com/mbostock/3019563
+  margin = { top: 20, right: 20, bottom: 20, left: 20 };
+
   render() {
-    return html`<div id="lineplot"></div>`;
+    return html` <div id="lineplot"></div>`;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
@@ -61,10 +73,63 @@ export class BiowcLineplot extends LitElement {
       this.curvePoints.push(this.calculateCurvePoints(curveFunction));
     }
     this.createAxes();
+    this._initializeTooltip();
+    this._initializeAuxiliaryLines();
     this._plotDots();
     this._plotCurves();
 
     super.firstUpdated(_changedProperties);
+  }
+
+  private _initializeTooltip() {
+    this._getMainDiv()
+      .append('div')
+      .attr('id', 'tooltip')
+      .attr('class', 'tooltip')
+      .style('opacity', 0);
+  }
+
+  private _showTooltip(e: MouseEvent, coordinates: { x: string; y: string }) {
+    this._getMainDiv()
+      .select('#tooltip')
+      .html(`<p>x=${coordinates.x}, y=${coordinates.y}</p>`)
+      .style('left', `${e.pageX + 10}px`)
+      .style('top', `${e.pageY - 10}px`)
+      .transition()
+      .duration(100) // ms
+      .style('opacity', 0.9); // started as 0!
+  }
+
+  private _hideTooltip() {
+    this._getMainDiv()
+      .select('#tooltip')
+      .transition()
+      .duration(100) // ms
+      .style('opacity', 0);
+  }
+
+  private _initializeAuxiliaryLines() {
+    const auxiliaryLines = this._getMainDiv()
+      .select('#svgGroupElement')
+      .append('g');
+
+    auxiliaryLines
+      .append('line')
+      .attr('id', 'auxiliaryHorizontalLine')
+      .attr('x1', this.svgXAxis(this.minX))
+      .attr('stroke', 'black')
+      .attr('stroke-width', 1.5)
+      .attr('stroke-dasharray', '3 2')
+      .style('opacity', 0);
+
+    auxiliaryLines
+      .append('line')
+      .attr('id', 'auxiliaryVerticalLine')
+      .attr('y1', this.svgYAxis(this.minY))
+      .attr('stroke', 'black')
+      .attr('stroke-width', 1.5)
+      .attr('stroke-dasharray', '3 2')
+      .style('opacity', 0);
   }
 
   private _getMainDiv() {
@@ -74,12 +139,10 @@ export class BiowcLineplot extends LitElement {
   }
 
   private createAxes() {
-    // The D3 axes will exceed the width & height a bit, so we define a hard-coded margin
-    // https://gist.github.com/mbostock/3019563
-    const margin = { top: 20, right: 20, bottom: 20, left: 20 };
-
-    const widthRelativeToMargin = this.width - margin.left - margin.right;
-    const heightRelativeToMargin = this.height - margin.top - margin.bottom;
+    const widthRelativeToMargin =
+      this.width - this.margin.left - this.margin.right;
+    const heightRelativeToMargin =
+      this.height - this.margin.top - this.margin.bottom;
 
     const mainDiv = this._getMainDiv();
 
@@ -89,7 +152,7 @@ export class BiowcLineplot extends LitElement {
       .attr('width', this.width)
       .attr('height', this.height)
       .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`)
+      .attr('transform', `translate(${this.margin.left},${this.margin.top})`)
       .attr('id', 'svgGroupElement');
 
     const allXValues = [
@@ -125,14 +188,14 @@ export class BiowcLineplot extends LitElement {
     ];
 
     // Add x and y axis
-    const minX = Math.min(...allXValues);
-    const maxX = Math.max(...allXValues);
-    const minY = Math.min(...allYValues);
-    const maxY = Math.max(...allYValues);
+    this.minX = Math.min(...allXValues);
+    this.maxX = Math.max(...allXValues);
+    this.minY = Math.min(...allYValues);
+    this.maxY = Math.max(...allYValues);
 
     this.svgXAxis = d3v6
       .scaleLinear()
-      .domain([minX, maxX])
+      .domain([this.minX, this.maxX])
       .range([0, widthRelativeToMargin]);
 
     svg
@@ -142,7 +205,7 @@ export class BiowcLineplot extends LitElement {
 
     this.svgYAxis = d3v6
       .scaleLinear()
-      .domain([minY, maxY])
+      .domain([this.minY, this.maxY])
       .range([heightRelativeToMargin, 0]);
 
     svg.append('g').call(d3v6.axisLeft(this.svgYAxis));
@@ -152,29 +215,6 @@ export class BiowcLineplot extends LitElement {
     const mainDiv = this._getMainDiv();
 
     const svg = mainDiv.select('#svgGroupElement');
-
-    // Define tooltip
-    const tooltip = mainDiv
-      .append('div')
-      .attr('class', 'tooltip')
-      .style('opacity', 0);
-
-    // Define tooltip event handlers
-    const showTooltip = (e: MouseEvent, d: number[]) => {
-      tooltip
-        .html(`<p>x=${d[0]}, y=${d[1]}</p>`)
-        .style('left', `${e.pageX + 10}px`)
-        .style('top', `${e.pageY - 10}px`)
-        .transition()
-        .duration(100) // ms
-        .style('opacity', 0.9); // started as 0!
-    };
-    const hideTooltip = () => {
-      tooltip
-        .transition()
-        .duration(100) // ms
-        .style('opacity', 0);
-    };
 
     // Add dots
     const dotlistGroup = svg.append('g').attr('id', 'dotlistGroup');
@@ -195,8 +235,13 @@ export class BiowcLineplot extends LitElement {
         .attr('r', 4)
         // .style('fill', colors(i))
         .style('fill', d3v6.schemeSet2[i])
-        .on('mousemove', showTooltip)
-        .on('mouseout', hideTooltip);
+        .on('mousemove', (e, d) =>
+          this._showTooltip(e, {
+            x: d[0].toPrecision(4),
+            y: d[1].toPrecision(4),
+          })
+        )
+        .on('mouseout', this._hideTooltip);
 
       // Connect dots with a line
       dotlistGroup
@@ -233,15 +278,66 @@ export class BiowcLineplot extends LitElement {
       .x(d => this.svgXAxis(d[0]))
       .y(d => this.svgYAxis(d[1]));
 
-    for (let i = 0; i < this.curvePoints.length; i += 1) {
+    const plotCurve = (
+      datum: number[][],
+      strokeWidth: number,
+      strokeColor: string
+    ) =>
       curveGroup
         .append('path')
         .attr('class', 'curvePath')
-        .datum(this.curvePoints[i])
-        .attr('stroke-width', 1.5)
+        .datum(datum)
+        .attr('stroke-width', strokeWidth)
         .attr('d', line as ValueFn<SVGPathElement, number[][], null>)
-        .style('stroke', d3v6.schemeSet2[i])
+        .style('stroke', strokeColor)
         .style('fill', 'none');
+
+    for (let i = 0; i < this.curvePoints.length; i += 1) {
+      // Add actual curve
+      plotCurve(this.curvePoints[i], 1.5, d3v6.schemeSet2[i]);
+      // Add thicker invisible curve - for better mouseover functionality
+      const invisibleCurve = plotCurve(
+        this.curvePoints[i],
+        10,
+        d3v6.schemeSet2[i]
+      );
+      invisibleCurve
+        .style('opacity', 0)
+        // Add mouseevent to invisible curve
+        .on('mousemove', e => {
+          const xValue = this.svgXAxis.invert(e.clientX - this.margin.left);
+          const yValue = this.curveFunctions[i](xValue);
+          // Get auxiliary lines, update their positions, and make them visible
+          this._getMainDiv()
+            .select('#auxiliaryHorizontalLine')
+            .attr('x2', this.svgXAxis(xValue))
+            .attr('y1', this.svgYAxis(yValue))
+            .attr('y2', this.svgYAxis(yValue))
+            .style('opacity', 1);
+
+          this._getMainDiv()
+            .select('#auxiliaryVerticalLine')
+            .attr('x1', this.svgXAxis(xValue))
+            .attr('x2', this.svgXAxis(xValue))
+            .attr('y2', this.svgYAxis(yValue))
+            .style('opacity', 1);
+
+          this._showTooltip(e, {
+            x: xValue.toPrecision(4),
+            y: yValue.toPrecision(4),
+          });
+        })
+        .on('mouseout', () => {
+          this._getMainDiv()
+            .select('#auxiliaryHorizontalLine')
+            .style('opacity', 0);
+
+          this._getMainDiv()
+            .select('#auxiliaryVerticalLine')
+            .style('opacity', 0);
+
+          this._hideTooltip();
+        });
     }
   }
 
