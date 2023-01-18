@@ -118,6 +118,32 @@ describe('BiowcHistogram', async () => {
     expect(nanCount).to.equal(3);
   });
 
+  const kdeHistogram = await fixture<BiowcHistogram>(
+    html` <biowc-histogram
+      .idKey="${HistogramFixture.kdeHistogram.idKey}"
+      .valueKey="${HistogramFixture.kdeHistogram.valueKey}"
+      .xLabel="${HistogramFixture.kdeHistogram.xLabel}"
+      .yLabel="${HistogramFixture.kdeHistogram.yLabel}"
+      .xValues="${HistogramFixture.kdeHistogram.xValues}"
+      .plotKDE="${HistogramFixture.kdeHistogram.plotKDE}"
+    />`
+  );
+
+  it('has element path for plotKDE=true', async () => {
+    const paths = kdeHistogram.shadowRoot!.querySelectorAll('.kdePath');
+    expect(paths.length).to.equal(1);
+  });
+
+  it('has kde path that covers the entire x axis range', async () => {
+    const path = kdeHistogram.shadowRoot!.querySelector('.kdePath');
+
+    // for some reason this doesn't work:
+    // expect(path!.getBoundingClientRect().width).to.equal("370")
+
+    expect(path!.getAttribute('d')!).to.contain('M0,'); // path starts at X=0
+    expect(path!.getAttribute('d')!).to.contain('L370,'); // path ends at X=370 (width - margin.left - margin.right)
+  });
+
   it('renders an invisible tooltip at first', async () => {
     const tooltip = histogram.shadowRoot!.querySelector(
       '.tooltip'

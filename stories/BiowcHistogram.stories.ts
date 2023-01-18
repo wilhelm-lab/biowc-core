@@ -14,6 +14,7 @@ export default {
     xValues: { control: 'object' },
     barColor: { control: 'text'},
     numBins: { control: 'number'},
+    plotKDE: { control: 'boolean'}
   },
 };
 
@@ -34,6 +35,7 @@ const Template: Story<ArgTypes> = (args: ArgTypes) => html`
     .xValues="${args.xValues}"
     .barColor="${args.barColor}"
     .numBins="${args.numBins}"
+    .plotKDE="${args.plotKDE}"
   >
   </biowc-histogram>
 `;
@@ -63,6 +65,9 @@ CustomData.args = {
     { 'Sample name': 'sample3', abundance: 2 },
   ],
 };
+
+export const PlotKDE = Template.bind({});
+PlotKDE.args = HistogramFixture.kdeHistogram;
 
 export const LargeHistogram = Template.bind({});
 LargeHistogram.args = HistogramFixture.largeHistogram;

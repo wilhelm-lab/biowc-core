@@ -38,6 +38,9 @@ export class BiowcHistogram extends LitElement {
   @property({ attribute: false })
   margin = { top: 10, right: 30, bottom: 30, left: 60 };
 
+  @property({ attribute: false })
+  plotKDE: boolean = false;
+
   render(): HTMLTemplateResult {
     return html` <div style="display: flex">
       <div id="histogram"></div>
@@ -170,6 +173,49 @@ export class BiowcHistogram extends LitElement {
     return [tipMouseover, tipMouseout];
   }
 
+  private static _kde(
+    kernel: any,
+    thresholds: number[],
+    data: number[],
+    bandwidth: number
+  ): [number, number][] {
+    const binWidth = thresholds[1] - thresholds[0];
+    return thresholds.map(t => [
+      t,
+      d3v6.sum(data, d => kernel((t - d) / bandwidth) / bandwidth) * binWidth,
+    ]);
+  }
+
+  private static _epanechnikov() {
+    return (x: number) => (Math.abs(x) <= 1 ? 0.75 * (1 - x * x) : 0);
+  }
+
+  private static _plotKDE(
+    svg: d3v6.Selection<SVGGElement, unknown, HTMLElement, any>,
+    density: [number, number][],
+    xAxis: d3v6.ScaleLinear<number, number, never>,
+    yAxis: d3v6.ScaleLinear<number, number, never>,
+    stroke = '#000',
+    dasharray = '1 0'
+  ) {
+    const line = d3v6
+      .line()
+      .curve(d3v6.curveBasis)
+      .x(d => xAxis(d[0]))
+      .y(d => yAxis(d[1]));
+
+    svg
+      .append('path')
+      .attr('class', 'kdePath')
+      .datum(density)
+      .attr('fill', 'none')
+      .attr('stroke', stroke)
+      .attr('stroke-dasharray', dasharray)
+      .attr('stroke-width', 1.5)
+      .attr('stroke-linejoin', 'round')
+      .attr('d', line);
+  }
+
   private _plotHistogram() {
     // set the dimensions and margins of the graph
     const { margin } = this;
@@ -196,17 +242,16 @@ export class BiowcHistogram extends LitElement {
     // X axis: scale and draw:
     const xAxis = this._drawXaxis(data, svg, plotWidth, plotHeight);
 
+    const minX = d3v6.min(data) || 0;
+    const maxX = d3v6.max(data) || 0;
+    const binWidth = (maxX - minX) / this.numBins;
+    const thresholds = d3v6.range(minX, maxX, binWidth);
+
     // set the parameters for the histogram
     const histogram = d3v6
       .bin()
       .domain(xAxis.domain() as [number, number]) // then the domain of the graphic
-      .thresholds(
-        d3v6.range(
-          d3v6.min(data) || 0,
-          d3v6.max(data) || 0,
-          ((d3v6.max(data) || 0) - (d3v6.min(data) || 0)) / this.numBins
-        )
-      ); // then the numbers of bins
+      .thresholds(thresholds);
 
     // And apply this function to data to get the bins
     const bins = histogram(data);
@@ -271,5 +316,21 @@ export class BiowcHistogram extends LitElement {
       .style('fill', this.barColor)
       .on('mousemove', tipMouseover)
       .on('mouseout', tipMouseout);
+
+    if (this.plotKDE) {
+      // Kernel density estimate graph
+      const bandwidth = binWidth * 2;
+      const density = BiowcHistogram._kde(
+        BiowcHistogram._epanechnikov(),
+        thresholds.concat([maxX]), // add right hand side of last bin as extra evaluation point
+        data,
+        bandwidth
+      );
+      // Scale the range of the data in the y domain
+      const maxDensity = d3v6.max(density.map(d => d[1])) || 0;
+      yAxis.domain([0, maxDensity * 1.1]);
+
+      BiowcHistogram._plotKDE(svg, density, xAxis, yAxis);
+    }
   }
 }

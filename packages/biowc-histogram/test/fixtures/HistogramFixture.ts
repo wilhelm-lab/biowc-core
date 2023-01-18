@@ -29,6 +29,23 @@ export default {
     barColor: '#69b3a2',
     numBins: 30,
   },
+  kdeHistogram: {
+    idKey: 'Sample name',
+    valueKey: 'abundance',
+    xLabel: 'abundance Gene_X',
+    xValues: [
+      { 'Sample name': 'sample1', abundance: 1.0 },
+      { 'Sample name': 'sample2', abundance: 3.0 },
+      { 'Sample name': 'sample3', abundance: 3.0 },
+      { 'Sample name': 'sampleNaN', abundance: NaN },
+      { 'Sample name': 'sampleNull', abundance: null },
+      { 'Sample name': 'sample_', abundance: '' },
+    ],
+    yLabel: 'counts',
+    barColor: '#69b3a2',
+    numBins: 30,
+    plotKDE: true,
+  },
   largeHistogram: {
     idKey: 'Sample name',
     valueKey: 'abundance',
