@@ -6,9 +6,7 @@ import * as d3 from 'd3';
 import styles from './biowc-barplot.css';
 
 // try
-// fix css
 // make data more generic (and simpler)
-// deal with interactivity
 // add colors?
 // clean code
 
@@ -55,7 +53,7 @@ export class BiowcBarplot extends LitElement {
   selectedModelIds: number[] = [];
 
   @property({ attribute: false })
-  sSelectedModelIds: any = undefined;
+  sSelectedModelIds: string = '';
 
   // @property({ attribute: false }) title: string = "";
   @property({ attribute: false })
@@ -85,11 +83,9 @@ export class BiowcBarplot extends LitElement {
     `;
   }
 
-  private onModelSelected(obj: any) {
+  private onSelect() {
     const selectEvent = new CustomEvent('send-message', {
-      detail: {
-        selectedModelId: obj,
-      },
+      detail: { sSelectedModelIds: this.selectedModelIds.join(';') },
     });
     this.dispatchEvent(selectEvent);
   }
@@ -100,13 +96,12 @@ export class BiowcBarplot extends LitElement {
 
   clearSelectedBars() {
     this.clearSelectedModelIds();
-    d3.selectAll('.Bar').attr('class', 'Bar');
-    d3.selectAll('.BackgroundBar').attr('class', 'BackgroundBar');
+    this._getMainDiv().selectAll('.Bar').attr('class', 'Bar');
+    this._getMainDiv()
+      .selectAll('.BackgroundBar')
+      .attr('class', 'BackgroundBar');
 
-    this.onModelSelected({
-      AttributeType: this.data.attributeType,
-      SelectedModelIds: this.selectedModelIds,
-    });
+    this.onSelect();
   }
 
   private _getMainDiv() {
@@ -120,27 +115,12 @@ export class BiowcBarplot extends LitElement {
 
     this.clearSelectedModelIds();
 
-    // eslint-disable-next-line no-param-reassign
-    oData.data = oData.data.sort((a, b) => b.value - a.value);
-
     const margin = {
       top: 60,
       right: 230,
       bottom: 120,
       left: 50,
     };
-
-    /*
-    oData.data
-      .map((e) =>
-        e.modelId.toString().split(';')
-      )
-      .reduce((prev, next) => prev.concat(next), []);
-*/
-
-    const bSameDrug = true;
-
-    const bSameCellLine = true;
 
     const height = this.minHeight - margin.top - margin.bottom;
     const width = Math.max(
@@ -154,8 +134,6 @@ export class BiowcBarplot extends LitElement {
       .attr('class', 'BarContainer')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom);
-
-    //    this.svg = svg;
 
     //  legend
     svg.append('g');
@@ -214,7 +192,7 @@ export class BiowcBarplot extends LitElement {
       .attr('class', () => 'BackgroundBar')
       .attr('height', height)
       .attr('width', this.barWidth - 1)
-      .attr('ModelId', d => d.modelId);
+      .attr('modelId', d => d.modelId);
 
     // store bars in chartObjects
     bar
@@ -234,7 +212,7 @@ export class BiowcBarplot extends LitElement {
         }
         return y(d.value);
       })
-      .attr('ModelId', d => d.modelId);
+      .attr('modelId', d => d.modelId);
 
     bar
       .append('a')
@@ -249,10 +227,7 @@ export class BiowcBarplot extends LitElement {
         if (d.dataset) {
           return d.dataset; // FIXME
         }
-        let labelText = !bSameDrug ? d.drug : '';
-        labelText += !bSameDrug && !bSameCellLine ? ' : ' : '';
-        labelText += !bSameCellLine ? d.cellLine : '';
-        return labelText;
+        return `${d.drug}: ${d.cellLine}`;
       });
     // clickBar
     const barRect = bar
@@ -261,7 +236,7 @@ export class BiowcBarplot extends LitElement {
       .attr('id', (d, i) => `ClickTipsy-${i}`)
       .attr('height', height)
       .attr('width', this.barWidth - 1)
-      .attr('ModelId', d => d.modelId)
+      .attr('modelId', d => d.modelId)
       .on('mouseover', function () {
         d3.select(this).style('cursor', 'pointer');
         d3.select(this).attr('class', 'ClickBar Highlight');
@@ -272,63 +247,64 @@ export class BiowcBarplot extends LitElement {
       });
 
     function onBarClick(f: IContent) {
-      const oSelectedModelIds = that.selectedModelIds;
-      if (oSelectedModelIds) {
-        let aSelectedModelIds = oSelectedModelIds;
-        if (
-          aSelectedModelIds.some(
-            (modelIdsEntry: number) => modelIdsEntry === f.modelId
-          )
-        ) {
-          d3.selectAll('.Bar')
-            .filter((e: any) => e.ModelId === f.modelId)
+      const div = that._getMainDiv();
+      if (that.selectedModelIds) {
+        if (that.selectedModelIds.some((id: number) => id === f.modelId)) {
+          div
+            .selectAll('.Bar')
+            .filter((e: any) => e.modelId === f.modelId)
             .attr('class', 'Bar');
-
-          d3.selectAll('.BackgroundBar')
-            .filter((e: any) => e.ModelId === f.modelId)
+          div
+            .selectAll('.BackgroundBar')
+            .filter((e: any) => e.modelId === f.modelId)
             .attr('class', 'BackgroundBar');
-
-          that.selectedModelIds.filter(e => e !== f.modelId);
+          that.selectedModelIds = that.selectedModelIds.filter(
+            e => e !== f.modelId
+          );
+        } else if (that.multiSelection) {
+          div
+            .selectAll('.Bar')
+            .filter((e: any) => e.modelId === f.modelId)
+            .attr('class', 'Bar BetterValue');
+          div
+            .selectAll('.BackgroundBar')
+            .filter((e: any) => e.modelId === f.modelId)
+            .attr('class', 'BackgroundBar Highlight');
+          that.selectedModelIds.push(f.modelId);
         } else {
-          if (that.multiSelection) {
-            d3.selectAll('.Bar')
-              .filter((e: any) => e.ModelId === f.modelId)
-              .attr('class', 'Bar BetterValue');
-
-            d3.selectAll('.BackgroundBar')
-              .filter((e: any) => e.ModelId === f.modelId)
-              .attr('class', 'BackgroundBar Highlight');
-
-            aSelectedModelIds.push(f.modelId);
-          } else {
-            // first deselect
-            d3.selectAll('.Bar').attr('class', 'Bar');
-            d3.selectAll('.BackgroundBar').attr('class', 'BackgroundBar');
-            // then select the new one and set it as single element array
-            d3.selectAll('.Bar')
-              .filter((e: any) => e.modelId === f.modelId)
-              .attr('class', 'Bar BetterValue');
-            d3.selectAll('.BackgroundBar')
-              .filter((e: any) => e.modelId === f.modelId)
-              .attr('class', 'BackgroundBar Highlight');
-            aSelectedModelIds = [f.modelId];
-          }
-          that.selectedModelIds = aSelectedModelIds;
+          // first deselect
+          div.selectAll('.Bar').attr('class', 'Bar');
+          div.selectAll('.BackgroundBar').attr('class', 'BackgroundBar');
+          // then select the new one and set it as single element array
+          div
+            .selectAll('.Bar')
+            .filter((e: any) => e.modelId === f.modelId)
+            .attr('class', 'Bar BetterValue');
+          div
+            .selectAll('.BackgroundBar')
+            .filter((e: any) => e.modelId === f.modelId)
+            .attr('class', 'BackgroundBar Highlight');
+          that.selectedModelIds = [f.modelId];
         }
       } else {
-        d3.selectAll('.Bar')
-          .filter((e: any) => e.ModelId === f.modelId)
+        div
+          .selectAll('.Bar')
+          .filter((e: any) => e.modelId === f.modelId)
           .attr('class', 'Bar BetterValue');
-        d3.selectAll('.BackgroundBar')
-          .filter((e: any) => e.ModelId === f.modelId)
+        div
+          .selectAll('.BackgroundBar')
+          .filter((e: any) => e.modelId === f.modelId)
           .attr('class', 'BackgroundBar Highlight');
         that.selectedModelIds = [f.modelId];
       }
 
+      that.onSelect();
+      /*
       that.onModelSelected({
-        AttributeType: oData.attributeType,
+        // AttributeType: oData.attributeType,
         SelectedModelIds: that.selectedModelIds,
       });
+       */
     }
 
     // TPS Explorer uses d3v6, ProteomicsDB uses D3v5. This if/else makes the component compatible with both
@@ -506,11 +482,16 @@ export class BiowcBarplot extends LitElement {
    */
 
   protected firstUpdated(_changedProperties: PropertyValues) {
+    this.drawPlot(this.data);
+    super.firstUpdated(_changedProperties);
+  }
+
+  protected updated(_changedProperties: PropertyValues) {
     _changedProperties.forEach((oldValue, propName) => {
       if (propName === 'data') {
         this.drawPlot(this.data);
       } else if (propName === 'selectedModelIds') {
-        this.sSelectedModelIds = oldValue;
+        // this.sSelectedModelIds = oldValue;
       }
     });
   }
