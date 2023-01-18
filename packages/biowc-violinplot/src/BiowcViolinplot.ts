@@ -7,18 +7,15 @@ import styles from './biowc-violinplot.css';
 import '../../../download-button/dist/src/download-button.js';
 
 type ExpressionData = {
-  PROTEIN_ID: number;
-  GENE_NAME: string;
-  VALUE: number;
-  STD_ERROR: number;
-  COD: number;
-  BIC: number;
+  proteinId: number;
+  geneName: string;
+  value: number;
 };
 
 type DataEntry = {
-  DRUG_ID: number;
-  TREATMENT: string;
-  catds: number;
+  idKey: number;
+  sampleName: string;
+  score: number;
   data: ExpressionData[];
 };
 
@@ -47,30 +44,27 @@ export class BiowcViolinplot extends LitElement {
   @property({ attribute: false })
   chartData: DataEntry[] = [
     {
-      DRUG_ID: NaN,
-      TREATMENT: '',
-      catds: NaN,
+      idKey: NaN,
+      sampleName: '',
+      score: NaN,
       data: [
         {
-          PROTEIN_ID: NaN,
-          GENE_NAME: '',
-          VALUE: NaN,
-          STD_ERROR: NaN,
-          COD: NaN,
-          BIC: NaN,
+          proteinId: NaN,
+          geneName: '',
+          value: NaN,
         },
       ],
     },
   ];
 
   @property({ attribute: false })
-  propertyPath: string = 'PROTEIN_ID';
+  propertyPath: string = 'proteinId';
 
   @property({ attribute: false })
   dataPath: string = 'data';
 
   @property({ attribute: false })
-  valuePath: string = 'VALUE';
+  valuePath: string = 'value';
 
   @property({ attribute: false })
   fontFamily: string = 'Arial,Helvetica,sans-serif';
@@ -85,7 +79,7 @@ export class BiowcViolinplot extends LitElement {
   selectedElement: string = '';
 
   @property({ attribute: false })
-  plotLabelValueDrug: string = 'TREATMENT';
+  plotLabelValueDrug: string = 'sampleName';
 
   @property({ attribute: false })
   plotLabelValueCatds: string = '';
@@ -97,7 +91,7 @@ export class BiowcViolinplot extends LitElement {
   simpleLabel: boolean = false;
 
   @property({ attribute: false })
-  keyValue: string = 'DRUG_ID';
+  keyValue: string = 'idKey';
 
   @property({ attribute: false })
   clippedSelectionLine: boolean = false;
