@@ -235,25 +235,41 @@ export class BiowcSwarmplot extends LitElement {
   //   }
   // }
 
-  // mouseHover (fieldName: string, fieldOfTable: string, tooltip: any, xLine: any) {
-  //   const nominalField: string = fieldName
-  //   d3.selectAll('.names').on('mousemove', function (d) {
-  //     tooltip.html(`<strong>${d.target.__data__[nominalField]}</strong><br>
-  //     ${d.target.__data__[fieldOfTable]}`)
-  //       .style('top', (d.pageY - 50) + 'px')
-  //       .style('left', (d.pageX) + 'px')
-  //       .style('opacity', 0.9)
-  //     xLine.attr('x1', d3.select(this).attr('cx'))
-  //       .attr('y1', d3.select(this).attr('cy'))
-  //       .attr('y2', d3.select(this).attr('cy'))
-  //       .attr('x2', 0)
-  //       .attr('opacity', 1)
-  //   }).on('mouseout', function () {
-  //     // console.log(_.target.__data__[fieldOfTable])
-  //     tooltip.style('opacity', 0)
-  //     xLine.attr('opacity', 0)
-  //   })
-  // }
+  mouseHover(
+    fieldName: string,
+    fieldOfTable: string,
+    tooltip: any,
+    xLine: any
+  ) {
+    const nominalField: string = fieldName;
+    const svg = this._getMainDiv();
+    console.log(xLine);
+    svg
+      .selectAll('.names')
+      .on('mousemove', (event: any, circle: any) => {
+        console.log('hoverMouse');
+        console.log(circle);
+        console.log(event);
+        tooltip
+          .html(
+            `<strong>${circle[nominalField as keyof swarmDataType]}</strong>
+      <br> ${circle[fieldOfTable as keyof swarmDataType]}`
+          )
+          .style('top', `${event.pageY - 50}px`)
+          .style('left', `${event.pageX}px`)
+          .style('opacity', 0.9);
+        // xLine.attr('x1', event.target.attr('cx'))
+        //   .attr('y1', event.target.attr('cy'))
+        //   .attr('y2', event.target.attr('cy'))
+        //   .attr('x2', 0)
+        //   .attr('opacity', 1)
+      })
+      .on('mouseout', () => {
+        // console.log(_.target.__data__[fieldOfTable])
+        tooltip.style('opacity', 0);
+        // xLine.attr('opacity', 0)
+      });
+  }
 
   prepFunc(svg: any, margin: marginType, yScale: any) {
     svg.append('g').attr('class', 'y axis');
@@ -261,7 +277,7 @@ export class BiowcSwarmplot extends LitElement {
     svg.append('g').attr('class', 'lines');
     svg.append('g').attr('class', 'selcirc');
 
-    const titlePlot: string = `${this.swarmTitlePrefix}(${this.swarmTitle})`;
+    const titlePlot: string = `${this.swarmTitlePrefix} (${this.swarmTitle})`;
     svg
       .append('text')
       .attr('class', 'y label')
@@ -276,7 +292,7 @@ export class BiowcSwarmplot extends LitElement {
       .attr('stroke', 'rgb(96,125,139)')
       .attr('stroke-dasharray', '1,2');
 
-    const tooltip: any = svg
+    const tooltip: any = this._getMainDiv()
       .append('div')
       .attr('class', 'tooltip')
       .style('opacity', 1);
@@ -420,11 +436,11 @@ export class BiowcSwarmplot extends LitElement {
       pltobj.svg
     );
 
-    // const plotObject =
-    this.prepFunc(pltobj.svg, margin, pltobj.yScale); // {tooltip, xline}
-    // const tooltip: any = plotObject.tooltip
-    // const xLine: any = plotObject.xLine
-    // console.log(tooltip)
+    const plotObject = this.prepFunc(pltobj.svg, margin, pltobj.yScale); // {tooltip, xline}
+    const { tooltip } = plotObject;
+    const { xLine } = plotObject;
+    console.log(tooltip);
+    console.log(xLine);
     BiowcSwarmplot.simulationSwarm(
       this.swarmData,
       width,
@@ -435,7 +451,6 @@ export class BiowcSwarmplot extends LitElement {
       pltobj.yScale,
       this.fieldName
     ); // 1st simulation of the data on the plot
-    // console.log(this._getMainDiv())
-    // this.mouseHover(this.fieldName, this.fieldValues, tooltip, xLine) // at mouse hover
+    this.mouseHover(this.fieldName, this.fieldValues, tooltip, xLine); // at mouse hover
   }
 }
