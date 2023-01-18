@@ -3,6 +3,7 @@ import { property } from 'lit/decorators.js';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import * as d3 from 'd3';
 import styles from './biowc-swarmplot.css';
+import '../../../download-button/dist/src/download-button.js';
 
 type marginType = { top: number; right: number; bottom: number; left: number };
 type swarmDataType = {
@@ -57,9 +58,13 @@ export class BiowcSwarmplot extends LitElement {
   LegendY: number = 40;
 
   render(): HTMLTemplateResult {
-    return html`
+    return html` <div style="display: flex">
       <div id="swarmplot"></div>
-    </p>`;
+      <download-button
+        .svgComponent="${this}"
+        style="margin-left: 20px;"
+      ></download-button>
+    </div>`;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
@@ -71,6 +76,10 @@ export class BiowcSwarmplot extends LitElement {
     // TODO: Fix without ignore
     // @ts-ignore
     return d3.select(this.shadowRoot).select('#swarmplot');
+  }
+
+  public exportSvg() {
+    return this.shadowRoot?.querySelector('svg')?.outerHTML;
   }
 
   boxPlot(
