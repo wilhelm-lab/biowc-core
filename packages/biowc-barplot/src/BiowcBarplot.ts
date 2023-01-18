@@ -12,14 +12,10 @@ import styles from './biowc-barplot.css';
 
 interface IContent {
   modelId: number;
-  drugId: number;
-  cellLineId: number;
   value: number;
   minValue: number;
   maxValue: number;
-  drug: string;
-  cellLine: string;
-  dataset: string;
+  label: string;
 }
 
 interface IData {
@@ -45,7 +41,6 @@ export class BiowcBarplot extends LitElement {
   barWidth: number = 11;
 
   @property({ attribute: false })
-  // data: any = undefined;
   data: IData = { attributeType: '', dataset: '', data: [] };
 
   // protein selected through Dropdown
@@ -115,6 +110,9 @@ export class BiowcBarplot extends LitElement {
 
     this.clearSelectedModelIds();
 
+    // eslint-disable-next-line no-param-reassign
+    // oData.data = oData.data.sort((a, b) => b.value - a.value);
+
     const margin = {
       top: 60,
       right: 230,
@@ -144,7 +142,7 @@ export class BiowcBarplot extends LitElement {
 
     // Y-AXIS
     const minY = Number(
-      d3.min(oData.data, d => (d.minValue > 0 && d.value > 0 ? 0 : d.minValue))
+      d3.min(oData.data, d => (d.minValue > 0 ? 0 : d.minValue))
     );
 
     const maxY = Number(
@@ -223,12 +221,14 @@ export class BiowcBarplot extends LitElement {
       .attr('dy', '.75em')
       .attr('class', 'Label')
       .attr('transform', `rotate(-65 0,${height + 3})`)
-      .text(d => {
-        if (d.dataset) {
-          return d.dataset; // FIXME
-        }
-        return `${d.drug}: ${d.cellLine}`;
-      });
+      .text(
+        d =>
+          // let labelText = !bSameDrug ? d.drug : '';
+          // labelText += !bSameDrug && !bSameCellLine ? ' : ' : '';
+          // labelText += !bSameCellLine ? d.cellLine : '';
+          // return labelText;
+          d.label
+      );
     // clickBar
     const barRect = bar
       .append('rect')
@@ -471,17 +471,23 @@ export class BiowcBarplot extends LitElement {
     const aTransformation = [15, 30, 45, 60];
     return aTransformation[i];
   }
+  */
 
   deletePlot() {
-    d3.select(this.$el).selectAll('svg').remove();
+    this._getMainDiv().selectAll('svg').remove();
   }
 
+  /*
   getLegendHeight() {
     return 75;
   }
-   */
+  */
 
   protected firstUpdated(_changedProperties: PropertyValues) {
+    const oData = this.data;
+    if (!oData || !oData.data) {
+      return;
+    }
     this.drawPlot(this.data);
     super.firstUpdated(_changedProperties);
   }

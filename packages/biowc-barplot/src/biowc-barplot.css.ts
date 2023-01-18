@@ -28,7 +28,7 @@ export default css`
     fill: rgb(240, 171, 0);
     stroke: black;
     stroke-width: -1;
-    // padding: 1;
+    padding: 1px;
   }
 
   .BarContainer .ClickBar.Highlight {
