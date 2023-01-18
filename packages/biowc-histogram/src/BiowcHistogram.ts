@@ -64,7 +64,7 @@ export class BiowcHistogram extends LitElement {
     return d3v6.select(this.shadowRoot).select('#histogram');
   }
 
-  protected _extractValues() {
+  private _extractValues() {
     return this.xValues.map(entry => {
       const value = entry[this.valueKey];
       switch (typeof value) {
@@ -76,79 +76,64 @@ export class BiowcHistogram extends LitElement {
     });
   }
 
-  private _plotHistogram() {
-    // set the dimensions and margins of the graph
-    const { margin } = this;
-    const width = this.width - margin.left - margin.right;
-    const height = this.height - margin.top - margin.bottom;
-
-    const mainDiv = this._getMainDiv();
-
-    mainDiv.select('svg').remove();
-
-    // append the svg object to the body of the page
-    const svg = mainDiv
-      .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom + 30)
-      .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
-
-    const data = this._extractValues();
-
-    // count number of NaN to report in messagebox
-    // const nanCount = data.filter(x => Number.isNaN(x)).length
-
+  private _drawXaxis(
+    data: number[],
+    svg: d3v6.Selection<SVGGElement, unknown, HTMLElement, any>,
+    plotWidth: number,
+    plotHeight: number
+  ) {
     // X axis: scale and draw:
     const x = d3v6
       .scaleLinear()
       .domain(d3v6.extent(data) as [number, number]) // can use this instead of 1000 to have the max of data: d3v6.max(data, function(d) { return +d.price })
-      .range([0, width]);
+      .range([0, plotWidth]);
 
     svg
       .append('g')
-      .attr('transform', `translate(0, ${height})`)
+      .attr('transform', `translate(0, ${plotHeight})`)
       .call(d3v6.axisBottom(x));
 
     // add the x Axis label
     svg
       .append('text')
-      .attr('transform', `translate(${width / 2} ,${height + margin.top + 30})`)
+      .attr(
+        'transform',
+        `translate(${plotWidth / 2} ,${plotHeight + this.margin.top + 30})`
+      )
       .style('text-anchor', 'middle')
       .text(`${this.xLabel}`);
 
-    // set the parameters for the histogram
-    const histogram = d3v6
-      .bin()
-      .domain(x.domain() as [number, number]) // then the domain of the graphic
-      .thresholds(
-        d3v6.range(
-          d3v6.min(data) || 0,
-          d3v6.max(data) || 0,
-          ((d3v6.max(data) || 0) - (d3v6.min(data) || 0)) / this.numBins
-        )
-      ); // then the numbers of bins
+    return x;
+  }
 
-    // And apply this function to data to get the bins
-    const bins = histogram(data);
-
+  private _drawYaxis(
+    maxCount: number,
+    svg: d3v6.Selection<SVGGElement, unknown, HTMLElement, any>,
+    plotHeight: number
+  ) {
     // Y axis: scale and draw:
-    const y = d3v6.scaleLinear().range([height, 0]);
-    y.domain([0, d3v6.max(bins, d => d.length)] as [number, number]); // d3v6.hist has to be called before the Y axis obviously
+    const y = d3v6.scaleLinear().range([plotHeight, 0]);
+    y.domain([0, maxCount] as [number, number]); // d3v6.hist has to be called before the Y axis obviously
     svg.append('g').call(d3v6.axisLeft(y));
 
     // add the y Axis
     svg
       .append('text')
       .attr('transform', 'rotate(-90)')
-      .attr('y', 0 - margin.left)
-      .attr('x', 0 - height / 2)
+      .attr('y', 0 - this.margin.left)
+      .attr('x', 0 - plotHeight / 2)
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
       .text(`${this.yLabel}`);
 
-    // Add the tooltip container to the vis container
-    // it's invisible and its position/contents are defined during mouseover
+    return y;
+  }
+
+  // Add the tooltip container to the vis container
+  // it's invisible and its position/contents are defined during mouseover
+  private _addTooltip(
+    mainDiv: d3v6.Selection<d3v6.BaseType, unknown, HTMLElement, any>
+  ) {
     const tooltip = mainDiv
       .append('div')
       .attr('class', 'tooltip')
@@ -181,6 +166,58 @@ export class BiowcHistogram extends LitElement {
         .duration(300) // ms
         .style('opacity', 0); // don't care about position!
     };
+
+    return [tipMouseover, tipMouseout];
+  }
+
+  private _plotHistogram() {
+    // set the dimensions and margins of the graph
+    const { margin } = this;
+    const plotWidth = this.width - margin.left - margin.right;
+    const plotHeight = this.height - margin.top - margin.bottom;
+
+    const mainDiv = this._getMainDiv();
+
+    mainDiv.select('svg').remove();
+
+    // append the svg object to the body of the page
+    const svg = mainDiv
+      .append('svg')
+      .attr('width', plotWidth + margin.left + margin.right)
+      .attr('height', plotHeight + margin.top + margin.bottom + 30)
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const data = this._extractValues();
+
+    // count number of NaN to report in messagebox
+    // const nanCount = data.filter(x => Number.isNaN(x)).length
+
+    // X axis: scale and draw:
+    const xAxis = this._drawXaxis(data, svg, plotWidth, plotHeight);
+
+    // set the parameters for the histogram
+    const histogram = d3v6
+      .bin()
+      .domain(xAxis.domain() as [number, number]) // then the domain of the graphic
+      .thresholds(
+        d3v6.range(
+          d3v6.min(data) || 0,
+          d3v6.max(data) || 0,
+          ((d3v6.max(data) || 0) - (d3v6.min(data) || 0)) / this.numBins
+        )
+      ); // then the numbers of bins
+
+    // And apply this function to data to get the bins
+    const bins = histogram(data);
+
+    const maxCount = d3v6.max(bins, d => d.length) || 0;
+
+    // Y axis: scale and draw:
+    const yAxis = this._drawYaxis(maxCount, svg, plotHeight);
+
+    // tooltip mouseover event handler
+    const [tipMouseover, tipMouseout] = this._addTooltip(mainDiv);
 
     /*
 
@@ -225,9 +262,12 @@ export class BiowcHistogram extends LitElement {
       .data(bins)
       .join('rect')
       .attr('x', 1)
-      .attr('transform', d => `translate(${x(d.x0 || 0)} , ${y(d.length)})`)
-      .attr('width', d => x(d.x1 || 0) - x(d.x0 || 0) - 1)
-      .attr('height', d => height - y(d.length))
+      .attr(
+        'transform',
+        d => `translate(${xAxis(d.x0 || 0)} , ${yAxis(d.length)})`
+      )
+      .attr('width', d => xAxis(d.x1 || 0) - xAxis(d.x0 || 0) - 1)
+      .attr('height', d => plotHeight - yAxis(d.length))
       .style('fill', this.barColor)
       .on('mousemove', tipMouseover)
       .on('mouseout', tipMouseout);

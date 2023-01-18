@@ -1,6 +1,7 @@
 import { html, TemplateResult } from 'lit';
 import '../packages/biowc-histogram/dist/src/biowc-histogram';
 import HistogramFixture from '../packages/biowc-histogram/test/fixtures/HistogramFixture';
+import { BiowcHistogram } from "biowc-histogram";
 
 export default {
   title: 'BiowcHistogram',
@@ -22,15 +23,7 @@ interface Story<T> {
   argTypes?: Record<string, unknown>;
 }
 
-interface ArgTypes {
-  idKey: string;
-  valueKey: string;
-  xLabel: string;
-  yLabel: string;
-  xValues: { [key: string]: number | string | null}[];
-  barColor: string;
-  numBins: number;
-}
+interface ArgTypes extends Pick<BiowcHistogram, keyof BiowcHistogram> {} // load in ArgTypes from BiowcHistogram properties: https://stackoverflow.com/questions/47114181/typescript-use-class-as-interface#64754408
 
 const Template: Story<ArgTypes> = (args: ArgTypes) => html`
   <biowc-histogram
