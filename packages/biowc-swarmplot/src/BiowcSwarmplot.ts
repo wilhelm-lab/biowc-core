@@ -77,8 +77,6 @@ export class BiowcSwarmplot extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues) {
     this._plotSwarm();
-    // this.disposeLabels()
-    // this.reDrawPlot()
     super.firstUpdated(_changedProperties);
   }
 
@@ -266,7 +264,7 @@ export class BiowcSwarmplot extends LitElement {
     const titlePlot: string = `${this.swarmTitlePrefix}(${this.swarmTitle})`;
     svg
       .append('text')
-      // .attr("class", "y label")
+      .attr('class', 'y label')
       .attr('transform', 'rotate(-90)')
       .attr('text-anchor', 'middle')
       .attr('x', -180)
@@ -278,18 +276,20 @@ export class BiowcSwarmplot extends LitElement {
       .attr('stroke', 'rgb(96,125,139)')
       .attr('stroke-dasharray', '1,2');
 
-    const tooltip: any = d3
-      .select(`#${this.swarmId}`)
+    const tooltip: any = svg
       .append('div')
       .attr('class', 'tooltip')
       .style('opacity', 1);
 
-    const yAxis: any = d3.axisRight(yScale).ticks(10, '.1f').tickSizeOuter(0);
+    const yAxis = d3.axisRight(yScale).ticks(10, '.1f').tickSizeOuter(0);
 
-    d3.transition(svg)
+    // d3.transition(svg)
+    svg
       .select('.y.axis')
       .attr('transform', `translate(${margin.left},01)`)
+      // @ts-ignore
       .call(yAxis);
+    // .attr('x', -10)
 
     return { tooltip, xLine };
   }
@@ -400,9 +400,9 @@ export class BiowcSwarmplot extends LitElement {
 
   private _plotSwarm() {
     // set the dimensions and margins of the graph
-    const margin: marginType = { top: 10, right: 30, bottom: 30, left: 60 };
-    const width: number = 460 - margin.left - margin.right;
-    const height: number = 400 - margin.top - margin.bottom;
+    const margin: marginType = { top: 50, right: 10, bottom: 100, left: 50 };
+    const width: number = 400;
+    const height: number = 500;
 
     const pltobj: any = this.initaxes(
       width,
@@ -420,7 +420,8 @@ export class BiowcSwarmplot extends LitElement {
       pltobj.svg
     );
 
-    // const plotObject = this.prepFunc(pltobj.svg, margin, pltobj.yScale)
+    // const plotObject =
+    this.prepFunc(pltobj.svg, margin, pltobj.yScale); // {tooltip, xline}
     // const tooltip: any = plotObject.tooltip
     // const xLine: any = plotObject.xLine
     // console.log(tooltip)
