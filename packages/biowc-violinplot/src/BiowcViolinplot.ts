@@ -1,7 +1,9 @@
-import { html, css, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import * as d3 from 'd3';
+import { ScaleLinear } from 'd3';
+import styles from './biowc-violinplot.css';
 
 type ExpressionData = {
   PROTEIN_ID: number;
@@ -19,12 +21,18 @@ type DataEntry = {
   data: ExpressionData[];
 };
 
+type Metadata = {
+  DRUG_ID: number;
+  TREATMENT: string;
+  catds: number;
+};
+
 type ViolinPropertiesType = {
   svg: any;
   results: ExpressionData[];
   width: number;
   localDomain: number[];
-  xScale: any;
+  xScale: ScaleLinear<number, number, never>;
   imposeMax: number;
   violinColor: string;
   resolution: number;
@@ -33,13 +41,7 @@ type ViolinPropertiesType = {
 };
 
 export class BiowcViolinplot extends LitElement {
-  static styles = css`
-    :host {
-      display: block;
-      padding: 25px;
-      color: var(--biowc-violinplot-text-color, #000);
-    }
-  `;
+  static styles = styles;
 
   @property({ attribute: false })
   height: number = 300;
@@ -94,6 +96,9 @@ export class BiowcViolinplot extends LitElement {
   plotLabelValueCatds: string = '';
 
   @property({ attribute: false })
+  plotLabelExtraFields: string[] = [];
+
+  @property({ attribute: false })
   simpleLabel: boolean = false;
 
   @property({ attribute: false })
@@ -111,15 +116,20 @@ export class BiowcViolinplot extends LitElement {
     bottom: number;
     left: number;
     right: number;
-  } = { top: 10, bottom: 50, left: 80, right: 30 };
+  } = { top: 10, bottom: 0, left: 80, right: 30 };
 
   @property({ attribute: false })
   oChartObjects: {
     svg: any;
     oSelections: any;
-    oSortedData: ExpressionData[][];
+    oSortedData: { data: ExpressionData[][]; meta: Metadata[] };
     d3YScale: any;
-  } = { svg: {}, oSelections: {}, oSortedData: [], d3YScale: d3.scaleLinear };
+  } = {
+    svg: {},
+    oSelections: {},
+    oSortedData: { data: [], meta: [] },
+    d3YScale: d3.scaleLinear,
+  };
 
   render(): HTMLTemplateResult {
     return html`
@@ -241,7 +251,7 @@ export class BiowcViolinplot extends LitElement {
     const plotWidth = this.violinWidth;
     const plotSpacing = 10;
 
-    const svg = this._getMainDiv().append('svg');
+    const svg = this._getMainDiv().append('svg:svg');
     this.oChartObjects.svg = svg;
 
     // const resolution = this.resolution
@@ -297,11 +307,11 @@ export class BiowcViolinplot extends LitElement {
     let j = 0;
     // store Objects needed for Selection
     this.oChartObjects.oSelections = {};
-    this.oChartObjects.oSortedData = oSortedData;
+    this.oChartObjects.oSortedData.data = oSortedData;
     this.oChartObjects.d3YScale = y;
 
     for (const [i, oSortedElement] of Object.entries(
-      this.oChartObjects.oSortedData
+      this.oChartObjects.oSortedData.data
     )) {
       const g = svg
         .append('g')
@@ -317,8 +327,8 @@ export class BiowcViolinplot extends LitElement {
         xScale: y,
         imposeMax: 0.25,
         violinColor: '#ccc',
-        resolution: NaN,
-        path: '',
+        resolution: this.resolution,
+        path,
         index: j,
       };
       this.oChartObjects.oSelections[i] = oControl.addViolin(oViolinProperties);
@@ -335,6 +345,29 @@ export class BiowcViolinplot extends LitElement {
         'white',
         path
       );
+
+      this.addLabel(
+        g,
+        results[parseInt(i, 10)][
+          this.plotLabelValueDrug as keyof DataEntry
+        ] as string,
+        plotHeight,
+        plotWidth,
+        this.margin,
+        10
+      );
+
+      this.plotLabelExtraFields.forEach((extraLabel: string, index: number) => {
+        this.addLabel(
+          g,
+          results[parseInt(i, 10)][extraLabel as keyof DataEntry] as string,
+          plotHeight + (index + 1) * 15,
+          plotWidth,
+          this.margin,
+          10
+        );
+      });
+
       oControl.addSelectionBoundingBox(
         g,
         plotWidth,
@@ -346,7 +379,7 @@ export class BiowcViolinplot extends LitElement {
         oControl._selectViolin(results[parseInt(i, 10)]);
       });
       j += 1;
-    }
+    } // end of for loop
 
     const width = (plotWidth + plotSpacing) * j;
     svg
@@ -359,22 +392,26 @@ export class BiowcViolinplot extends LitElement {
       .call(yAxis)
       .append('text')
       .attr('transform', 'rotate(-90)')
-      .attr('x', -plotHeight / 2)
+      .attr('x', (-plotHeight + this.margin.bottom) / 2)
       .attr('y', -35)
       .attr('fill', '#000')
       .style('text-anchor', 'middle')
       .style('font-family', this.fontFamily)
       .style('font-size', this.fontSize)
       .text('pEC50');
-    svg
-      .append('text')
-      .attr('text-anchor', 'end')
-      .attr('x', 40)
-      .attr('y', plotHeight - 12)
-      .text('CATDS')
-      .style('text-anchor', 'middle')
-      .style('font-family', this.fontFamily)
-      .style('font-size', 15);
+
+    this.plotLabelExtraFields.forEach((extraLabel: string, index: number) => {
+      svg
+        .append('text')
+        .attr('text-anchor', 'end')
+        .attr('x', this.margin.left)
+        .attr('y', plotHeight + (index + 1) * 15 - this.margin.bottom + 10)
+        .text(extraLabel)
+        .style('text-anchor', 'end')
+        .style('text-align', 'right')
+        .style('font-family', this.fontFamily)
+        .style('font-size', this.fontSize);
+    });
 
     if (oControl.selectedElement) {
       oControl.selectElement(oControl.selectedElement);
@@ -424,7 +461,9 @@ export class BiowcViolinplot extends LitElement {
     const { valuePath } = oControl;
     const aValuePath = valuePath.split('/');
 
-    for (const [plotId, plot] of Object.entries(oChartObjects.oSortedData)) {
+    for (const [plotId, plot] of Object.entries(
+      oChartObjects.oSortedData.data
+    )) {
       // find the Element with the Value of the Property
       let element;
       for (let i = 0; i < plot.length; i += 1) {
@@ -450,7 +489,7 @@ export class BiowcViolinplot extends LitElement {
   }
 
   selectElementByValue(value: number, plotValue: number) {
-    const aData = this.oChartObjects.oSortedData[plotValue];
+    const aData = this.oChartObjects.oSortedData.data[plotValue];
     const oSelection = this.oChartObjects.oSelections[plotValue];
     const d3Yscale = this.oChartObjects.d3YScale;
     const iElementIndex = this._binarySearch(value, aData);
@@ -536,13 +575,7 @@ export class BiowcViolinplot extends LitElement {
     const y = d3
       .scaleLinear()
       .range([width / 2, 0])
-      .domain([
-        0,
-        Math.max(
-          imposeMax,
-          d3.max(finalData, (d: any) => d.y)
-        ),
-      ]);
+      .domain([0, Math.max(imposeMax, d3.max(finalData, d => d.y) as number)]);
 
     const area = d3
       .area()
@@ -561,27 +594,28 @@ export class BiowcViolinplot extends LitElement {
 
     gPlus
       .append('path')
-      .datum(data)
+      .datum(finalData)
       .attr('class', 'area')
       .attr('d', area)
       .style('fill', violinColor);
 
     gPlus
       .append('path')
-      .datum(data)
+      .datum(finalData)
       .attr('class', 'violin')
       .attr('d', line)
       .style('stroke', violinColor);
+
     gMinus
       .append('path')
-      .datum(data)
+      .datum(finalData)
       .attr('class', 'area')
       .attr('d', area)
       .style('fill', violinColor);
 
     gMinus
       .append('path')
-      .datum(data)
+      .datum(finalData)
       .attr('class', 'violin')
       .attr('d', line)
       .style('stroke', violinColor);
@@ -597,13 +631,13 @@ export class BiowcViolinplot extends LitElement {
 
       const clipPathPlus = clipPath
         .append('path')
-        .datum(data)
+        .datum(finalData)
         .attr('class', 'clippath')
         .attr('d', area);
 
       const clipPathMinus = clipPath
         .append('path')
-        .datum(data)
+        .datum(finalData)
         .attr('class', 'clippath')
         .attr('d', area);
       clipPathPlus.attr('transform', `rotate(90,0,0)  translate(0,-${width})`);
@@ -735,7 +769,8 @@ export class BiowcViolinplot extends LitElement {
       .attr('width', x(right) - x(left))
       .attr('y', probs[3])
       .attr('height', -probs[3] + probs[1])
-      .style('stroke', boxColor);
+      .style('stroke', boxColor)
+      .style('fill', 'none');
 
     d3Group
       .append('circle')
@@ -838,7 +873,24 @@ export class BiowcViolinplot extends LitElement {
     return this._getMainDiv().selectAll('svg').node();
   }
 
+  labelOffsetStyles() {
+    const offsets: { left: number; top: number }[] = [];
+    const plotHeight = this.height;
+    const plotWidth = this.violinWidth;
+    const plotSpacing = 10;
+    for (let index = 0; index < this.chartData.length; index += 1) {
+      offsets[index] = {
+        left:
+          index * (plotWidth + plotSpacing) + this.margin.left + plotWidth / 2,
+        top: plotHeight - this.margin.bottom + 5,
+      };
+    }
+    return offsets;
+  }
+
   protected firstUpdated(changedProperties: PropertyValues) {
+    // change bottom margin
+    this.margin.bottom += (this.plotLabelExtraFields.length + 1) * 15;
     this.drawChart();
 
     super.firstUpdated(changedProperties);

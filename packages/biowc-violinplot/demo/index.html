@@ -1,29 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-GB">
-<head>
-  <meta charset="utf-8">
-  <style>
-    body {
-      background: #fafafa;
-    }
-  </style>
-</head>
-<body>
-  <div id="demo"></div>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        background: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="demo"></div>
 
-  <script type="module">
-    import { html, render } from 'lit';
-    import '../dist/src/biowc-violinplot.js';
+    <script type="module">
+      import { html, render } from 'lit';
+      import '../dist/src/biowc-violinplot.js';
+      import ViolinPlotFixture from '../dist/test/fixtures/ViolinPlotFixture.js';
 
-    const title = 'Hello owc World!';
-    render(
-      html`
-        <biowc-violinplot .title=${title}>
-          some light-dom
-        </biowc-violinplot>
-      `,
-      document.querySelector('#demo')
-    );
-  </script>
-</body>
+      render(
+        html`
+          <biowc-violinplot
+            .plotLabelValueCatds="${ViolinPlotFixture.violinPlot.plotLabelValueCatds}"
+            .plotLabelExtraFields="${ViolinPlotFixture.violinPlot.plotLabelExtraFields}"
+            .chartData="${ViolinPlotFixture.violinPlot.chartData}"
+          >
+          </biowc-violinplot>
+        `,
+
+        document.querySelector('#demo')
+      );
+    </script>
+  </body>
 </html>

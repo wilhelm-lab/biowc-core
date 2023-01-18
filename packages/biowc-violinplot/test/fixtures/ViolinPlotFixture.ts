@@ -1,6 +1,8 @@
 export default {
   violinPlot: {
     plotLabelValueCatds: 'catds',
+    // plotLabelExtraFields: [],
+    plotLabelExtraFields: ['DRUG_ID', 'catds', 'catds', 'catds'],
     chartData: [
       {
         DRUG_ID: 103,
