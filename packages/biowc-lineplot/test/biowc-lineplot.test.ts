@@ -32,9 +32,30 @@ describe('BiowcLineplot', async () => {
     // TODO: Test with >8 lines
   });
 
-  // it('still renders axes if there is no data', () => {
-  //
-  //  })
+  const emptyLineplot = await fixture<BiowcLineplot>(
+    html`<biowc-lineplot
+      .dataPoints=${LinePlotFixture.emptyLineplot.dataPoints}
+    />`
+  );
+
+  it('still renders axes if there is no data', () => {
+    const axisPaths = emptyLineplot.shadowRoot!.querySelectorAll('.domain');
+    // @ts-ignore
+    const pathLengths = [...axisPaths].map((path: SVGPathElement) =>
+      path.getTotalLength()
+    );
+    pathLengths.forEach((l: number) => {
+      expect(l).to.be.greaterThan(0);
+    });
+  });
+
+  it('"renders" a connecting line with length 0 if there is not data', () => {
+    expect(
+      (<SVGPathElement>(
+        emptyLineplot.shadowRoot!.querySelector('.dotconnector')
+      )).getTotalLength()
+    ).to.equal(0);
+  });
 
   it('passes the a11y audit', async () => {
     const el = await fixture<BiowcLineplot>(
