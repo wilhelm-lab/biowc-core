@@ -97,7 +97,7 @@ export class BiowcViolinplot extends LitElement {
   clippedSelectionLine: boolean = false;
 
   @property({ attribute: false })
-  myTitle: string = '';
+  yAxisLabel: string = 'yAxis';
 
   @property({ attribute: false })
   margin: {
@@ -318,7 +318,7 @@ export class BiowcViolinplot extends LitElement {
       .style('text-anchor', 'middle')
       .style('font-family', this.fontFamily)
       .style('font-size', this.fontSize)
-      .text('pEC50');
+      .text(this.yAxisLabel);
 
     this.plotLabelExtraFields.forEach((extraLabel: string, index: number) => {
       svg
@@ -397,11 +397,9 @@ export class BiowcViolinplot extends LitElement {
       }
       if (element) {
         oControl.selectElementByValue(
-          BiowcViolinplot.convertEC50topEC50(
-            element[
-              aValuePath[aValuePath.length - 1] as keyof ExpressionData
-            ] as number
-          ),
+          element[
+            aValuePath[aValuePath.length - 1] as keyof ExpressionData
+          ] as number,
           parseInt(plotId, 10)
         );
       } else {
@@ -742,11 +740,9 @@ export class BiowcViolinplot extends LitElement {
       const midIndex = Math.floor((maxIndex + minIndex) / 2);
       compareResult = d3.ascending(
         value,
-        BiowcViolinplot.convertEC50topEC50(
-          array[midIndex][
-            aPath[aPath.length - 1] as keyof ExpressionData
-          ] as number
-        )
+        array[midIndex][
+          aPath[aPath.length - 1] as keyof ExpressionData
+        ] as number
       );
       switch (compareResult) {
         case -1:
@@ -765,11 +761,7 @@ export class BiowcViolinplot extends LitElement {
       // get the lowest array index with the value
       compareResult = d3.ascending(
         value,
-        BiowcViolinplot.convertEC50topEC50(
-          array[i - 1][
-            aPath[aPath.length - 1] as keyof ExpressionData
-          ] as number
-        )
+        array[i - 1][aPath[aPath.length - 1] as keyof ExpressionData] as number
       );
       if (compareResult === 0) {
         i -= 1;
@@ -780,19 +772,6 @@ export class BiowcViolinplot extends LitElement {
 
     // it will never reach here
     return minIndex;
-  }
-
-  /*
-   *  Convert log10 EC50 values to pEC50 values
-   */
-  static convertEC50topEC50(nValue: number) {
-    // Convert log10 ec50 to ec50 in nM
-    const ec50 = 10 ** nValue;
-    // Convert nM to M
-    const ec50M = ec50 / 1000000000;
-    // Convert to pEC50
-    const pEC50 = -(Math.log(ec50M) / Math.log(10));
-    return pEC50;
   }
 
   public exportSvg() {
