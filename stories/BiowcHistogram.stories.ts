@@ -27,7 +27,7 @@ interface ArgTypes {
   valueKey: string;
   xLabel: string;
   yLabel: string;
-  xValues: { [key: string]: number | string }[];
+  xValues: { [key: string]: number | string | null}[];
   barColor: string;
   numBins: number;
 }

@@ -15,7 +15,7 @@ export class BiowcHistogram extends LitElement {
   valueKey: string = 'value';
 
   @property({ attribute: false })
-  xValues: { [key: string]: number | string | undefined }[] = [];
+  xValues: { [key: string]: number | string | null }[] = [];
 
   @property({ attribute: false })
   xLabel: string = '';
@@ -64,6 +64,18 @@ export class BiowcHistogram extends LitElement {
     return d3v6.select(this.shadowRoot).select('#histogram');
   }
 
+  protected _extractValues() {
+    return this.xValues.map(entry => {
+      const value = entry[this.valueKey];
+      switch (typeof value) {
+        case 'number':
+          return value;
+        default:
+          return NaN;
+      }
+    });
+  }
+
   private _plotHistogram() {
     // set the dimensions and margins of the graph
     const { margin } = this;
@@ -82,15 +94,7 @@ export class BiowcHistogram extends LitElement {
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    const data = this.xValues.map(entry => {
-      const value = entry[this.valueKey];
-      switch (typeof value) {
-        case 'number':
-          return value;
-        default:
-          return NaN;
-      }
-    });
+    const data = this._extractValues();
 
     // count number of NaN to report in messagebox
     // const nanCount = data.filter(x => Number.isNaN(x)).length
@@ -177,6 +181,44 @@ export class BiowcHistogram extends LitElement {
         .duration(300) // ms
         .style('opacity', 0); // don't care about position!
     };
+
+    /*
+
+    // Add the modalBox container to the vis container
+    // it's invisible and its position/contents are defined during mouseover
+    const modalBox = mainDiv
+      .append('div')
+      .attr('class', 'modalBox')
+      .style('opacity', 0)
+      .style('background-color', 'black')
+      .style('color', 'white')
+      .style('border-radius', '5px')
+      .style('padding', '10px');
+
+
+    if(nanCount > 0) {
+      const htmlElement = `<br><br>${nanCount} NaN entries found in dataset`
+      modalBox
+        .html(htmlElement)
+        .style('opacity', 0.9); // started as 0
+    }
+
+    const boxMouseclick = () => {
+      modalBox
+        .transition()
+        .duration(300) // ms
+        .style('opacity', 0); // don't care about position!
+    };
+
+    modalBox
+      .append('rect')
+      .text('X')
+      // .attr("y", 100)
+      // .attr("fill", "red")
+      .on('click', boxMouseclick)
+
+*/
+
     // append the bar rectangles to the svg element
     svg
       .selectAll('rect')

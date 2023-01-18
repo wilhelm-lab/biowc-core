@@ -93,6 +93,31 @@ describe('BiowcHistogram', async () => {
     expect(ratioBars).to.be.closeTo(2, 0.001);
   });
 
+  const naHistogram = await fixture<BiowcHistogram>(
+    html` <biowc-histogram
+      .idKey="${HistogramFixture.naHistogram.idKey}"
+      .valueKey="${HistogramFixture.naHistogram.valueKey}"
+      .xLabel="${HistogramFixture.naHistogram.xLabel}"
+      .yLabel="${HistogramFixture.naHistogram.yLabel}"
+      .xValues="${HistogramFixture.naHistogram.xValues}"
+    />`
+  );
+
+  it('has 2 bars higher than 0 for naHistogram fixture', async () => {
+    const bars = naHistogram.shadowRoot!.querySelectorAll('rect');
+    const visibleBars = Array.from(bars).filter(
+      rect => rect.height.baseVal.value > 0
+    );
+    expect(visibleBars.length).to.equal(2);
+  });
+
+  it('has 3 NaN values for naHistogram fixture', async () => {
+    // @ts-ignore
+    const extractedValues = naHistogram._extractValues() as number[]; // accessing private function: https://stackoverflow.com/questions/35987055/how-to-write-unit-testing-for-angular-typescript-for-private-methods-with-jasm
+    const nanCount = extractedValues.filter(x => Number.isNaN(x)).length;
+    expect(nanCount).to.equal(3);
+  });
+
   it('renders an invisible tooltip at first', async () => {
     const tooltip = histogram.shadowRoot!.querySelector(
       '.tooltip'

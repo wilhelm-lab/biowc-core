@@ -19,4 +19,13 @@ export default css`
     pointer-events: none;
     background-color: white;
   }
+
+  .modalBox {
+    position: absolute;
+    font-size: 12px;
+    width: auto;
+    height: auto;
+    pointer-events: none;
+    background-color: white;
+  }
 `;
