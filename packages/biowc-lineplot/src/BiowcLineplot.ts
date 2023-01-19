@@ -368,7 +368,9 @@ export class BiowcLineplot extends LitElement {
           }
           const loc = cursorPoint(e);
           // We need the original xValue in our data domain. So we call the inverse function of the xAxis
-          const xValue = this.svgXAxis.invert(loc.x - this.margin.left);
+          const xValue = this.svgXAxis.invert(
+            loc.x - this.margin.left - this.margin.xAxis
+          );
           // Then we calculate the y position by feeding the x value into the function
           const yValue = this.curveFunctions[i](xValue);
           // Get auxiliary lines, update their positions, and make them visible
