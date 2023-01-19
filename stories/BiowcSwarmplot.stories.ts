@@ -13,7 +13,7 @@ export default {
     swarmTitlePrefix: { control: 'text' },
     width: {control: 'number'},
     height: {control: 'number'},
-
+    drawBoxPlot: {control: 'boolean'}
   },
 };
 
@@ -32,6 +32,7 @@ interface ArgTypes {
   }[]
   width: number;
   height: number;
+  drawBoxPlot: boolean;
 }
 
 const Template: Story<ArgTypes> = (args: ArgTypes) => html`
@@ -43,6 +44,7 @@ const Template: Story<ArgTypes> = (args: ArgTypes) => html`
     .swarmData="${args.swarmData}"
     .height="${args.height}"
     .width="${args.width}"
+    .drawBoxPlot="${args.drawBoxPlot}"
   >
   </biowc-swarmplot>
 `;
