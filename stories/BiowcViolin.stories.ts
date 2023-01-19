@@ -1,4 +1,3 @@
-import { BiowcViolinplot } from 'biowc-violinplot';
 import { html, TemplateResult } from 'lit';
 import '../packages/biowc-violinplot/dist/src/biowc-violinplot';
 import ViolinPlotFixture from '../packages/biowc-violinplot/test/fixtures/ViolinPlotFixture';
@@ -9,7 +8,7 @@ export default {
   argTypes: {
     plotLabelExtraFields: {control: 'object' },
     chartData: { control: 'object' },
-    yAxisLabel: { control: 'string' },
+    yAxisLabel: { control: 'text' },
     simpleLabel: {control: 'boolean'}
   },
 };
