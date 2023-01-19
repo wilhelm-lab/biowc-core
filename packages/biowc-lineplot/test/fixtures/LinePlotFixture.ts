@@ -17,6 +17,8 @@ const basicLineplot = {
   ],
   width: 500,
   height: 500,
+  xAxisLabel: 'This is the x Axis',
+  yAxisLabel: 'This is the y Axis',
 };
 
 const oneDotLineplot = {
