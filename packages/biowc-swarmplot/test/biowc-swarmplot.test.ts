@@ -100,4 +100,15 @@ describe('BiowcSwarmplot', async () => {
 
     await expect(el).shadowDom.to.be.accessible();
   });
+
+  it('renders every line with a different color', () => {
+    const _htmlDivElement = swarmplot.shadowRoot!.querySelectorAll(
+      '#swarmplot'
+    )[0] as HTMLDivElement;
+    const svg = _htmlDivElement.querySelector('svg') as SVGSVGElement;
+    console.log(svg);
+    const width = parseInt(svg.getAttribute('width') as string, 10);
+    const expected = SwarmPlotFixture.swarmPlot.width;
+    expect(width).to.equal(expected);
+  });
 });
