@@ -165,7 +165,9 @@ export class BiowcSwarmplot extends LitElement {
     const centerX = widthRelativeToMargin / 2 + margin.left + 50;
 
     const filterData = dataSet.filter(
-      item => !Number.isNaN(item[fieldOfTable as keyof swarmDataType] as number)
+      item =>
+        !Number.isNaN(item[fieldOfTable as keyof swarmDataType] as number) &&
+        !Number.isNaN(item['sizeR' as keyof swarmDataType] as number)
     );
     const simulation = d3
       // @ts-ignore

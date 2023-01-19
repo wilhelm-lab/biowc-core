@@ -151,15 +151,15 @@ describe('BiowcSwarmplot', async () => {
           'Sample name': 'sample13',
           colorID: 'grey',
           sizeR: NaN,
-        }, // created, but not visible
+        },
       ]}
       .height="${SwarmPlotFixture.swarmPlot.height}"
       .width="${SwarmPlotFixture.swarmPlot.width}"
     />`
   );
 
-  it('renders 13 - 2 circles if having NaNs ', async () => {
+  it('renders 13 - 3 circles if having NaNs ', async () => {
     const circles = swarmplotWithNaN.shadowRoot!.querySelectorAll('circle');
-    expect(circles.length).to.equal(11);
+    expect(circles.length).to.equal(10);
   });
 });
