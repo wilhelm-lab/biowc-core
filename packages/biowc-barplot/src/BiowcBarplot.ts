@@ -6,11 +6,12 @@ import * as d3 from 'd3';
 import styles from './biowc-barplot.css';
 import '../../../download-button/dist/src/download-button.js';
 
-// fix download button
+// fix SVG download button
 // clean code
-
-// advanced stuff to do if we have time:
-// add colors?
+// support stacked bars
+// support horizontal visualization
+// support grouping
+// add a legend
 
 interface IContent {
   modelId: number;
@@ -148,17 +149,6 @@ export class BiowcBarplot extends LitElement {
     return d3.select(this.shadowRoot).select('#clear-button');
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  private _getSelectedBarColor(): string {
-    return 'fill: #f0ac00';
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private _getBarColor(content: IContent): string {
-    if (content && content.color) return `fill: ${content.color}`;
-    return 'fill: #008fd3';
-  }
-
   drawPlot(oData: IData) {
     console.log(this.data.attributeType);
     const that = this;
@@ -247,8 +237,6 @@ export class BiowcBarplot extends LitElement {
     bar
       .append('rect')
       .attr('class', () => 'Bar')
-      // .attr('style', d => d.color ? `fill: ${d.color}` : 'fill: #008fd3')
-      .attr('style', d => that._getBarColor(d))
       .attr('height', d => {
         const startingPoint = minY < 0 ? y(0) : y(minY);
         if (d.value < 0) {
@@ -299,9 +287,6 @@ export class BiowcBarplot extends LitElement {
       .attr('width', this.barWidth - 1)
       .attr('modelId', d => d.modelId)
       .on('mouseover', () => tooltip.style('opacity', 0.9))
-      /* .on('mouseover',  (event, d: IContent) => {
-        if(d.tooltipText && d.tooltipText.length > 0) tooltip.style('opacity', 0.9);
-      }) */
       .on('mousemove', (event, d: IContent) => {
         const labels = that.getFullLabel(d);
         tooltip
@@ -319,8 +304,7 @@ export class BiowcBarplot extends LitElement {
           div
             .selectAll('.Bar')
             .filter((e: any) => e.modelId === f.modelId)
-            .attr('class', 'Bar')
-            .attr('style', that._getBarColor(f));
+            .attr('class', 'Bar');
           div
             .selectAll('.BackgroundBar')
             .filter((e: any) => e.modelId === f.modelId)
@@ -332,8 +316,7 @@ export class BiowcBarplot extends LitElement {
           div
             .selectAll('.Bar')
             .filter((e: any) => e.modelId === f.modelId)
-            .attr('class', 'Bar BetterValue')
-            .attr('style', that._getSelectedBarColor);
+            .attr('class', 'Bar BetterValue');
           div
             .selectAll('.BackgroundBar')
             .filter((e: any) => e.modelId === f.modelId)
@@ -347,8 +330,7 @@ export class BiowcBarplot extends LitElement {
           div
             .selectAll('.Bar')
             .filter((e: any) => e.modelId === f.modelId)
-            .attr('class', 'Bar BetterValue')
-            .attr('style', that._getSelectedBarColor);
+            .attr('class', 'Bar BetterValue');
           div
             .selectAll('.BackgroundBar')
             .filter((e: any) => e.modelId === f.modelId)
@@ -359,8 +341,7 @@ export class BiowcBarplot extends LitElement {
         div
           .selectAll('.Bar')
           .filter((e: any) => e.modelId === f.modelId)
-          .attr('class', 'Bar BetterValue')
-          .attr('style', that._getSelectedBarColor);
+          .attr('class', 'Bar BetterValue');
         div
           .selectAll('.BackgroundBar')
           .filter((e: any) => e.modelId === f.modelId)
