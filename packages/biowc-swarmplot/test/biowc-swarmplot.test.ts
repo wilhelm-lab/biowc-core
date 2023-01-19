@@ -65,7 +65,7 @@ describe('BiowcSwarmplot', async () => {
 
   it('renders 13 circles ', async () => {
     const circles = swarmplot.shadowRoot!.querySelectorAll('circle');
-    expect(circles.length).to.equal(13);
+    expect(circles.length).to.equal(12);
   });
 
   it('renders an invisible tooltip at first', async () => {
@@ -110,5 +110,56 @@ describe('BiowcSwarmplot', async () => {
     const width = parseInt(svg.getAttribute('width') as string, 10);
     const expected = SwarmPlotFixture.swarmPlot.width;
     expect(width).to.equal(expected);
+  });
+
+  const swarmplotWithNaN = await fixture<BiowcSwarmplot>(
+    html`<biowc-swarmplot
+      .swarmTitle="${SwarmPlotFixture.swarmPlot.swarmTitle}"
+      .fieldName="${SwarmPlotFixture.swarmPlot.fieldName}"
+      .fieldValues="${SwarmPlotFixture.swarmPlot.fieldValues}"
+      .swarmTitlePrefix="${SwarmPlotFixture.swarmPlot.swarmTitlePrefix}"
+      .swarmData=${[
+        { 'Z-score': NaN, 'Sample name': 'sample1', colorID: 'grey', sizeR: 3 },
+        { 'Z-score': 3.0, 'Sample name': 'sample2', colorID: 'grey', sizeR: 3 },
+        { 'Z-score': 2.5, 'Sample name': NaN, colorID: 'grey', sizeR: 3 },
+        { 'Z-score': 2.3, 'Sample name': 'sample4', colorID: 'grey', sizeR: 3 },
+        { 'Z-score': 2.3, 'Sample name': 'sample5', colorID: 'grey', sizeR: 3 },
+        { 'Z-score': 2.2, 'Sample name': 'sample6', colorID: 'grey', sizeR: 3 },
+        { 'Z-score': 2.1, 'Sample name': 'sample7', colorID: NaN, sizeR: 3 },
+        { 'Z-score': 1.9, 'Sample name': 'sample8', colorID: 'grey', sizeR: 3 },
+        { 'Z-score': 1.8, 'Sample name': 'sample9', colorID: 'grey', sizeR: 3 },
+        {
+          'Z-score': 0.5,
+          'Sample name': 'sample10',
+          colorID: 'grey',
+          sizeR: 3,
+        },
+        {
+          'Z-score': 1.9,
+          'Sample name': 'sample11',
+          colorID: 'grey',
+          sizeR: 3,
+        },
+        {
+          'Z-score': NaN,
+          'Sample name': 'sample12',
+          colorID: 'grey',
+          sizeR: 3,
+        },
+        {
+          'Z-score': 0.5,
+          'Sample name': 'sample13',
+          colorID: 'grey',
+          sizeR: NaN,
+        }, // created, but not visible
+      ]}
+      .height="${SwarmPlotFixture.swarmPlot.height}"
+      .width="${SwarmPlotFixture.swarmPlot.width}"
+    />`
+  );
+
+  it('renders 13 - 2 circles if having NaNs ', async () => {
+    const circles = swarmplotWithNaN.shadowRoot!.querySelectorAll('circle');
+    expect(circles.length).to.equal(11);
   });
 });

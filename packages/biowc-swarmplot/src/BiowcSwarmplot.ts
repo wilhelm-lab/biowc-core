@@ -164,9 +164,12 @@ export class BiowcSwarmplot extends LitElement {
     const widthRelativeToMargin = width - margin.left - margin.right;
     const centerX = widthRelativeToMargin / 2 + margin.left + 50;
 
+    const filterData = dataSet.filter(
+      item => !Number.isNaN(item[fieldOfTable as keyof swarmDataType] as number)
+    );
     const simulation = d3
       // @ts-ignore
-      .forceSimulation(dataSet)
+      .forceSimulation(filterData)
       .force(
         'y',
         d3
@@ -184,11 +187,11 @@ export class BiowcSwarmplot extends LitElement {
       return simulation.tick(10);
     };
 
-    dataSet.forEach(applySimulation);
+    filterData.forEach(applySimulation);
 
     const namesCircles = svg
       .selectAll('.names')
-      .data(dataSet, (d: any) => d[nominalField]);
+      .data(filterData, (d: any) => d[nominalField]);
     namesCircles
       .enter()
       .append('circle')
