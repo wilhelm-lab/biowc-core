@@ -115,7 +115,6 @@ export class BiowcSwarmplot extends LitElement {
       const widthRelativeToMargin: number = width - margin.left - margin.right;
 
       const center: number = widthRelativeToMargin / 2 + margin.left + 50;
-      console.log(center);
 
       svg
         .append('line')
@@ -262,7 +261,7 @@ export class BiowcSwarmplot extends LitElement {
     const tooltip: any = this._getMainDiv()
       .append('div')
       .attr('class', 'tooltip')
-      .style('opacity', 1);
+      .style('opacity', 0);
 
     const yAxis = d3.axisRight(yScale).ticks(10, '.1f').tickSizeOuter(0);
 
