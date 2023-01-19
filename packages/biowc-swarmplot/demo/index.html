@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div id="demo"></div>
+
+  <script type="module">
+    import { html, render } from 'lit';
+    import '../dist/src/biowc-swarmplot.js';
+    import SwarmPlotFixture from "../dist/test/fixtures/SwarmPlotFixture.js";
+
+    render(
+      html`
+        <biowc-swarmplot
+          .swarmTitle="${SwarmPlotFixture.swarmPlot.swarmTitle}"
+          .fieldName="${SwarmPlotFixture.swarmPlot.fieldName}"
+          .fieldValues="${SwarmPlotFixture.swarmPlot.fieldValues}"
+          .swarmTitlePrefix="${SwarmPlotFixture.swarmPlot.swarmTitlePrefix}"
+          .swarmData="${SwarmPlotFixture.swarmPlot.swarmData}"
+          .height="${SwarmPlotFixture.swarmPlot.height}"
+          .width="${SwarmPlotFixture.swarmPlot.width}"
+         >
+          some light-dom
+        </biowc-swarmplot>
+      `,
+      document.querySelector('#demo')
+    );
+  </script>
+</body>
+</html>
