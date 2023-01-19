@@ -1,5 +1,4 @@
 import { css } from 'lit';
-// import "./GenericBarPlot.css.prdb";
 
 export default css`
   .barPlotClearSelectionButton {
@@ -41,7 +40,7 @@ export default css`
 
   .Bar {
     cursor: pointer;
-    fill: rgb(0, 143, 211);
+    // fill: rgb(0, 143, 211);
   }
 
   .ClickBar {
@@ -87,20 +86,4 @@ export default css`
     shape-rendering: crispEdges !important;
     text-rendering: geometricPrecision !important;
   }
-
-  /*
-  .tooltip {
-    background-color: black;
-    border-radius: 5px;
-    color: white;
-    padding: 10px;
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-  
-  g:hover .tooltip {
-    opacity: 1;
-  }
-  */
 `;

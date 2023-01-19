@@ -19,6 +19,7 @@ interface IContent {
   maxValue: number;
   label: string;
   tooltipText: string;
+  color: string;
 }
 
 interface IData {
@@ -145,6 +146,17 @@ export class BiowcBarplot extends LitElement {
     return d3.select(this.shadowRoot).select('#clear-button');
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  private _getSelectedBarColor(): string {
+    return 'fill: #f0ac00';
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private _getBarColor(content: IContent): string {
+    if (content && content.color) return `fill: ${content.color}`;
+    return 'fill: #008fd3';
+  }
+
   drawPlot(oData: IData) {
     console.log(this.data.attributeType);
     const that = this;
@@ -233,6 +245,8 @@ export class BiowcBarplot extends LitElement {
     bar
       .append('rect')
       .attr('class', () => 'Bar')
+      // .attr('style', d => d.color ? `fill: ${d.color}` : 'fill: #008fd3')
+      .attr('style', d => that._getBarColor(d))
       .attr('height', d => {
         const startingPoint = minY < 0 ? y(0) : y(minY);
         if (d.value < 0) {
@@ -301,7 +315,8 @@ export class BiowcBarplot extends LitElement {
           div
             .selectAll('.Bar')
             .filter((e: any) => e.modelId === f.modelId)
-            .attr('class', 'Bar');
+            .attr('class', 'Bar')
+            .attr('style', that._getBarColor(f));
           div
             .selectAll('.BackgroundBar')
             .filter((e: any) => e.modelId === f.modelId)
@@ -313,7 +328,8 @@ export class BiowcBarplot extends LitElement {
           div
             .selectAll('.Bar')
             .filter((e: any) => e.modelId === f.modelId)
-            .attr('class', 'Bar BetterValue');
+            .attr('class', 'Bar BetterValue')
+            .attr('style', that._getSelectedBarColor);
           div
             .selectAll('.BackgroundBar')
             .filter((e: any) => e.modelId === f.modelId)
@@ -327,7 +343,8 @@ export class BiowcBarplot extends LitElement {
           div
             .selectAll('.Bar')
             .filter((e: any) => e.modelId === f.modelId)
-            .attr('class', 'Bar BetterValue');
+            .attr('class', 'Bar BetterValue')
+            .attr('style', that._getSelectedBarColor);
           div
             .selectAll('.BackgroundBar')
             .filter((e: any) => e.modelId === f.modelId)
@@ -338,7 +355,8 @@ export class BiowcBarplot extends LitElement {
         div
           .selectAll('.Bar')
           .filter((e: any) => e.modelId === f.modelId)
-          .attr('class', 'Bar BetterValue');
+          .attr('class', 'Bar BetterValue')
+          .attr('style', that._getSelectedBarColor);
         div
           .selectAll('.BackgroundBar')
           .filter((e: any) => e.modelId === f.modelId)
@@ -515,8 +533,15 @@ export class BiowcBarplot extends LitElement {
   */
 
   public exportSvg() {
-    // FIXME the svg does not include the css
     return this.shadowRoot?.querySelector('svg')?.outerHTML;
+
+    // TODO the following lines add css to the exported file
+    // TODO but the css is copy-pasted for the moment, it should be extracted from the file automatically
+    // TODO also, the selected columns are not well displayed
+    // const head = `<svg title="${this.myTitle}" xmlns="http://www.w3.org/2000/svg">`;
+    // const style = ".barPlotClearSelectionButton {\n    position: absolute !important;\n    margin-top: 32px;\n    margin-left: 50px;\n  }\n\n  .barplotClass {\n    height: inherit;\n    width: inherit;\n  }\n\n  .BarContainer .Title {\n    font-size: 18px;\n    font-family: Arial, Helvetica, sans-serif;\n  }\n\n  .BarContainer .AxisTitle {\n    font-family: Arial, Helvetica, sans-serif;\n    font: 12px sans-serif;\n    text-anchor: middle;\n  }\n\n  .BarContainer .BetterValue {\n    fill: rgb(240, 171, 0);\n    stroke: black;\n    stroke-width: -1;\n    padding: 1px;\n  }\n\n  .BarContainer .ClickBar.Highlight,\n  .BarContainer .ClickBar:hover {\n    stroke: black;\n    stroke-width: 1;\n    fill: transparent;\n    cursor: pointer;\n  }\n\n  .Bar {\n    cursor: pointer;\n    fill: rgb(0, 143, 211);\n  }\n\n  .ClickBar {\n    stroke: transparent;\n    stroke-width: 0;\n    fill: transparent;\n    cursor: pointer;\n  }\n\n  .BackgroundBar {\n    stroke: transparent;\n    fill: transparent;\n  }\n\n  .BackgroundBar.Highlight {\n    fill: #f7d57f;\n  }\n\n  a .Label.Highlight {\n    font-family: Arial, Helvetica, sans-serif;\n    font: 10px sans-serif;\n    text-anchor: end;\n    fill: green;\n    color: green;\n    font-weight: bold;\n  }\n\n  a .Label {\n    font-family: Arial, Helvetica, sans-serif;\n    font: 10px sans-serif;\n    text-anchor: end;\n    fill: #00679e;\n    color: #00679e;\n    font-weight: normal;\n  }\n\n  .axis path,\n  .axis line {\n    fill: none;\n    stroke: #000;\n    stroke-width: 1px;\n    color-rendering: optimizeQuality !important;\n    shape-rendering: crispEdges !important;\n    text-rendering: geometricPrecision !important;\n  }"; // extract from css file
+    // const data = this.shadowRoot?.querySelector('svg')?.innerHTML;
+    // return `${head} <style>${style}</style> ${data} </svg>`;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {

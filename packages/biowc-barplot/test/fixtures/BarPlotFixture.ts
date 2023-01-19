@@ -17,6 +17,7 @@ export default {
           maxValue: 5,
           label: 'Exampletinib: Cellline B',
           tooltipText: 'Some text',
+          color: '#ee5500',
         },
         {
           modelId: 1,
@@ -36,6 +37,7 @@ export default {
           label: 'Foobarbazine: Cellline B',
           tooltipText:
             "This is a large text to test how the tooltip will behave when there's a lot to say",
+          color: 'green',
         },
         {
           modelId: 3,
