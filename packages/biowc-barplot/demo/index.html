@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div id="demo"></div>
+
+  <script type="module">
+    import { html, render } from 'lit';
+    import '../dist/src/biowc-barplot.js';
+    import BarPlotFixture from "../dist/test/fixtures/BarPlotFixture.js";
+
+    render(
+      html`
+        <biowc-barplot
+          .minWidth="${BarPlotFixture.barPlot.minWidth}"
+          .minHeight="${BarPlotFixture.barPlot.minHeight}"
+          .barWidth="${BarPlotFixture.barPlot.barWidth}"
+          .myTitle="${BarPlotFixture.barPlot.myTitle}"
+          .multiSelection="${BarPlotFixture.barPlot.multiSelection}"
+          .data="${BarPlotFixture.barPlot.data}"
+          .sSelectedModelIds="${BarPlotFixture.barPlot.sSelectedModelIds}"
+        >
+        </biowc-barplot>
+      `,
+      document.querySelector('#demo')
+    );
+  </script>
+</body>
+</html>
