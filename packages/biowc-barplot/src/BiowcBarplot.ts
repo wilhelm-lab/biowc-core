@@ -517,7 +517,7 @@ export class BiowcBarplot extends LitElement {
   */
 
   public exportSvg() {
-    const head = `<svg title="${this.myTitle}" xmlns="http://www.w3.org/2000/svg">`;
+    const head = `<svg class='BarContainer' title="${this.myTitle}" xmlns="http://www.w3.org/2000/svg">`;
     const data = this.shadowRoot?.querySelector('svg')?.innerHTML;
     return `${head} <style>${styles.toString()}</style> ${data} </svg>`;
   }
