@@ -102,10 +102,12 @@ export class BiowcBarplot extends LitElement {
   private getFullLabel(content: IContent): string[] {
     const label = [];
     if (content) {
-      if (content.tooltipText) label.push(content.tooltipText);
+      label.push(content.label);
+      if (content.tooltipText)
+        label.push(`<font size="-1">${content.tooltipText}</font>`);
       label.push(
-        `Value: ${content.value}`,
-        `Error bar: [${content.minValue} ; ${content.maxValue}]`
+        `<font size="-1" style="color:#00679e">Value: ${content.value}</font>`,
+        `<font size="-1" style="color:#00679e">Error bar: [${content.minValue} ; ${content.maxValue}]</font>`
       );
     }
     return label;
@@ -279,12 +281,14 @@ export class BiowcBarplot extends LitElement {
       ._getMainDiv()
       .append('div')
       .attr('class', 'tooltip')
+      .style('font-family', 'Arial,Helvetica,sans-serif')
       .style('opacity', 0)
-      .style('background-color', 'black')
+      .style('background-color', 'white')
       .style('border-radius', '5px')
       .style('padding', '10px')
-      .style('color', 'white')
-      .style('position', 'absolute');
+      .style('color', 'black')
+      .style('position', 'absolute')
+      .style('border', '2px solid black');
 
     // clickBar
     const barRect = bar
