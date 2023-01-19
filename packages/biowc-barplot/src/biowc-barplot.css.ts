@@ -40,7 +40,7 @@ export default css`
 
   .Bar {
     cursor: pointer;
-    // fill: rgb(0, 143, 211);
+    fill: rgb(0, 143, 211);
   }
 
   .ClickBar {
