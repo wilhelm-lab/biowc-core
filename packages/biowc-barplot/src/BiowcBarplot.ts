@@ -60,14 +60,11 @@ export class BiowcBarplot extends LitElement {
       <div>
         <div id="barplot" class="barplotClass"></div>
         <button
+          id="clear-button"
           x-small
-          class="barPlotClearSelectionButton"
-          v-if="multiSelection"
-          @click="clearSelectedBars"
-          @keyup="clearSelectedBars"
-          :disabled="
-        !this.selectedModelIds || this.selectedModelIds.length == 0
-      "
+          className="barPlotClearSelectionButton"
+          @click="${this.clearSelectedBars}"
+          disabled
         >
           Clear selection
         </button>
@@ -80,6 +77,14 @@ export class BiowcBarplot extends LitElement {
   }
 
   private onSelect() {
+    console.log(this.selectedModelIds);
+    if (this.selectedModelIds && this.selectedModelIds.length > 0) {
+      console.log('Prova-select');
+      this._getButton().attr('disabled', null);
+    } else {
+      this._getButton().attr('disabled', 1);
+    }
+
     const selectEvent = new CustomEvent('send-message', {
       detail: { sSelectedModelIds: this.selectedModelIds.join(';') },
     });
@@ -132,7 +137,14 @@ export class BiowcBarplot extends LitElement {
     return d3.select(this.shadowRoot).select('#barplot');
   }
 
+  private _getButton() {
+    // TODO: Fix without ignore
+    // @ts-ignore
+    return d3.select(this.shadowRoot).select('#clear-button');
+  }
+
   drawPlot(oData: IData) {
+    console.log(this.data.attributeType);
     const that = this;
 
     this.clearSelectedModelIds();

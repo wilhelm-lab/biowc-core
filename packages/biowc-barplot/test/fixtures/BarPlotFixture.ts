@@ -6,8 +6,8 @@ export default {
     title: 'another Example Bar Plot',
     multiSelection: true,
     data: {
-      AttributeType: 'Attribute type',
-      Dataset: 'Dataset',
+      attributeType: 'Attribute type',
+      dataset: 'Dataset',
       data: [
         {
           modelId: 0,
@@ -19,7 +19,7 @@ export default {
           tooltipText: 'Some text',
         },
         {
-          modelId: '1',
+          modelId: 1,
           labelId: 2,
           value: 2,
           minValue: 4,
@@ -28,7 +28,7 @@ export default {
           tooltipText: '',
         },
         {
-          modelId: '2',
+          modelId: 2,
           labelId: 3,
           value: 4,
           minValue: 3.9,
