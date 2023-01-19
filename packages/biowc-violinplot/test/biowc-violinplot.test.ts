@@ -72,11 +72,7 @@ describe('BiowcViolinplot', async () => {
   ];
 
   const newViolinplot = await fixture<BiowcViolinplot>(
-    html` <biowc-violinplot
-      .plotLabelValueCatds="${ViolinPlotFixture.violinPlot.plotLabelValueCatds}"
-      .chartData="${someData}"
-      ,
-    />`
+    html` <biowc-violinplot .chartData="${someData}" , />`
   );
 
   it('can run with custom data', async () => {
