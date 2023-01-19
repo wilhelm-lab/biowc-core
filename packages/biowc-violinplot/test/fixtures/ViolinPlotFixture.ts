@@ -1,14 +1,14 @@
 export default {
   violinPlot: {
-    plotLabelValueCatds: 'score',
     yAxisLabel: 'EC50',
     // plotLabelExtraFields: [],
-    plotLabelExtraFields: ['idKey', 'score', 'score', 'score'],
+    plotLabelExtraFields: ['idKey', 'catds', 'catds'],
+    simpleLabel: true,
     chartData: [
       {
         idKey: 103,
         sampleName: 'CP-724714',
-        score: 0.8,
+        scores: [{ scoreName: 'catds', scoreValue: 0.8 }],
         data: [
           {
             proteinId: 59199,
@@ -39,7 +39,7 @@ export default {
       {
         idKey: 105,
         sampleName: 'CUDC-101',
-        score: 0.7,
+        scores: [{ scoreName: 'catds', scoreValue: 0.7 }],
         data: [
           {
             proteinId: 56726,
@@ -102,7 +102,7 @@ export default {
       {
         idKey: 107,
         sampleName: 'Dacomitinib',
-        score: 0.5,
+        scores: [{ scoreName: 'catds', scoreValue: 0.5 }],
         data: [
           {
             proteinId: 48350,

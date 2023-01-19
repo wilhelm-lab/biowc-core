@@ -7,8 +7,10 @@ export default {
   title: 'BiowcViolinplot',
   component: 'biowc-violinplot',
   argTypes: {
-    plotLabelValueCatds: {control: 'text' },
-    chartData: { control: 'object' }
+    plotLabelExtraFields: {control: 'object' },
+    chartData: { control: 'object' },
+    yAxisLabel: { control: 'string' },
+    simpleLabel: {control: 'boolean'}
   },
 };
 
@@ -19,13 +21,17 @@ interface Story<T> {
 }
 
 interface ArgTypes {
-    plotLabelValueCatds: string;
+  plotLabelExtraFields: string[];
     chartData: { [key: string]: number | string | {[key: string]: number | string}[] }[];
+  yAxisLabel: string;
+  simpleLabel: boolean;
 }
 
 const Template: Story<ArgTypes> = (args: ArgTypes) => html`
   <biowc-violinplot
-    .plotLabelValueCatds="${args.plotLabelValueCatds}"
+    .yAxisLabel="${args.yAxisLabel}"
+    .simpleLabel="${args.simpleLabel}"
+    .plotLabelExtraFields="${args.plotLabelExtraFields}"
     .chartData="${args.chartData}"
   >
   </biowc-violinplot>
@@ -37,7 +43,7 @@ Regular.args = ViolinPlotFixture.violinPlot;
 export const CustomLabels = Template.bind({});
 CustomLabels.args = {
   ...Regular.args,
-  plotLabelValueCatds: 'CATDS Example',
+  plotLabelExtraFields: [],
 };
 
 export const CustomData = Template.bind({});
@@ -45,35 +51,35 @@ CustomData.args = {
   ...Regular.args,
   chartData: [
     {
-      DRUG_ID: 103,
-      TREATMENT: 'CUSTOM DRUG',
-      catds: 0.8,
+      idKey: 103,
+      sampleName: 'CP-724714',
+      scores: [{ scoreName: 'catds', scoreValue: 0.8 }],
       data: [
         {
-          PROTEIN_ID: 59199,
-          GENE_NAME: 'MAP2K5',
-          VALUE: 2.156096833453978,
+          proteinId: 59199,
+          geneName: 'MAP2K5',
+          value: 3.156096833453978,
           STD_ERROR: 377.496344653788,
           COD: 0.973658167533412,
           BIC: -19.0144925570025,
         },
         {
-          PROTEIN_ID: 80852,
-          GENE_NAME: 'OSBPL3',
-          VALUE: 2.3640446277823703,
+          proteinId: 80852,
+          geneName: 'OSBPL3',
+          value: 3.3640446277823703,
           STD_ERROR: 851.166394634132,
           COD: 0.946086446044412,
           BIC: -7.68393005312425,
         },
         {
-          PROTEIN_ID: 51261,
-          GENE_NAME: 'EGFR',
-          VALUE: 5.9513888363866225,
+          proteinId: 51261,
+          geneName: 'EGFR',
+          value: 1.9513888363866225,
           STD_ERROR: 51.9773760920471,
           COD: 0.898650157095037,
           BIC: 7.41915175882179,
         },
       ],
-    }
-]
+    },
+  ]
 };
