@@ -7,7 +7,8 @@
     "biowc-violinplot": "file:packages/biowc-violinplot",
     "d3": "^6.7.0",
     "biowc-swarmplot": "file:packages/biowc-swarmplot",
-    "download-button": "file:packages/download-button"
+    "download-button": "file:packages/download-button",
+    "biowc-lineplot": "file:packages/biowc-lineplot"
   },
   "private": true,
   "workspaces": [
