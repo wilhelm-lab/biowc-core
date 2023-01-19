@@ -32,6 +32,15 @@ type ViolinPropertiesType = {
   index: number;
 };
 
+type TooltipDataType = {
+  sampleName: string;
+  nOfPoints: number;
+  min: number;
+  max: number;
+  median: number;
+  mean: number;
+};
+
 export class BiowcViolinplot extends LitElement {
   static styles = styles;
 
@@ -56,6 +65,9 @@ export class BiowcViolinplot extends LitElement {
       ],
     },
   ];
+
+  @property({ attribute: false })
+  tooltipData: TooltipDataType[] = [];
 
   @property({ attribute: false })
   propertyPath: string = 'proteinId';
@@ -270,6 +282,12 @@ export class BiowcViolinplot extends LitElement {
         path
       );
 
+      this.tooltipData[parseInt(i, 10)] = BiowcViolinplot.populateTooltip(
+        oSortedElement,
+        path,
+        results[parseInt(i, 10)].sampleName
+      );
+
       this.addLabel(
         g,
         results[parseInt(i, 10)][
@@ -397,10 +415,19 @@ export class BiowcViolinplot extends LitElement {
 
     rect.on('mousemove', (e: MouseEvent) => {
       tip
-        .html(this.chartData[index].sampleName)
+        .html(
+          `<strong>Sample Name:</strong> ${that.tooltipData[index].sampleName} <br>
+              <strong>No of Data Points:</strong> ${that.tooltipData[index].nOfPoints} <br>
+              <strong>Min:</strong> ${that.tooltipData[index].min} <br>
+              <strong>Mean:</strong> ${that.tooltipData[index].mean} <br>
+              <strong>Median:</strong> ${that.tooltipData[index].median} <br>
+              <strong>Max:</strong> ${that.tooltipData[index].max}`
+        )
         .style('opacity', '1')
         .style('left', `${e.pageX + 10}px`)
-        .style('top', `${e.pageY - 10}px`);
+        .style('top', `${e.pageY - 10}px`)
+        .style('font-family', this.fontFamily)
+        .style('font-size', this.fontSize);
     });
 
     rect.on('mouseleave', () => {
@@ -636,6 +663,55 @@ export class BiowcViolinplot extends LitElement {
       selectionLabelBottom,
     };
     return oSelection;
+  }
+
+  static populateTooltip(
+    results: ExpressionData[],
+    path: string,
+    sampleName: string
+  ) {
+    const toolTipData: TooltipDataType = {
+      min:
+        Math.round(
+          (d3.min(
+            results.map(
+              (ed: ExpressionData) => ed[path as keyof ExpressionData] as number
+            )
+          ) as number) * 100
+        ) / 100,
+
+      max:
+        Math.round(
+          (d3.max(
+            results.map(
+              (ed: ExpressionData) => ed[path as keyof ExpressionData] as number
+            )
+          ) as number) * 100
+        ) / 100,
+
+      mean:
+        Math.round(
+          (d3.mean(
+            results.map(
+              (ed: ExpressionData) => ed[path as keyof ExpressionData] as number
+            )
+          ) as number) * 100
+        ) / 100,
+
+      median:
+        Math.round(
+          (d3.median(
+            results.map(
+              (ed: ExpressionData) => ed[path as keyof ExpressionData] as number
+            )
+          ) as number) * 100
+        ) / 100,
+
+      nOfPoints: results.length,
+      sampleName,
+    };
+
+    return toolTipData;
   }
 
   static addBoxPlot(
