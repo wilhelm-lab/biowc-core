@@ -13,7 +13,7 @@ type CurveParameterList = {
 interface InputDataset {
   id: string;
   formula: string;
-  curveParameters: CurveParameterList;
+  curveParameters: CurveParameterList; // TODO: Why are you not throwing errors?
   dataPoints: number[][];
   color: string;
   curveFunction?: Function;
@@ -296,49 +296,49 @@ export class BiowcLineplot extends LitElement {
     // .range(["#f44336", "#3b73b4"]);
 
     for (let i = 0; i < this.inputData.length; i += 1) {
-      const { dataPoints } = this.inputData[i];
-
-      dotlistGroup
-        .append('g')
-        .selectAll('dot')
-        .data(dataPoints)
-        .join('circle')
-        .attr('cx', point => this.svgXAxis((<Number[]>point)[0]))
-        .attr('cy', point => this.svgYAxis((<Number[]>point)[1]))
-        .attr('r', 4)
-        // .style('fill', colors(i))
-        .style('fill', d3v6.schemeSet2[i])
-        .on('mousemove', (e, d) =>
-          this._showTooltip(e, {
-            x: d[0].toPrecision(4),
-            y: d[1].toPrecision(4),
-          })
-        )
-        .on('mouseout', () => this._hideTooltip());
-
-      // Connect dots with a line
-
-      if (this.metaDataAttr.connectDots) {
+      if (this.inputData[i].dataPoints) {
         dotlistGroup
-          .append('path')
-          .attr('class', 'dotconnector')
-          // Sort ascending by x value
-          .datum(dataPoints.sort((a, b) => a[0] - b[0]))
-          .attr('stroke-width', 1.5)
-          .attr(
-            'd',
-            d3v6
-              .line()
-              .x(d => this.svgXAxis(d[0]))
-              .y(d => this.svgYAxis(d[1])) as ValueFn<
-              SVGPathElement,
-              number[][],
-              null
-            >
+          .append('g')
+          .selectAll('dot')
+          .data(this.inputData[i].dataPoints)
+          .join('circle')
+          .attr('cx', point => this.svgXAxis((<Number[]>point)[0]))
+          .attr('cy', point => this.svgYAxis((<Number[]>point)[1]))
+          .attr('r', 4)
+          // .style('fill', colors(i))
+          .style('fill', d3v6.schemeSet2[i])
+          .on('mousemove', (e, d) =>
+            this._showTooltip(e, {
+              x: d[0].toPrecision(4),
+              y: d[1].toPrecision(4),
+            })
           )
-          // .style('stroke', colors(i))
-          .style('stroke', d3v6.schemeSet2[i])
-          .style('fill', 'none');
+          .on('mouseout', () => this._hideTooltip());
+
+        // Connect dots with a line
+
+        if (this.metaDataAttr.connectDots) {
+          dotlistGroup
+            .append('path')
+            .attr('class', 'dotconnector')
+            // Sort ascending by x value
+            .datum(this.inputData[i].dataPoints.sort((a, b) => a[0] - b[0]))
+            .attr('stroke-width', 1.5)
+            .attr(
+              'd',
+              d3v6
+                .line()
+                .x(d => this.svgXAxis(d[0]))
+                .y(d => this.svgYAxis(d[1])) as ValueFn<
+                SVGPathElement,
+                number[][],
+                null
+              >
+            )
+            // .style('stroke', colors(i))
+            .style('stroke', d3v6.schemeSet2[i])
+            .style('fill', 'none');
+        }
       }
     }
   }
