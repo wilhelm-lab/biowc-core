@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { fixture, expect, aTimeout } from '@open-wc/testing';
 import { BiowcHistogram } from '../src/BiowcHistogram.js';
 import HistogramFixture from './fixtures/HistogramFixture.js';
+// import * as d3v6 from 'd3'; // this will be used for brush-zoom test
 
 window.customElements.define('biowc-histogram', BiowcHistogram);
 
@@ -103,6 +104,27 @@ describe('BiowcHistogram', async () => {
     const modalboxes = histogram.shadowRoot!.querySelectorAll('.modalBox');
     expect(modalboxes.length).to.equal(0);
   });
+
+  /*
+
+// CURRENTLY NOT WORKING!
+// this test (should) simulates the zoom-in by mouse-brush by a factor of 2 and then checks if the width of a bar doubled.
+
+  it('updates bar width on mousebrush', async () => {
+    const brush = histogram.shadowRoot!.querySelector<SVGRectElement>('rect.overlay');
+    const initHistogramBarWidth =
+      histogram.shadowRoot!.querySelectorAll<SVGRectElement>(
+        'rect.histogramBar')[1].width.baseVal.value
+    brush!.dispatchEvent(new MouseEvent('mousedown', { screenX: histogram.margin.left, screenY: 100 }));
+    brush!.dispatchEvent(new MouseEvent('mousemove', { screenX: 185, screenY: 100 }));
+    brush!.dispatchEvent(new MouseEvent('mouseup', { screenX: 185, screenY: 100 }));
+
+    await aTimeout(1250);
+    expect(histogram.shadowRoot!.querySelectorAll<SVGRectElement>(
+      'rect.histogramBar')[1].width.baseVal.value).to.be.closeTo(2 * initHistogramBarWidth, 0.001);
+  });
+
+*/
 
   const naHistogram = await fixture<BiowcHistogram>(
     html` <biowc-histogram
