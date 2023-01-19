@@ -6,7 +6,6 @@ import * as d3 from 'd3';
 import styles from './biowc-barplot.css';
 import '../../../download-button/dist/src/download-button.js';
 
-// fix the button
 // fix download button
 // clean code
 
@@ -32,6 +31,9 @@ export class BiowcBarplot extends LitElement {
   static styles = styles;
 
   @property({ type: Number }) counter = 5;
+
+  @property({ attribute: false })
+  myTitle: string = '';
 
   @property({ attribute: false })
   minWidth: number = 200;
@@ -451,7 +453,7 @@ export class BiowcBarplot extends LitElement {
       .attr('x', margin.left)
       .attr('y', 28)
       .attr('text-anchor', 'start')
-      .text(this.title);
+      .text(this.myTitle);
 
     BiowcBarplot.expandChartSizeToTitle(svg, title, width, margin);
   }

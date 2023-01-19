@@ -3,7 +3,7 @@ export default {
     minWidth: 600,
     minHeight: 400,
     barWidth: 11,
-    title: 'another Example Bar Plot',
+    myTitle: 'another Example Bar Plot',
     multiSelection: true,
     data: {
       attributeType: 'Attribute type',
