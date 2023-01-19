@@ -115,7 +115,6 @@ export class BiowcSwarmplot extends LitElement {
       const widthRelativeToMargin: number = width - margin.left - margin.right;
 
       const center: number = widthRelativeToMargin / 2 + margin.left + 50;
-      console.log(center);
 
       svg
         .append('line')
@@ -165,9 +164,14 @@ export class BiowcSwarmplot extends LitElement {
     const widthRelativeToMargin = width - margin.left - margin.right;
     const centerX = widthRelativeToMargin / 2 + margin.left + 50;
 
+    const filterData = dataSet.filter(
+      item =>
+        !Number.isNaN(item[fieldOfTable as keyof swarmDataType] as number) &&
+        !Number.isNaN(item['sizeR' as keyof swarmDataType] as number)
+    );
     const simulation = d3
       // @ts-ignore
-      .forceSimulation(dataSet)
+      .forceSimulation(filterData)
       .force(
         'y',
         d3
@@ -185,11 +189,11 @@ export class BiowcSwarmplot extends LitElement {
       return simulation.tick(10);
     };
 
-    dataSet.forEach(applySimulation);
+    filterData.forEach(applySimulation);
 
     const namesCircles = svg
       .selectAll('.names')
-      .data(dataSet, (d: any) => d[nominalField]);
+      .data(filterData, (d: any) => d[nominalField]);
     namesCircles
       .enter()
       .append('circle')
@@ -262,7 +266,7 @@ export class BiowcSwarmplot extends LitElement {
     const tooltip: any = this._getMainDiv()
       .append('div')
       .attr('class', 'tooltip')
-      .style('opacity', 1);
+      .style('opacity', 0);
 
     const yAxis = d3.axisRight(yScale).ticks(10, '.1f').tickSizeOuter(0);
 
