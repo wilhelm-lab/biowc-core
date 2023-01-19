@@ -57,6 +57,12 @@ export class BiowcSwarmplot extends LitElement {
   @property({ attribute: false })
   LegendY: number = 40;
 
+  @property({ attribute: false })
+  width: number = 400;
+
+  @property({ attribute: false })
+  height: number = 500;
+
   render(): HTMLTemplateResult {
     return html` <div style="display: flex">
       <div id="swarmplot"></div>
@@ -105,24 +111,29 @@ export class BiowcSwarmplot extends LitElement {
       const min: number | undefined = q1 - 1.5 * interQuantileRange;
       const max: number | undefined = q1 + 1.5 * interQuantileRange;
       const recHeigth: number = yScale(q1) - yScale(q3);
-      const center: number = width - margin.left;
+
+      const widthRelativeToMargin: number = width - margin.left - margin.right;
+
+      const center: number = widthRelativeToMargin / 2 + margin.left + 50;
+      console.log(center);
 
       svg
         .append('line')
         // .attr('x1', center) // - 3 * margin.left)
         // .attr('x2', center)
-        .attr('x1', center - 3 * margin.left)
-        .attr('x2', center - 3 * margin.left)
+        .attr('x1', center)
+        .attr('x2', center)
         .attr('y1', yScale(min))
         .attr('y2', yScale(max))
         .attr('stroke', 'black');
 
+      const halfLineWidth: number = widthRelativeToMargin / 3;
       svg
         .append('rect')
-        .attr('x', center - (4 * margin.left + margin.right))
+        .attr('x', center - halfLineWidth)
         .attr('y', yScale(q3))
         .attr('height', recHeigth)
-        .attr('width', 2 * (margin.left + margin.right))
+        .attr('width', halfLineWidth * 2)
         .attr('stroke', 'black')
         .attr('opacity', 0.5)
         .style('fill', 'grey');
@@ -131,8 +142,8 @@ export class BiowcSwarmplot extends LitElement {
         .data([min, median, max])
         .enter()
         .append('line')
-        .attr('x1', center - (4 * margin.left + margin.right))
-        .attr('x2', center - (2 * margin.left - margin.right))
+        .attr('x1', center - halfLineWidth)
+        .attr('x2', center + halfLineWidth)
         .attr('y1', (d: any) => yScale(d))
         .attr('y2', (d: any) => yScale(d))
         .attr('stroke', 'black');
@@ -151,6 +162,9 @@ export class BiowcSwarmplot extends LitElement {
   ) {
     const nominalField: string = fieldName;
 
+    const widthRelativeToMargin = width - margin.left - margin.right;
+    const centerX = widthRelativeToMargin / 2 + margin.left + 50;
+
     const simulation = d3
       // @ts-ignore
       .forceSimulation(dataSet)
@@ -163,15 +177,15 @@ export class BiowcSwarmplot extends LitElement {
           )
           .strength(1)
       ) // Increase velocity
-      .force('x', d3.forceX(height / 2 - margin.bottom / 2))
+      .force('x', d3.forceX(centerX))
       .force('collide', d3.forceCollide(4))
-      // .force('center', d3.forceCenter(width / 2, height / 2))
       .stop();
-    const fakeFn = function fakeFn() {
+
+    const applySimulation = function fakeFn() {
       return simulation.tick(10);
     };
 
-    dataSet.forEach(fakeFn);
+    dataSet.forEach(applySimulation);
 
     const namesCircles = svg
       .selectAll('.names')
@@ -227,14 +241,17 @@ export class BiowcSwarmplot extends LitElement {
     svg.append('g').attr('class', 'lines');
     svg.append('g').attr('class', 'selcirc');
 
+    const heightRelativeToMargin: number =
+      this.height - margin.top - margin.bottom;
+
     const titlePlot: string = `${this.swarmTitlePrefix} (${this.swarmTitle})`;
     svg
       .append('text')
       .attr('class', 'y label')
       .attr('transform', 'rotate(-90)')
       .attr('text-anchor', 'middle')
-      .attr('x', -180)
-      .attr('y', 15)
+      .attr('x', -margin.top - heightRelativeToMargin / 2)
+      .attr('y', margin.left - 10)
       .text(titlePlot);
 
     const xLine: any = svg
@@ -273,6 +290,7 @@ export class BiowcSwarmplot extends LitElement {
       .attr('class', 'd3')
       .attr('width', width)
       .attr('height', height);
+
     const yScale = d3
       .scaleLinear()
       .range([height - margin.bottom, margin.top])
@@ -287,9 +305,12 @@ export class BiowcSwarmplot extends LitElement {
 
   private _plotSwarm() {
     // set the dimensions and margins of the graph
-    const margin: marginType = { top: 50, right: 10, bottom: 100, left: 50 };
-    const width: number = 400;
-    const height: number = 500;
+    const { width } = this;
+    const { height } = this;
+
+    // The D3 axes will exceed the width & height a bit, so we define a hard-coded margin
+    // https://gist.github.com/mbostock/3019563
+    const margin: marginType = { top: 50, right: 30, bottom: 50, left: 30 };
 
     const pltobj: any = this.initaxes(
       width,

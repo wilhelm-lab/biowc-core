@@ -20,5 +20,7 @@ export default {
       { 'Z-score': 0.5, 'Sample name': 'sample13', colorID: 'grey', sizeR: 3 },
     ],
     drawBoxPlot: true,
+    width: 300,
+    height: 450,
   },
 };
