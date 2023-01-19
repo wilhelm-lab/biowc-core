@@ -4,6 +4,7 @@ import * as d3v6 from 'd3';
 import { ScaleLinear, ValueFn } from 'd3';
 import styles from './biowc-lineplot.css';
 // import * as scale from "d3-scale";
+import '../../../download-button/dist/src/download-button.js';
 
 type CurveParameterList = {
   [key: string]: number;
@@ -62,7 +63,17 @@ export class BiowcLineplot extends LitElement {
   // margin = { top: 0, right: 0, bottom: 0, left: 0 };
 
   render() {
-    return html` <div id="lineplot"></div>`;
+    return html` <div style="display: flex">
+      <div id="lineplot"></div>
+      <download-button
+        .svgComponent="${this}"
+        style="margin-left: 20px;"
+      ></download-button>
+    </div>`;
+  }
+
+  public exportSvg() {
+    return this.shadowRoot?.querySelector('svg')?.outerHTML;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
