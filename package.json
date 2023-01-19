@@ -2,6 +2,7 @@
   "name": "root",
   "dependencies": {
     "biowc-scatter": "file:packages/biowc-scatter",
+    "biowc-vennplot": "file:packages/biowc-vennplot",
     "download-button": "file:packages/download-button"
   },
   "private": true,
