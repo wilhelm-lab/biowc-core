@@ -18,6 +18,10 @@ describe('BiowcSwarmplot', async () => {
     />`
   );
 
+  const emptySwarmPlot = await fixture<BiowcSwarmplot>(
+    html`<biowc-swarmplot></biowc-swarmplot>`
+  );
+
   it('has empty x labels by default', async () => {
     const el = await fixture<BiowcSwarmplot>(
       html`<biowc-swarmplot></biowc-swarmplot>`
@@ -26,12 +30,19 @@ describe('BiowcSwarmplot', async () => {
     expect(el.xLabel).to.equal('');
   });
 
-  it('has empty x values by default', async () => {
-    const el = await fixture<BiowcSwarmplot>(
-      html`<biowc-swarmplot></biowc-swarmplot>`
-    );
+  it('has empty data array by default', async () => {
+    expect(emptySwarmPlot.swarmData.length).to.equal(0);
+  });
 
-    expect(el.swarmData.length).to.equal(0);
+  it('still renders axis if there is no data', () => {
+    const axisPaths = emptySwarmPlot.shadowRoot!.querySelectorAll('.domain');
+    // @ts-ignore
+    const pathLengths = [...axisPaths].map((path: SVGPathElement) =>
+      path.getTotalLength()
+    );
+    pathLengths.forEach((l: number) => {
+      expect(l).to.be.greaterThan(0);
+    });
   });
 
   it('can override the x label via attribute', async () => {
@@ -52,7 +63,7 @@ describe('BiowcSwarmplot', async () => {
     expect(el.swarmData.length).to.equal(1);
   });
 
-  it('renders 10 circles ', async () => {
+  it('renders 13 circles ', async () => {
     const circles = swarmplot.shadowRoot!.querySelectorAll('circle');
     expect(circles.length).to.equal(13);
   });
