@@ -143,13 +143,13 @@ const userInput = [
 ];
 
 const plotMetaAttributes = {
-  width: 500,
+  width: 800,
   height: 500,
-  xAxisLabel: 'This is the x Axis',
+  xAxisLabel: 'Very important x axis',
   yAxisLabel: 'This is the y Axis',
-  curveMinX: -5,
+  curveMinX: -10,
   curveMaxX: 5,
-  connectDots: true, // TODO: Add check in component
+  connectDots: false, // TODO: Add check in component
 };
 
 export default {

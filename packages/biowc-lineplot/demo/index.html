@@ -19,15 +19,8 @@
     render(
       html`
         <biowc-lineplot
-          .dataPoints = "${LinePlotFixture.basicLineplot.dataPoints}"
-                        .formulas="${LinePlotFixture.parabola.formulas}"
-                        .curveParameters="${LinePlotFixture.parabola.curveParameters}"
-                        .curveMinX="${LinePlotFixture.parabola.curveMinX}"
-                        .curveMaxX="${LinePlotFixture.parabola.curveMaxX}"
-                        .width="${LinePlotFixture.complexLineplot.width}"
-                        .height="${LinePlotFixture.complexLineplot.height}"
-                        .xAxisLabel="${LinePlotFixture.basicLineplot.xAxisLabel}"
-                        .yAxisLabel="${LinePlotFixture.basicLineplot.yAxisLabel}">
+          .inputData = "${LinePlotFixture.userInput}"
+          .metaDataAttr = "${LinePlotFixture.plotMetaAttributes}">
         </biowc-lineplot>
       `,
       document.querySelector('#demo')

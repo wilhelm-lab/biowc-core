@@ -18,44 +18,34 @@ interface InputDataset {
   color: string;
 }
 
+interface MetaDataAttributes {
+  width: number;
+  height: number;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
+  curveMinX: number;
+  curveMaxX: number;
+  curveMinY?: number;
+  curveMaxY?: number;
+  connectDots: boolean; // TODO: Add check in component
+}
+
 export class BiowcLineplot extends LitElement {
   static styles = styles;
 
   @property({ attribute: false })
-  inputData!: InputDataset[];
+  inputData: InputDataset[] = [];
 
   @property({ attribute: false })
+  metaDataAttr: MetaDataAttributes = {
+    width: 400,
+    height: 400,
+    curveMinX: -5,
+    curveMaxX: 5,
+    connectDots: true,
+  };
+
   dataPoints: number[][][] = [];
-
-  @property({ attribute: false })
-  width: number = 400;
-
-  @property({ attribute: false })
-  height: number = 400;
-
-  @property({ attribute: false })
-  xAxisLabel: string = '';
-
-  @property({ attribute: false })
-  yAxisLabel: string = '';
-
-  @property({ attribute: false })
-  formulas: string[] = [];
-
-  @property({ attribute: false })
-  curveParameters: CurveParameterList[] = [];
-
-  @property({ attribute: false })
-  curveMinX: number = -3;
-
-  @property({ attribute: false })
-  curveMaxX: number = 3;
-
-  @property({ attribute: false })
-  curveMinY: number | null = null;
-
-  @property({ attribute: false })
-  curveMaxY: number | null = null;
 
   svgXAxis: ScaleLinear<any, any> = d3v6.scaleLinear();
 
@@ -94,14 +84,16 @@ export class BiowcLineplot extends LitElement {
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
-    for (let i = 0; i < this.formulas.length; i += 1) {
+    for (let i = 0; i < this.inputData.length; i += 1) {
       const curveFunction = BiowcLineplot.createCurveFunction(
-        this.formulas[i],
-        this.curveParameters[i]
+        this.inputData[i].formula,
+        this.inputData[i].curveParameters
       );
       this.curveFunctions.push(curveFunction);
       this.curvePoints.push(this.calculateCurvePoints(curveFunction));
+      this.dataPoints.push(this.inputData[i].dataPoints);
     }
+
     this.createAxes();
     this._initializeTooltip();
     this._initializeAuxiliaryLines();
@@ -170,17 +162,23 @@ export class BiowcLineplot extends LitElement {
 
   private createAxes() {
     const widthRelativeToMargin =
-      this.width - this.margin.left - this.margin.right - this.margin.yAxis;
+      this.metaDataAttr.width -
+      this.margin.left -
+      this.margin.right -
+      this.margin.yAxis;
     const heightRelativeToMargin =
-      this.height - this.margin.top - this.margin.bottom - this.margin.xAxis;
+      this.metaDataAttr.height -
+      this.margin.top -
+      this.margin.bottom -
+      this.margin.xAxis;
 
     const mainDiv = this._getMainDiv();
 
     // append the svg object to the body of the page
     const svg = mainDiv
       .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height);
+      .attr('width', this.metaDataAttr.width)
+      .attr('height', this.metaDataAttr.height);
 
     const svgGroup = svg
       .append('g')
@@ -194,20 +192,20 @@ export class BiowcLineplot extends LitElement {
       ...this.dataPoints
         .map(pointlist => pointlist.map(point => point[0]))
         .flat(),
-      this.curveMinX,
-      this.curveMaxX,
+      this.metaDataAttr.curveMinX,
+      this.metaDataAttr.curveMaxX,
     ];
 
-    if (!this.curveMinY) {
-      this.curveMinY = Math.min(
+    if (!this.metaDataAttr.curveMinY) {
+      this.metaDataAttr.curveMinY = Math.min(
         ...this.curvePoints
           .map(pointlist => pointlist.map(point => point[1]))
           .flat()
       );
     }
 
-    if (!this.curveMaxY) {
-      this.curveMaxY = Math.max(
+    if (!this.metaDataAttr.curveMaxY) {
+      this.metaDataAttr.curveMaxY = Math.max(
         ...this.curvePoints
           .map(pointlist => pointlist.map(point => point[1]))
           .flat()
@@ -218,8 +216,8 @@ export class BiowcLineplot extends LitElement {
       ...this.dataPoints
         .map(pointlist => pointlist.map(point => point[1]))
         .flat(),
-      this.curveMinY,
-      this.curveMaxY,
+      this.metaDataAttr.curveMinY,
+      this.metaDataAttr.curveMaxY,
     ];
 
     // Add x and y axis
@@ -253,16 +251,16 @@ export class BiowcLineplot extends LitElement {
         'transform',
         `translate(
       ${
-        (this.width -
+        (this.metaDataAttr.width -
           this.margin.yAxis -
           this.margin.right -
           this.margin.left) /
         2
       },
-      ${this.height - this.margin.xAxis})`
+      ${this.metaDataAttr.height - this.margin.xAxis})`
       )
       .style('text-anchor', 'middle')
-      .text(`${this.xAxisLabel}`);
+      .text(`${this.metaDataAttr.xAxisLabel}`);
 
     svgGroup
       .append('text')
@@ -272,7 +270,7 @@ export class BiowcLineplot extends LitElement {
         `translate(
       ${-this.margin.yAxis},
       ${
-        (this.height -
+        (this.metaDataAttr.height -
           this.margin.xAxis -
           this.margin.bottom -
           this.margin.top) /
@@ -280,7 +278,7 @@ export class BiowcLineplot extends LitElement {
       }) rotate(-90)`
       )
       .style('text-anchor', 'middle')
-      .text(`${this.yAxisLabel}`);
+      .text(`${this.metaDataAttr.yAxisLabel}`);
   }
 
   private _plotDots() {
@@ -296,16 +294,13 @@ export class BiowcLineplot extends LitElement {
     // .domain([0, this.dataPoints.length])
     // .range(["#f44336", "#3b73b4"]);
 
-    // TODO: Reformat like this:
-    //  for (let i = 0; i < this.inputData.length; i+=1) {
-    //    const dataPoints = this.inputData[i].dataPoints
-    //  }
+    for (let i = 0; i < this.inputData.length; i += 1) {
+      const { dataPoints } = this.inputData[i];
 
-    for (let i = 0; i < this.dataPoints.length; i += 1) {
       dotlistGroup
         .append('g')
         .selectAll('dot')
-        .data(this.dataPoints[i])
+        .data(dataPoints)
         .join('circle')
         .attr('cx', point => this.svgXAxis((<Number[]>point)[0]))
         .attr('cy', point => this.svgYAxis((<Number[]>point)[1]))
@@ -321,26 +316,29 @@ export class BiowcLineplot extends LitElement {
         .on('mouseout', this._hideTooltip);
 
       // Connect dots with a line
-      dotlistGroup
-        .append('path')
-        .attr('class', 'dotconnector')
-        // Sort ascending by x value
-        .datum(this.dataPoints[i].sort((a, b) => a[0] - b[0]))
-        .attr('stroke-width', 1.5)
-        .attr(
-          'd',
-          d3v6
-            .line()
-            .x(d => this.svgXAxis(d[0]))
-            .y(d => this.svgYAxis(d[1])) as ValueFn<
-            SVGPathElement,
-            number[][],
-            null
-          >
-        )
-        // .style('stroke', colors(i))
-        .style('stroke', d3v6.schemeSet2[i])
-        .style('fill', 'none');
+
+      if (this.metaDataAttr.connectDots) {
+        dotlistGroup
+          .append('path')
+          .attr('class', 'dotconnector')
+          // Sort ascending by x value
+          .datum(dataPoints.sort((a, b) => a[0] - b[0]))
+          .attr('stroke-width', 1.5)
+          .attr(
+            'd',
+            d3v6
+              .line()
+              .x(d => this.svgXAxis(d[0]))
+              .y(d => this.svgYAxis(d[1])) as ValueFn<
+              SVGPathElement,
+              number[][],
+              null
+            >
+          )
+          // .style('stroke', colors(i))
+          .style('stroke', d3v6.schemeSet2[i])
+          .style('fill', 'none');
+      }
     }
   }
 
@@ -454,10 +452,15 @@ export class BiowcLineplot extends LitElement {
   }
 
   calculateCurvePoints(curveFunction: Function) {
-    const curveStep = (this.curveMaxX - this.curveMinX) / 1000;
+    const curveStep =
+      (this.metaDataAttr.curveMaxX - this.metaDataAttr.curveMinX) / 1000;
     const curvePoints: number[][] = [];
 
-    for (let x = this.curveMinX; x <= this.curveMaxX; x += curveStep) {
+    for (
+      let x = this.metaDataAttr.curveMinX;
+      x <= this.metaDataAttr.curveMaxX;
+      x += curveStep
+    ) {
       curvePoints.push([x, curveFunction(x)]);
     }
     return curvePoints;
