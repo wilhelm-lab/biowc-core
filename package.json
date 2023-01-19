@@ -2,13 +2,13 @@
   "name": "root",
   "dependencies": {
     "biowc-barplot": "file:packages/biowc-barplot",
-    "biowc-scatter": "file:packages/biowc-scatter",
     "biowc-histogram": "file:packages/biowc-histogram",
+    "biowc-lineplot": "file:packages/biowc-lineplot",
+    "biowc-scatter": "file:packages/biowc-scatter",
+    "biowc-swarmplot": "file:packages/biowc-swarmplot",
     "biowc-violinplot": "file:packages/biowc-violinplot",
     "d3": "^6.7.0",
-    "biowc-swarmplot": "file:packages/biowc-swarmplot",
-    "download-button": "file:packages/download-button",
-    "biowc-lineplot": "file:packages/biowc-lineplot"
+    "download-button": "file:packages/download-button"
   },
   "private": true,
   "workspaces": [

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <title>Title</title>
+</head>
+<body>
+<div id='demo'></div>
+
+<script type='module'>
+  import { html, render } from 'lit';
+  import '../packages/biowc-barplot/dist/src/biowc-barplot.js';
+  import BarPlotFixture from '../packages/biowc-barplot/dist/test/fixtures/BarPlotFixture.js';
+  import '../packages/biowc-histogram/dist/src/biowc-histogram.js';
+  import HistogramFixture from '../packages/biowc-histogram/dist/test/fixtures/HistogramFixture.js';
+  //import '../packages/biowc-lineplot/dist/src/biowc-lineplot.js'
+  //import LineplotFixture from '../packages/biowc-lineplot/dist/test/fixtures/LinePlotFixture.js';
+  import '../packages/biowc-scatter/dist/src/biowc-scatter.js';
+  import ScatterPlotFixture from '../packages/biowc-scatter/dist/test/fixtures/ScatterPlotFixture.js';
+  import '../packages/biowc-swarmplot/dist/src/biowc-swarmplot.js';
+  import SwarmPlotFixture from '../packages/biowc-swarmplot/dist/test/fixtures/SwarmPlotFixture.js';
+  import '../packages/biowc-violinplot/dist/src/biowc-violinplot.js';
+  import ViolinPlotFixture from '../packages/biowc-violinplot/dist/test/fixtures/ViolinPlotFixture.js';
+
+  render(
+    html`
+      <div style='display: flex'>
+        <biowc-barplot
+          .minWidth='${BarPlotFixture.barPlot.minWidth}'
+          .minHeight='${BarPlotFixture.barPlot.minHeight}'
+          .barWidth='${BarPlotFixture.barPlot.barWidth}'
+          .myTitle='${BarPlotFixture.barPlot.myTitle}'
+          .multiSelection='${BarPlotFixture.barPlot.multiSelection}'
+          .data='${BarPlotFixture.barPlot.data}'
+          .sSelectedModelIds='${BarPlotFixture.barPlot.sSelectedModelIds}'
+        >
+        </biowc-barplot>
+
+        <biowc-histogram
+          .idKey='${HistogramFixture.naHistogram.idKey}'
+          .valueKey='${HistogramFixture.naHistogram.valueKey}'
+          .xLabel='${HistogramFixture.naHistogram.xLabel}'
+          .yLabel='${HistogramFixture.naHistogram.yLabel}'
+          .xValues='${HistogramFixture.naHistogram.xValues}'
+        >
+        </biowc-histogram>
+      </div>
+      <div style='display: flex'>
+        <biowc-scatter
+          .idKey='${ScatterPlotFixture.scatterPlot.idKey}'
+          .valueKey='${ScatterPlotFixture.scatterPlot.valueKey}'
+          .xLabel='${ScatterPlotFixture.scatterPlot.xLabel}'
+          .yLabel='${ScatterPlotFixture.scatterPlot.yLabel}'
+          .xValues='${ScatterPlotFixture.scatterPlot.xValues}'
+          .yValues='${ScatterPlotFixture.scatterPlot.yValues}'
+        >
+        </biowc-scatter>
+      </div>
+      <div style='display: flex'>
+        <biowc-swarmplot
+          .swarmTitle='${SwarmPlotFixture.swarmPlot.swarmTitle}'
+          .fieldName='${SwarmPlotFixture.swarmPlot.fieldName}'
+          .fieldValues='${SwarmPlotFixture.swarmPlot.fieldValues}'
+          .swarmTitlePrefix='${SwarmPlotFixture.swarmPlot.swarmTitlePrefix}'
+          .swarmData='${SwarmPlotFixture.swarmPlot.swarmData}'
+          .height='${SwarmPlotFixture.swarmPlot.height}'
+          .width='${SwarmPlotFixture.swarmPlot.width}'
+        >
+        </biowc-swarmplot>
+        <biowc-violinplot
+          .plotLabelValueCatds='${ViolinPlotFixture.violinPlot.plotLabelValueCatds}'
+          .plotLabelExtraFields='${ViolinPlotFixture.violinPlot.plotLabelExtraFields}'
+          .chartData='${ViolinPlotFixture.violinPlot.chartData}'
+          .simpleLabel='${ViolinPlotFixture.violinPlot.simpleLabel}'
+          .yAxisLabel='${ViolinPlotFixture.violinPlot.yAxisLabel}'
+        >
+        </biowc-violinplot>
+      </div>
+    `,
+    document.querySelector('#demo')
+  );
+</script>
+</body>
+</html>
