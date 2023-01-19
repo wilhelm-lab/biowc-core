@@ -74,4 +74,12 @@ export default css`
     pointer-events: none;
     font-size: 15px;
   }
+  .tooltip {
+    position: absolute;
+    font-size: 12px;
+    width: auto;
+    height: auto;
+    pointer-events: none;
+    background-color: white;
+  }
 `;

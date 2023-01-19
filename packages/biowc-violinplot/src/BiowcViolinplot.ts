@@ -229,6 +229,10 @@ export class BiowcViolinplot extends LitElement {
     this.oChartObjects.oSelections = {};
     this.oChartObjects.oSortedData = oSortedData;
     this.oChartObjects.d3YScale = y;
+    const tip = this._getMainDiv()
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0);
 
     for (const [i, oSortedElement] of Object.entries(
       this.oChartObjects.oSortedData
@@ -292,7 +296,8 @@ export class BiowcViolinplot extends LitElement {
         g,
         plotWidth,
         plotHeight,
-        parseInt(i, 10)
+        parseInt(i, 10),
+        tip
       );
 
       g.on('click', () => {
@@ -342,7 +347,8 @@ export class BiowcViolinplot extends LitElement {
     svg: any,
     plotWidth: number,
     plotHeight: number,
-    index: number
+    index: number,
+    tip: any
   ) {
     const rect = svg
       .append('svg')
@@ -362,14 +368,25 @@ export class BiowcViolinplot extends LitElement {
       .attr('fill', 'rgba(0,0,0,0.03)');
 
     const that = this;
+
     rect.on('mouseenter', () => {
       that
         ._getMainDiv()
         .select(`#violin-bbox-${index}`)
         .style('opacity', '1.0');
     });
+
+    rect.on('mousemove', (e: MouseEvent) => {
+      tip
+        .html(this.chartData[index].sampleName)
+        .style('opacity', '1')
+        .style('left', `${e.pageX + 10}px`)
+        .style('top', `${e.pageY - 10}px`);
+    });
+
     rect.on('mouseleave', () => {
       that._getMainDiv().select(`#violin-bbox-${index}`).style('opacity', '0');
+      tip.style('opacity', '0');
     });
   }
 
