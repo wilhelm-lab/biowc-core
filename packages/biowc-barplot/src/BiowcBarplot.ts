@@ -4,11 +4,14 @@ import { HTMLTemplateResult } from 'lit/development';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as d3 from 'd3';
 import styles from './biowc-barplot.css';
+import '../../../download-button/dist/src/download-button.js';
 
-// try
-// make data more generic (and simpler)
-// add colors?
+// fix the button
+// fix download button
 // clean code
+
+// advanced stuff to do if we have time:
+// add colors?
 
 interface IContent {
   modelId: number;
@@ -16,6 +19,7 @@ interface IContent {
   minValue: number;
   maxValue: number;
   label: string;
+  tooltipText: string;
 }
 
 interface IData {
@@ -26,8 +30,6 @@ interface IData {
 
 export class BiowcBarplot extends LitElement {
   static styles = styles;
-
-  // @property({ type: String }) title = 'Hey there';
 
   @property({ type: Number }) counter = 5;
 
@@ -50,19 +52,14 @@ export class BiowcBarplot extends LitElement {
   @property({ attribute: false })
   sSelectedModelIds: string = '';
 
-  // @property({ attribute: false }) title: string = "";
   @property({ attribute: false })
   multiSelection: boolean = true;
-
-  __increment() {
-    this.counter += 1;
-  }
 
   render(): HTMLTemplateResult {
     return html`
       <div>
         <div id="barplot" class="barplotClass"></div>
-        <v-btn
+        <button
           x-small
           class="barPlotClearSelectionButton"
           v-if="multiSelection"
@@ -73,7 +70,11 @@ export class BiowcBarplot extends LitElement {
       "
         >
           Clear selection
-        </v-btn>
+        </button>
+        <download-button
+          .svgComponent="${this}"
+          style="margin-left: 20px;"
+        ></download-button>
       </div>
     `;
   }
@@ -87,6 +88,32 @@ export class BiowcBarplot extends LitElement {
 
   clearSelectedModelIds() {
     this.selectedModelIds = [];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private getFullLabel(content: IContent): string[] {
+    const label = [];
+    if (content) {
+      if (content.tooltipText) label.push(content.tooltipText);
+      label.push(
+        `Value: ${content.value}`,
+        `Error bar: [${content.minValue} ; ${content.maxValue}]`
+      );
+    }
+    return label;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private getLabelSize(labels: string[]): number {
+    if (labels.length === 0) return 0;
+    const size =
+      labels
+        .map(d => d.length)
+        .sort()
+        .reverse()[0] * 8;
+    if (size < 200) return 200;
+    if (size > 350) return 350;
+    return size;
   }
 
   clearSelectedBars() {
@@ -109,9 +136,6 @@ export class BiowcBarplot extends LitElement {
     const that = this;
 
     this.clearSelectedModelIds();
-
-    // eslint-disable-next-line no-param-reassign
-    // oData.data = oData.data.sort((a, b) => b.value - a.value);
 
     const margin = {
       top: 60,
@@ -152,7 +176,6 @@ export class BiowcBarplot extends LitElement {
     const y = d3.scaleLinear().domain([minY, maxY]).range([height, 0]).nice();
 
     const yAxis = d3.axisLeft(y);
-    // .orient('left')
 
     content
       .append('g')
@@ -173,7 +196,7 @@ export class BiowcBarplot extends LitElement {
       .attr('transform', 'rotate(-90)')
       .attr('x', -height / 2)
       .attr('y', -40)
-      .text(oData.attributeType);
+      .text(oData.attributeType); // y axis that is empty
 
     // DATA BARS
     const bars = content.append('g');
@@ -221,14 +244,20 @@ export class BiowcBarplot extends LitElement {
       .attr('dy', '.75em')
       .attr('class', 'Label')
       .attr('transform', `rotate(-65 0,${height + 3})`)
-      .text(
-        d =>
-          // let labelText = !bSameDrug ? d.drug : '';
-          // labelText += !bSameDrug && !bSameCellLine ? ' : ' : '';
-          // labelText += !bSameCellLine ? d.cellLine : '';
-          // return labelText;
-          d.label
-      );
+      .text(d => d.label);
+
+    // create a tooltip
+    const tooltip = that
+      ._getMainDiv()
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0)
+      .style('background-color', 'black')
+      .style('border-radius', '5px')
+      .style('padding', '10px')
+      .style('color', 'white')
+      .style('position', 'absolute');
+
     // clickBar
     const barRect = bar
       .append('rect')
@@ -237,14 +266,19 @@ export class BiowcBarplot extends LitElement {
       .attr('height', height)
       .attr('width', this.barWidth - 1)
       .attr('modelId', d => d.modelId)
-      .on('mouseover', function () {
-        d3.select(this).style('cursor', 'pointer');
-        d3.select(this).attr('class', 'ClickBar Highlight');
+      .on('mouseover', () => tooltip.style('opacity', 0.9))
+      /* .on('mouseover',  (event, d: IContent) => {
+        if(d.tooltipText && d.tooltipText.length > 0) tooltip.style('opacity', 0.9);
+      }) */
+      .on('mousemove', (event, d: IContent) => {
+        const labels = that.getFullLabel(d);
+        tooltip
+          .html(labels.join('<br />'))
+          .style('width', `${that.getLabelSize(labels)}px`)
+          .style('left', `${event.pageX + 10}px`)
+          .style('top', `${event.pageY - 10}px`);
       })
-      .on('mouseout', function () {
-        d3.select(this).style('cursor', 'default');
-        d3.select(this).attr('class', 'ClickBar');
-      });
+      .on('mouseout', () => tooltip.style('opacity', 0));
 
     function onBarClick(f: IContent) {
       const div = that._getMainDiv();
@@ -299,12 +333,6 @@ export class BiowcBarplot extends LitElement {
       }
 
       that.onSelect();
-      /*
-      that.onModelSelected({
-        // AttributeType: oData.attributeType,
-        SelectedModelIds: that.selectedModelIds,
-      });
-       */
     }
 
     // TPS Explorer uses d3v6, ProteomicsDB uses D3v5. This if/else makes the component compatible with both
@@ -413,17 +441,6 @@ export class BiowcBarplot extends LitElement {
       .attr('text-anchor', 'start')
       .text(this.title);
 
-    /* TODO: convert this to Vue.js
-    for (i = 0; i < oData.data.length; i++) {
-        $('#ClickTipsy-' + i).tipsy({
-            gravity: 's',
-            html: true,
-            title: function() {
-                return 'cell line: ' + this.__data__.CellLine + '<br>' + 'drug: ' + this.__data__.Drug + '<br>'; // .value.toFixed(2) + " " + aProperties[0]["doseUnit"];+ '<br>';
-            }
-        });
-    } */
-
     BiowcBarplot.expandChartSizeToTitle(svg, title, width, margin);
   }
 
@@ -482,6 +499,11 @@ export class BiowcBarplot extends LitElement {
     return 75;
   }
   */
+
+  public exportSvg() {
+    // FIXME the svg does not include the css
+    return this.shadowRoot?.querySelector('svg')?.outerHTML;
+  }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
     const oData = this.data;

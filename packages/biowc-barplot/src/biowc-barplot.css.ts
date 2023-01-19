@@ -31,7 +31,8 @@ export default css`
     padding: 1px;
   }
 
-  .BarContainer .ClickBar.Highlight {
+  .BarContainer .ClickBar.Highlight,
+  .BarContainer .ClickBar:hover {
     stroke: black;
     stroke-width: 1;
     fill: transparent;
@@ -86,4 +87,20 @@ export default css`
     shape-rendering: crispEdges !important;
     text-rendering: geometricPrecision !important;
   }
+
+  /*
+  .tooltip {
+    background-color: black;
+    border-radius: 5px;
+    color: white;
+    padding: 10px;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  
+  g:hover .tooltip {
+    opacity: 1;
+  }
+  */
 `;
