@@ -113,10 +113,51 @@ const parabola = {
   curveMaxX: 5,
 };
 
+const userInput = [
+  {
+    id: 'dataset1',
+    formula: 'return x+abscissa',
+    curveParameters: { abscissa: 2 },
+    dataPoints: [
+      [0, 1],
+      [2, 5],
+      [1, 2],
+      [3, 4],
+      [4, 6],
+    ],
+    color: '#58631c',
+  },
+
+  {
+    id: 'dataset2',
+    formula: 'return x**2+abscissa',
+    curveParameters: { abscissa: 2 },
+    dataPoints: [
+      [1, 7],
+      [-1, 0],
+      [0, 3],
+      [2, 5],
+      [-2, -2],
+    ],
+  },
+];
+
+const plotMetaAttributes = {
+  width: 500,
+  height: 500,
+  xAxisLabel: 'This is the x Axis',
+  yAxisLabel: 'This is the y Axis',
+  curveMinX: -5,
+  curveMaxX: 5,
+  connectDots: true, // TODO: Add check in component
+};
+
 export default {
   basicLineplot,
   oneDotLineplot,
   emptyLineplot,
   parabola,
   complexLineplot,
+  userInput,
+  plotMetaAttributes,
 };

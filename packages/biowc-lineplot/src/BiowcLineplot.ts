@@ -10,8 +10,19 @@ type CurveParameterList = {
   [key: string]: number;
 };
 
+interface InputDataset {
+  id: string;
+  formula: string;
+  curveParameters: CurveParameterList;
+  dataPoints: number[][];
+  color: string;
+}
+
 export class BiowcLineplot extends LitElement {
   static styles = styles;
+
+  @property({ attribute: false })
+  inputData!: InputDataset[];
 
   @property({ attribute: false })
   dataPoints: number[][][] = [];
@@ -247,7 +258,7 @@ export class BiowcLineplot extends LitElement {
           this.margin.right -
           this.margin.left) /
         2
-      }, 
+      },
       ${this.height - this.margin.xAxis})`
       )
       .style('text-anchor', 'middle')
@@ -284,6 +295,11 @@ export class BiowcLineplot extends LitElement {
     // .scaleLinear<string>()
     // .domain([0, this.dataPoints.length])
     // .range(["#f44336", "#3b73b4"]);
+
+    // TODO: Reformat like this:
+    //  for (let i = 0; i < this.inputData.length; i+=1) {
+    //    const dataPoints = this.inputData[i].dataPoints
+    //  }
 
     for (let i = 0; i < this.dataPoints.length; i += 1) {
       dotlistGroup
