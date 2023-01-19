@@ -22,6 +22,12 @@ export class BiowcLineplot extends LitElement {
   height: number = 400;
 
   @property({ attribute: false })
+  xAxisLabel: string = '';
+
+  @property({ attribute: false })
+  yAxisLabel: string = '';
+
+  @property({ attribute: false })
   formulas: string[] = [];
 
   @property({ attribute: false })
@@ -57,7 +63,7 @@ export class BiowcLineplot extends LitElement {
 
   // The D3 axes will exceed the width & height a bit, so we define a hard-coded margin
   // https://gist.github.com/mbostock/3019563
-  margin = { top: 20, right: 20, bottom: 20, left: 20 };
+  margin = { top: 20, right: 20, bottom: 20, left: 20, xAxis: 30, yAxis: 30 };
 
   // margin = { top: 0, right: 0, bottom: 0, left: 0 };
 
@@ -142,9 +148,9 @@ export class BiowcLineplot extends LitElement {
 
   private createAxes() {
     const widthRelativeToMargin =
-      this.width - this.margin.left - this.margin.right;
+      this.width - this.margin.left - this.margin.right - this.margin.yAxis;
     const heightRelativeToMargin =
-      this.height - this.margin.top - this.margin.bottom;
+      this.height - this.margin.top - this.margin.bottom - this.margin.xAxis;
 
     const mainDiv = this._getMainDiv();
 
@@ -156,7 +162,10 @@ export class BiowcLineplot extends LitElement {
 
     const svgGroup = svg
       .append('g')
-      .attr('transform', `translate(${this.margin.left},${this.margin.top})`)
+      .attr(
+        'transform',
+        `translate(${this.margin.left + this.margin.xAxis},${this.margin.top})`
+      )
       .attr('id', 'svgGroupElement');
 
     const allXValues = [
@@ -213,6 +222,43 @@ export class BiowcLineplot extends LitElement {
       .range([heightRelativeToMargin, 0]);
 
     svgGroup.append('g').call(d3v6.axisLeft(this.svgYAxis));
+
+    // Add x axis label
+
+    svgGroup
+      .append('text')
+      .attr(
+        'transform',
+        `translate(
+      ${
+        (this.width -
+          this.margin.yAxis -
+          this.margin.right -
+          this.margin.left) /
+        2
+      }, 
+      ${this.height - this.margin.xAxis})`
+      )
+      .style('text-anchor', 'middle')
+      .text(`${this.xAxisLabel}`);
+
+    svgGroup
+      .append('text')
+      // .attr('transform', 'rotate(-90)')
+      .attr(
+        'transform',
+        `translate(
+      ${-this.margin.yAxis},
+      ${
+        (this.height -
+          this.margin.xAxis -
+          this.margin.bottom -
+          this.margin.top) /
+        2
+      }) rotate(-90)`
+      )
+      .style('text-anchor', 'middle')
+      .text(`${this.yAxisLabel}`);
   }
 
   private _plotDots() {
