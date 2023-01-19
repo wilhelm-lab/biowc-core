@@ -105,7 +105,7 @@ const complexLineplot = {
 };
 
 const parabola = {
-  formulas: ['return x**2+abscissa', 'return (x+offset)**2'],
+  formulas: ['return x**2+abscissa', 'return (-0.2*x+offset)**3'],
   curveParameters: [{ abscissa: 0.5 }, { offset: -1 }],
   curveMinX: -5,
   curveMaxX: 5,

@@ -59,6 +59,8 @@ export class BiowcLineplot extends LitElement {
   // https://gist.github.com/mbostock/3019563
   margin = { top: 20, right: 20, bottom: 20, left: 20 };
 
+  // margin = { top: 0, right: 0, bottom: 0, left: 0 };
+
   render() {
     return html` <div id="lineplot"></div>`;
   }
@@ -150,7 +152,9 @@ export class BiowcLineplot extends LitElement {
     const svg = mainDiv
       .append('svg')
       .attr('width', this.width)
-      .attr('height', this.height)
+      .attr('height', this.height);
+
+    const svgGroup = svg
       .append('g')
       .attr('transform', `translate(${this.margin.left},${this.margin.top})`)
       .attr('id', 'svgGroupElement');
@@ -198,7 +202,7 @@ export class BiowcLineplot extends LitElement {
       .domain([this.minX, this.maxX])
       .range([0, widthRelativeToMargin]);
 
-    svg
+    svgGroup
       .append('g')
       .attr('transform', `translate(0,${heightRelativeToMargin})`)
       .call(d3v6.axisBottom(this.svgXAxis));
@@ -208,16 +212,16 @@ export class BiowcLineplot extends LitElement {
       .domain([this.minY, this.maxY])
       .range([heightRelativeToMargin, 0]);
 
-    svg.append('g').call(d3v6.axisLeft(this.svgYAxis));
+    svgGroup.append('g').call(d3v6.axisLeft(this.svgYAxis));
   }
 
   private _plotDots() {
     const mainDiv = this._getMainDiv();
 
-    const svg = mainDiv.select('#svgGroupElement');
+    const svgGroup = mainDiv.select('#svgGroupElement');
 
     // Add dots
-    const dotlistGroup = svg.append('g').attr('id', 'dotlistGroup');
+    const dotlistGroup = svgGroup.append('g').attr('id', 'dotlistGroup');
 
     // const colors = scale
     // .scaleLinear<string>()
@@ -269,9 +273,9 @@ export class BiowcLineplot extends LitElement {
 
   private _plotCurves() {
     const mainDiv = this._getMainDiv();
-    const svg = mainDiv.select('#svgGroupElement');
+    const svgGroup = mainDiv.select('#svgGroupElement');
 
-    const curveGroup = svg.append('g').attr('id', 'curveGroup');
+    const curveGroup = svgGroup.append('g').attr('id', 'curveGroup');
     const line = d3v6
       .line()
       .curve(d3v6.curveLinear)
@@ -305,7 +309,21 @@ export class BiowcLineplot extends LitElement {
         .style('opacity', 0)
         // Add mouseevent to invisible curve
         .on('mousemove', e => {
-          const xValue = this.svgXAxis.invert(e.clientX - this.margin.left);
+          // Get mouse event position relative to the svg object
+          // Copied from here: https://stackoverflow.com/questions/10298658/mouse-position-inside-autoscaled-svg
+          const svg = this._getMainDiv().select('svg');
+          const svgPoint = (<SVGSVGElement>svg.node())!.createSVGPoint();
+          function cursorPoint(event: MouseEvent) {
+            svgPoint.x = event.clientX;
+            svgPoint.y = event.clientY;
+            return svgPoint.matrixTransform(
+              (<SVGGraphicsElement>svg.node())!.getScreenCTM()!.inverse()
+            );
+          }
+          const loc = cursorPoint(e);
+          // We need the original xValue in our data domain. So we call the inverse function of the xAxis
+          const xValue = this.svgXAxis.invert(loc.x - this.margin.left);
+          // Then we calculate the y position by feeding the x value into the function
           const yValue = this.curveFunctions[i](xValue);
           // Get auxiliary lines, update their positions, and make them visible
           this._getMainDiv()
