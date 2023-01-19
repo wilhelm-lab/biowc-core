@@ -1,24 +1,21 @@
-/*
 import { html } from 'lit';
 import { fixture, expect } from '@open-wc/testing';
 import { BiowcLineplot } from '../src/BiowcLineplot.js';
 import '../src/biowc-lineplot.js';
 import LinePlotFixture from './fixtures/LinePlotFixture.js';
+
 describe('BiowcLineplot', async () => {
   it('consists only of 2-dimensional points', () => {
     expect(
-      LinePlotFixture.basicLineplot.dataPoints[0]
+      LinePlotFixture.basicLineplot[0].dataPoints
         .map(elem => elem.length)
         .every(len => len === 2)
     ).to.be.true;
   });
 
   const simpleLineplot = await fixture<BiowcLineplot>(
-    html`
-      <biowc-lineplot .dataPoints=${LinePlotFixture.basicLineplot.dataPoints} />
-    `
+    html` <biowc-lineplot .inputData="${LinePlotFixture.basicLineplot}" /> `
   );
-
   it('renders every line with a different color', () => {
     const connectingLines = simpleLineplot.shadowRoot!.querySelectorAll(
       '.dotconnector'
@@ -33,9 +30,7 @@ describe('BiowcLineplot', async () => {
   });
 
   const emptyLineplot = await fixture<BiowcLineplot>(
-    html`<biowc-lineplot
-      .dataPoints=${LinePlotFixture.emptyLineplot.dataPoints}
-    />`
+    html` <biowc-lineplot .inputData="${LinePlotFixture.emptyLineplot}" />`
   );
 
   it('still renders axes if there is no data', () => {
@@ -56,12 +51,9 @@ describe('BiowcLineplot', async () => {
       )).getTotalLength()
     ).to.equal(0);
   });
+
   const complexLineplot = await fixture<BiowcLineplot>(
-    html`
-      <biowc-lineplot
-        .dataPoints=${LinePlotFixture.complexLineplot.dataPoints}
-      />
-    `
+    html` <biowc-lineplot .inputData=${LinePlotFixture.complexLineplot} /> `
   );
 
   it('renders every line with a different color for more than 8 lines', () => {
@@ -89,4 +81,3 @@ describe('BiowcLineplot', async () => {
     await expect(el).shadowDom.to.be.accessible();
   });
 });
-*/

@@ -16,6 +16,8 @@ interface InputDataset {
   curveParameters: CurveParameterList;
   dataPoints: number[][];
   color: string;
+  curveFunction?: Function;
+  curvePoints?: number[][];
 }
 
 interface MetaDataAttributes {
@@ -45,15 +47,9 @@ export class BiowcLineplot extends LitElement {
     connectDots: true,
   };
 
-  dataPoints: number[][][] = [];
-
   svgXAxis: ScaleLinear<any, any> = d3v6.scaleLinear();
 
   svgYAxis: ScaleLinear<any, any> = d3v6.scaleLinear();
-
-  curveFunctions: Function[] = [];
-
-  curvePoints: number[][][] = [];
 
   minX!: number;
 
@@ -85,13 +81,15 @@ export class BiowcLineplot extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues) {
     for (let i = 0; i < this.inputData.length; i += 1) {
-      const curveFunction = BiowcLineplot.createCurveFunction(
-        this.inputData[i].formula,
-        this.inputData[i].curveParameters
-      );
-      this.curveFunctions.push(curveFunction);
-      this.curvePoints.push(this.calculateCurvePoints(curveFunction));
-      this.dataPoints.push(this.inputData[i].dataPoints);
+      if (this.inputData[i].formula && this.inputData[i].curveParameters) {
+        this.inputData[i].curveFunction = BiowcLineplot.createCurveFunction(
+          this.inputData[i].formula,
+          this.inputData[i].curveParameters
+        );
+        this.inputData[i].curvePoints = this.calculateCurvePoints(
+          <Function>this.inputData[i].curveFunction
+        );
+      }
     }
 
     this.createAxes();
@@ -189,36 +187,39 @@ export class BiowcLineplot extends LitElement {
       .attr('id', 'svgGroupElement');
 
     const allXValues = [
-      ...this.dataPoints
-        .map(pointlist => pointlist.map(point => point[0]))
+      ...this.inputData
+        .filter(dataset => dataset.dataPoints)
+        .map(dataset => dataset.dataPoints.map(point => point[0]))
         .flat(),
       this.metaDataAttr.curveMinX,
       this.metaDataAttr.curveMaxX,
     ];
 
-    if (!this.metaDataAttr.curveMinY) {
-      this.metaDataAttr.curveMinY = Math.min(
-        ...this.curvePoints
-          .map(pointlist => pointlist.map(point => point[1]))
-          .flat()
-      );
+    const allCurveYValues = this.inputData
+      .filter(dataset => dataset.curvePoints)
+      .map(dataset => (<number[][]>dataset.curvePoints).map(point => point[1]))
+      .flat();
+    if (!this.metaDataAttr.curveMinY && allCurveYValues.length > 0) {
+      this.metaDataAttr.curveMinY = Math.min(...allCurveYValues);
     }
 
-    if (!this.metaDataAttr.curveMaxY) {
-      this.metaDataAttr.curveMaxY = Math.max(
-        ...this.curvePoints
-          .map(pointlist => pointlist.map(point => point[1]))
-          .flat()
-      );
+    if (!this.metaDataAttr.curveMaxY && allCurveYValues.length > 0) {
+      this.metaDataAttr.curveMaxY = Math.max(...allCurveYValues);
     }
 
     const allYValues = [
-      ...this.dataPoints
-        .map(pointlist => pointlist.map(point => point[1]))
+      ...this.inputData
+        .filter(dataset => dataset.dataPoints)
+        .map(dataset => dataset.dataPoints.map(point => point[1]))
         .flat(),
-      this.metaDataAttr.curveMinY,
-      this.metaDataAttr.curveMaxY,
     ];
+    if (this.metaDataAttr.curveMinY) {
+      allYValues.push(this.metaDataAttr.curveMinY);
+    }
+
+    if (this.metaDataAttr.curveMaxY) {
+      allYValues.push(this.metaDataAttr.curveMaxY);
+    }
 
     // Add x and y axis
     this.minX = Math.min(...allXValues);
@@ -313,7 +314,7 @@ export class BiowcLineplot extends LitElement {
             y: d[1].toPrecision(4),
           })
         )
-        .on('mouseout', this._hideTooltip);
+        .on('mouseout', () => this._hideTooltip());
 
       // Connect dots with a line
 
@@ -367,68 +368,76 @@ export class BiowcLineplot extends LitElement {
         .style('stroke', strokeColor)
         .style('fill', 'none');
 
-    for (let i = 0; i < this.curvePoints.length; i += 1) {
-      // Add actual curve
-      plotCurve(this.curvePoints[i], 1.5, d3v6.schemeSet2[i]);
-      // Add thicker invisible curve - for better mouseover functionality
-      const invisibleCurve = plotCurve(
-        this.curvePoints[i],
-        10,
-        d3v6.schemeSet2[i]
-      );
-      invisibleCurve
-        .style('opacity', 0)
-        // Add mouseevent to invisible curve
-        .on('mousemove', e => {
-          // Get mouse event position relative to the svg object
-          // Copied from here: https://stackoverflow.com/questions/10298658/mouse-position-inside-autoscaled-svg
-          const svg = this._getMainDiv().select('svg');
-          const svgPoint = (<SVGSVGElement>svg.node())!.createSVGPoint();
-          function cursorPoint(event: MouseEvent) {
-            svgPoint.x = event.clientX;
-            svgPoint.y = event.clientY;
-            return svgPoint.matrixTransform(
-              (<SVGGraphicsElement>svg.node())!.getScreenCTM()!.inverse()
+    for (let i = 0; i < this.inputData.length; i += 1) {
+      if (this.inputData[i].curvePoints) {
+        // Add actual curve
+        plotCurve(
+          <number[][]>this.inputData[i].curvePoints,
+          1.5,
+          d3v6.schemeSet2[i]
+        );
+        // Add thicker invisible curve - for better mouseover functionality
+        const invisibleCurve = plotCurve(
+          <number[][]>this.inputData[i].curvePoints,
+          10,
+          d3v6.schemeSet2[i]
+        );
+        invisibleCurve
+          .style('opacity', 0)
+          // Add mouseevent to invisible curve
+          .on('mousemove', e => {
+            // Get mouse event position relative to the svg object
+            // Copied from here: https://stackoverflow.com/questions/10298658/mouse-position-inside-autoscaled-svg
+            const svg = this._getMainDiv().select('svg');
+            const svgPoint = (<SVGSVGElement>svg.node())!.createSVGPoint();
+
+            function cursorPoint(event: MouseEvent) {
+              svgPoint.x = event.clientX;
+              svgPoint.y = event.clientY;
+              return svgPoint.matrixTransform(
+                (<SVGGraphicsElement>svg.node())!.getScreenCTM()!.inverse()
+              );
+            }
+
+            const loc = cursorPoint(e);
+            // We need the original xValue in our data domain. So we call the inverse function of the xAxis
+            const xValue = this.svgXAxis.invert(
+              loc.x - this.margin.left - this.margin.xAxis
             );
-          }
-          const loc = cursorPoint(e);
-          // We need the original xValue in our data domain. So we call the inverse function of the xAxis
-          const xValue = this.svgXAxis.invert(
-            loc.x - this.margin.left - this.margin.xAxis
-          );
-          // Then we calculate the y position by feeding the x value into the function
-          const yValue = this.curveFunctions[i](xValue);
-          // Get auxiliary lines, update their positions, and make them visible
-          this._getMainDiv()
-            .select('#auxiliaryHorizontalLine')
-            .attr('x2', this.svgXAxis(xValue))
-            .attr('y1', this.svgYAxis(yValue))
-            .attr('y2', this.svgYAxis(yValue))
-            .style('opacity', 1);
+            // Then we calculate the y position by feeding the x value into the function
+            const yValue = (<Function>this.inputData[i].curveFunction)(xValue);
+            // Get auxiliary lines, update their positions, and make them visible
+            this._getMainDiv()
+              .select('#auxiliaryHorizontalLine')
+              .attr('x2', this.svgXAxis(xValue))
+              .attr('y1', this.svgYAxis(yValue))
+              .attr('y2', this.svgYAxis(yValue))
+              .style('opacity', 1);
 
-          this._getMainDiv()
-            .select('#auxiliaryVerticalLine')
-            .attr('x1', this.svgXAxis(xValue))
-            .attr('x2', this.svgXAxis(xValue))
-            .attr('y2', this.svgYAxis(yValue))
-            .style('opacity', 1);
+            this._getMainDiv()
+              .select('#auxiliaryVerticalLine')
+              .attr('x1', this.svgXAxis(xValue))
+              .attr('x2', this.svgXAxis(xValue))
+              .attr('y2', this.svgYAxis(yValue))
+              .style('opacity', 1);
 
-          this._showTooltip(e, {
-            x: xValue.toPrecision(4),
-            y: yValue.toPrecision(4),
+            this._showTooltip(e, {
+              x: xValue.toPrecision(4),
+              y: yValue.toPrecision(4),
+            });
+          })
+          .on('mouseout', () => {
+            this._getMainDiv()
+              .select('#auxiliaryHorizontalLine')
+              .style('opacity', 0);
+
+            this._getMainDiv()
+              .select('#auxiliaryVerticalLine')
+              .style('opacity', 0);
+
+            this._hideTooltip();
           });
-        })
-        .on('mouseout', () => {
-          this._getMainDiv()
-            .select('#auxiliaryHorizontalLine')
-            .style('opacity', 0);
-
-          this._getMainDiv()
-            .select('#auxiliaryVerticalLine')
-            .style('opacity', 0);
-
-          this._hideTooltip();
-        });
+      }
     }
   }
 

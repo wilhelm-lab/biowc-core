@@ -1,117 +1,155 @@
-const basicLineplot = {
-  dataPoints: [
-    [
+const basicLineplot = [
+  {
+    id: 'lineplot1',
+    dataPoints: [
       [0, 1],
       [2, 5],
       [1, 2],
       [3, 4],
       [4, 6],
     ],
-    [
+  },
+  {
+    id: 'lineplot2',
+    dataPoints: [
       [1, 7],
       [-1, 0],
       [0, 3],
       [2, 5],
       [-2, -2],
     ],
-  ],
-  width: 500,
-  height: 500,
-  xAxisLabel: 'This is the x Axis',
-  yAxisLabel: 'This is the y Axis',
-};
+  },
+];
 
-const oneDotLineplot = {
-  dataPoints: [[[1, 1]]],
-};
+const oneDotLineplot = [
+  {
+    id: 'onedot',
+    dataPoints: [[1, 1]],
+  },
+];
 
-const emptyLineplot = {
-  dataPoints: [[]],
-};
+const emptyLineplot = [
+  {
+    id: 'emptylp',
+    dataPoints: [[]],
+  },
+];
 
-const complexLineplot = {
-  dataPoints: [
-    [
+const complexLineplot = [
+  {
+    id: 'complex1',
+    dataPoints: [
       [0, 1],
       [2, 5],
       [1, 2],
       [3, 4],
       [4, 6],
     ],
-    [
+  },
+  {
+    id: 'complex2',
+    dataPoints: [
       [1, 7],
       [-1, 0],
       [0, 3],
       [2, 5],
       [-2, -2],
     ],
-    [
+  },
+  {
+    id: 'complex3',
+    dataPoints: [
       [-3, 4],
       [8, 6],
       [1, 3],
       [9, 4],
       [-1, 6],
     ],
-    [
+  },
+  {
+    id: 'complex4',
+    dataPoints: [
       [1, 1],
       [-1, 5],
       [0, 3],
       [5, 5],
       [-5, -2],
     ],
-    [
+  },
+  {
+    id: 'complex5',
+    dataPoints: [
       [4, 1],
       [2, 9],
       [1, 2],
       [3, 3],
       [8, 6],
     ],
-    [
+  },
+  {
+    id: 'complex6',
+    dataPoints: [
       [1, 7],
       [-1, 0],
       [0, 3],
       [2, 4],
       [-2, -2],
     ],
-    [
+  },
+  {
+    id: 'complex7',
+    dataPoints: [
       [0, 1],
       [2, 5],
       [1, 2],
       [3, 4],
       [4, 6],
     ],
-    [
+  },
+  {
+    id: 'complex8',
+    dataPoints: [
       [1, 7],
       [-8, 0],
       [0, 3],
       [2, 9],
       [-2, -2],
     ],
-    [
+  },
+  {
+    id: 'complex9',
+    dataPoints: [
       [0, 1],
       [2, 3],
       [1, 2],
       [3, 4],
       [4, 6],
     ],
-    [
+  },
+  {
+    id: 'complex10',
+    dataPoints: [
       [5, 7],
       [-1, -4],
       [4, 3],
       [2, 4],
       [-2, 6],
     ],
-  ],
-  width: 500,
-  height: 500,
-};
+  },
+];
 
-const parabola = {
-  formulas: ['return x**2+abscissa', 'return (-0.2*x+offset)**3'],
-  curveParameters: [{ abscissa: 0.5 }, { offset: -1 }],
-  curveMinX: -5,
-  curveMaxX: 5,
-};
+const parabola = [
+  {
+    id: 'parabola1',
+    formula: 'return x**2+abscissa',
+    curveParameters: { abscissa: 0.5 },
+  },
+  {
+    id: 'parabola2',
+    formula: 'return (-0.2*x+offset)**3',
+    curveParameters: { offset: -1 },
+  },
+];
 
 const userInput = [
   {
@@ -149,7 +187,7 @@ const plotMetaAttributes = {
   yAxisLabel: 'This is the y Axis',
   curveMinX: -10,
   curveMaxX: 5,
-  connectDots: false, // TODO: Add check in component
+  connectDots: false,
 };
 
 export default {
