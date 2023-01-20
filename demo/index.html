@@ -13,8 +13,8 @@
   import BarPlotFixture from '../packages/biowc-barplot/dist/test/fixtures/BarPlotFixture.js';
   import '../packages/biowc-histogram/dist/src/biowc-histogram.js';
   import HistogramFixture from '../packages/biowc-histogram/dist/test/fixtures/HistogramFixture.js';
-  //import '../packages/biowc-lineplot/dist/src/biowc-lineplot.js'
-  //import LineplotFixture from '../packages/biowc-lineplot/dist/test/fixtures/LinePlotFixture.js';
+  import '../packages/biowc-lineplot/dist/src/biowc-lineplot.js';
+  import LinePlotFixture from '../packages/biowc-lineplot/dist/test/fixtures/LinePlotFixture.js';
   import '../packages/biowc-scatter/dist/src/biowc-scatter.js';
   import ScatterPlotFixture from '../packages/biowc-scatter/dist/test/fixtures/ScatterPlotFixture.js';
   import '../packages/biowc-swarmplot/dist/src/biowc-swarmplot.js';
@@ -29,7 +29,7 @@
           .minWidth='${BarPlotFixture.barPlot.minWidth}'
           .minHeight='${BarPlotFixture.barPlot.minHeight}'
           .barWidth='${BarPlotFixture.barPlot.barWidth}'
-          .myTitle='${BarPlotFixture.barPlot.myTitle}'
+          .myTitle=''
           .multiSelection='${BarPlotFixture.barPlot.multiSelection}'
           .data='${BarPlotFixture.barPlot.data}'
           .sSelectedModelIds='${BarPlotFixture.barPlot.sSelectedModelIds}'
@@ -46,6 +46,10 @@
         </biowc-histogram>
       </div>
       <div style='display: flex'>
+        <biowc-lineplot
+          .inputData='${LinePlotFixture.userInput}'
+          .metaDataAttr='${{ ...LinePlotFixture.plotMetaAttributes, width: 500 }}'>
+        </biowc-lineplot>
         <biowc-scatter
           .idKey='${ScatterPlotFixture.scatterPlot.idKey}'
           .valueKey='${ScatterPlotFixture.scatterPlot.valueKey}'

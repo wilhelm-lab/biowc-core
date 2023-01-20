@@ -1,7 +1,6 @@
 import { html, TemplateResult } from 'lit';
 import '../packages/biowc-swarmplot/dist/src/biowc-swarmplot';
 import SwarmPlotFixture from '../packages/biowc-swarmplot/test/fixtures/SwarmPlotFixture';
-import { BiowcSwarmplot } from "biowc-swarmplot";
 
 export default {
   title: 'BiowcSwarmplot',
@@ -50,6 +49,7 @@ const Template: Story<ArgTypes> = (args: ArgTypes) => html`
 `;
 
 export const Regular = Template.bind({});
+// @ts-ignore
 Regular.args = SwarmPlotFixture.swarmPlot;
 
 export const CustomTitle = Template.bind({});

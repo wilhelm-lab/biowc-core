@@ -1,7 +1,7 @@
 import { html, TemplateResult } from 'lit';
 import '../packages/biowc-histogram/dist/src/biowc-histogram';
 import HistogramFixture from '../packages/biowc-histogram/test/fixtures/HistogramFixture';
-import { BiowcHistogram } from "biowc-histogram";
+import { BiowcHistogram } from '../packages/biowc-histogram';
 
 export default {
   title: 'BiowcHistogram',

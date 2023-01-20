@@ -1,6 +1,6 @@
 import { html, TemplateResult } from 'lit';
 import '../packages/biowc-barplot/dist/src/biowc-barplot';
-import BarPlotFixture from "biowc-barplot/test/fixtures/BarPlotFixture";
+import BarPlotFixture from '../packages/biowc-barplot/test/fixtures/BarPlotFixture';
 
 export default {
   title: 'BiowcBarplot',
@@ -46,6 +46,7 @@ const Template: Story<ArgTypes> = (args: ArgTypes) => html`
 `;
 
 export const Regular = Template.bind({});
+// @ts-ignore
 Regular.args = BarPlotFixture.barPlot;
 
 /*
