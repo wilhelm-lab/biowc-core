@@ -309,6 +309,8 @@ export class BiowcHistogram extends LitElement {
     // tooltip mouseover event handler
     const [tipMouseover, tipMouseout] = this._addTooltip(mainDiv);
 
+    const brushElement = svg.append('g').attr('class', 'brush');
+
     // append the bar rectangles to the svg element
     const clippedArea = svg.append('g').attr('clip-path', 'url(#clip)');
 
@@ -327,6 +329,12 @@ export class BiowcHistogram extends LitElement {
       .style('fill', this.barColor)
       .on('mousemove', tipMouseover)
       .on('mouseout', tipMouseout);
+    // starting brushzoom on top of bars does not work yet...
+    // .on('mousedown', (e: MouseEvent) => {
+    //   const brushEl = svg.select<SVGGElement>(".brush").node();
+    //   const newClickEvent = new MouseEvent('mousedown', {screenX: e.pageX, screenY: e.pageY, clientX: e.clientX, clientY: e.clientY});
+    //   brushEl!.dispatchEvent(newClickEvent);
+    // });
 
     if (this.plotKDE) {
       // Kernel density estimate graph
@@ -404,6 +412,6 @@ export class BiowcHistogram extends LitElement {
       .on('end', updateChart); // Each time the brush selection changes, trigger the 'updateChart' function
 
     // Add the brushing
-    svg.append('g').attr('class', 'brush').call(brush);
+    brushElement.call(brush);
   }
 }

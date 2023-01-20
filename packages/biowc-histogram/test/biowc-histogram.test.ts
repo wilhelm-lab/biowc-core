@@ -195,7 +195,7 @@ describe('BiowcHistogram', async () => {
   });
 
   it('sets the opacity of the tooltip to 0.9 when user hovers over it', async () => {
-    const rect = histogram.shadowRoot!.querySelector('rect');
+    const rect = histogram.shadowRoot!.querySelector('rect.histogramBar');
     rect!.dispatchEvent(new MouseEvent('mousemove'));
     await aTimeout(250);
     const tooltip = histogram.shadowRoot!.querySelector(
