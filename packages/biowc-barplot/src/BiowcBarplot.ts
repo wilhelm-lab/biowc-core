@@ -80,15 +80,13 @@ export class BiowcBarplot extends LitElement {
   }
 
   private onSelect() {
-    console.log(this.selectedModelIds);
     if (this.selectedModelIds && this.selectedModelIds.length > 0) {
-      console.log('Prova-select');
       this._getButton().attr('disabled', null);
     } else {
       this._getButton().attr('disabled', 1);
     }
 
-    const selectEvent = new CustomEvent('send-message', {
+    const selectEvent = new CustomEvent('model-selected', {
       detail: { sSelectedModelIds: this.selectedModelIds.join(';') },
     });
     this.dispatchEvent(selectEvent);
@@ -149,7 +147,6 @@ export class BiowcBarplot extends LitElement {
   }
 
   drawPlot(oData: IData) {
-    console.log(this.data.attributeType);
     const that = this;
 
     this.clearSelectedModelIds();

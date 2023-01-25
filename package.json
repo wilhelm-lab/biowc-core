@@ -3,6 +3,7 @@
   "dependencies": {
     "biowc-barplot": "file:packages/biowc-barplot",
     "biowc-scatter": "file:packages/biowc-scatter",
+    "biowc-bar-scatter-plot": "file:packages/biowc-bar-scatter-plot",
     "d3": "^6.7.0",
     "download-button": "file:packages/download-button"
   },

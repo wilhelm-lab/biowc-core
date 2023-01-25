@@ -26,9 +26,9 @@ interface ArgTypes {
   minWidth: number;
   minHeight: number;
   barWidth: number;
-  title: string;
+  myTitle: string;
   multiSelection: boolean;
-  data: { [key: string]: number | string }[];
+  data: any;
   sSelectedModelIds: number[];
 }
 
@@ -37,7 +37,7 @@ const Template: Story<ArgTypes> = (args: ArgTypes) => html`
     .minWidth="${args.minWidth}"
     .minHeight="${args.minHeight}"
     .barWidth="${args.barWidth}"
-    .title="${args.title}"
+    .myTitle="${args.myTitle}"
     .multiSelection="${args.multiSelection}"
     .data="${args.data}"
     .sSelectedModelIds="${args.sSelectedModelIds}"
@@ -48,27 +48,52 @@ const Template: Story<ArgTypes> = (args: ArgTypes) => html`
 export const Regular = Template.bind({});
 Regular.args = BarPlotFixture.barPlot;
 
-/*
-export const CustomLabels = Template.bind({});
-CustomLabels.args = {
-  ...Regular.args,
-  minWidth: 'min width',
-  minHeight: 'min height',
-};
 
 export const CustomData = Template.bind({});
 CustomData.args = {
   ...Regular.args,
-  xValues: [
-    { 'Sample name': 'sample1', abundance: 0 },
-    { 'Sample name': 'sample2', abundance: 1 },
-    { 'Sample name': 'sample3', abundance: 2 },
-  ],
-  yValues: [
-    { 'Sample name': 'sample1', abundance: 10 },
-    { 'Sample name': 'sample2', abundance: 8 },
-    { 'Sample name': 'sample3', abundance: -2 },
-  ],
+  data: {
+    attributeType: "Attribute 2",
+    dataset: 'Dataset',
+    data: [
+      {
+        modelId: 0,
+        labelId: 1,
+        value: 3.5,
+        minValue: 1,
+        maxValue: 5,
+        label: 'Exampletinib: Cellline B',
+        tooltipText: 'Some text',
+      },
+      {
+        modelId: 1,
+        labelId: 2,
+        value: 4,
+        minValue: 3,
+        maxValue: 5,
+        label: 'Whateverimab: Cellline C',
+        tooltipText: '',
+      },
+      {
+        modelId: 2,
+        labelId: 3,
+        value: 4,
+        minValue: 3.9,
+        maxValue: 4.1,
+        label: 'Foobarbazine: Cellline B',
+        tooltipText:
+          "This ",
+      },
+      {
+        modelId: 3,
+        labelId: 4,
+        value: 7,
+        minValue: 3.5,
+        maxValue: 10.5,
+        label: 'A weird label\nsomehow...',
+      },
+    ],
+  },
 };
-*/
+
 
