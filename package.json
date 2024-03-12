@@ -3,7 +3,8 @@
   "dependencies": {
     "biowc-scatter": "file:packages/biowc-scatter",
     "download-button": "file:packages/download-button",
-    "biowc-violinplot": "file:packages/biowc-violinplot"
+    "biowc-violinplot": "file:packages/biowc-violinplot",
+    "biowc-histogram": "file:packages/biowc-histogram"
   },
   "private": true,
   "workspaces": [
@@ -48,6 +49,8 @@
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint",
     "clean": "lerna run clean",
-    "test": "lerna run test"
+    "test": "lerna run test",
+    "version": "lerna version --no-private",
+    "publish": "lerna publish --no-private"
   }
 }
