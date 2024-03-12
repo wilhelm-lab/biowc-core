@@ -3,7 +3,7 @@
   "description": "Webcomponent biowc-scatter following open-wc recommendations",
   "license": "MIT",
   "author": "biowc-scatter",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "exports": {
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "d3": "^6.2.0",
-    "download-button": "^0.0.0",
+    "download-button": "^0.1.5",
     "lit": "^2.0.2"
   },
   "devDependencies": {

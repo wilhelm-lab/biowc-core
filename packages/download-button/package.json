@@ -3,7 +3,7 @@
   "description": "Webcomponent download-button following open-wc recommendations",
   "license": "MIT",
   "author": "download-button",
-  "version": "0.0.0",
+  "version": "0.1.5",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "exports": {
