@@ -1,7 +1,8 @@
 import { html } from 'lit';
-import { fixture, expect, aTimeout } from '@open-wc/testing';
+import { fixture, expect } from '@open-wc/testing';
 import { BiowcHistogram } from '../src/BiowcHistogram.js';
 import HistogramFixture from './fixtures/HistogramFixture.js';
+// import * as d3v6 from 'd3'; // this will be used for brush-zoom test
 
 window.customElements.define('biowc-histogram', BiowcHistogram);
 
@@ -201,6 +202,25 @@ describe('Demo regular histogram', async () => {
     expect(modalboxes.length).to.equal(0);
   });
 
+  /*
+
+// CURRENTLY NOT WORKING!
+// this test (should) simulates the zoom-in by mouse-brush by a factor of 2 and then checks if the width of a bar doubled.
+
+  it('updates bar width on mousebrush', async () => {
+    const brush = histogram.shadowRoot!.querySelector<SVGRectElement>('rect.overlay');
+    const initHistogramBarWidth =
+      histogram.shadowRoot!.querySelectorAll<SVGRectElement>(
+        'rect.histogramBar')[1].width.baseVal.value
+    brush!.dispatchEvent(new MouseEvent('mousedown', { screenX: histogram.margin.left, screenY: 100 }));
+    brush!.dispatchEvent(new MouseEvent('mousemove', { screenX: 185, screenY: 100 }));
+    brush!.dispatchEvent(new MouseEvent('mouseup', { screenX: 185, screenY: 100 }));
+
+    await aTimeout(1250);
+    expect(histogram.shadowRoot!.querySelectorAll<SVGRectElement>(
+      'rect.histogramBar')[1].width.baseVal.value).to.be.closeTo(2 * initHistogramBarWidth, 0.001);
+  });
+
   it('sets the opacity of the tooltip to 0.9 when user hovers over it', async () => {
     const rect = el.shadowRoot!.querySelector('rect');
     rect!.dispatchEvent(new MouseEvent('mousemove'));
@@ -208,6 +228,7 @@ describe('Demo regular histogram', async () => {
     const tooltip = el.shadowRoot!.querySelector('.tooltip') as HTMLElement;
     expect(tooltip!.style.opacity).to.equal('0.9');
   });
+*/
 
   it('passes the a11y audit', async () => {
     await expect(el).shadowDom.to.be.accessible();

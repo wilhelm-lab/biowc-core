@@ -51,7 +51,7 @@ export class BiowcHistogram extends LitElement {
     </div>`;
   }
 
-  public exportSvg() {
+  public exportsvg() {
     return this.shadowRoot?.querySelector('svg')?.outerHTML;
   }
 
@@ -86,15 +86,15 @@ export class BiowcHistogram extends LitElement {
     plotHeight: number
   ) {
     // X axis: scale and draw:
-    const x = d3v6
+    const xScale = d3v6
       .scaleLinear()
       .domain(d3v6.extent(data) as [number, number]) // can use this instead of 1000 to have the max of data: d3v6.max(data, function(d) { return +d.price })
       .range([0, plotWidth]);
 
-    svg
+    const xAxis = svg
       .append('g')
       .attr('transform', `translate(0, ${plotHeight})`)
-      .call(d3v6.axisBottom(x));
+      .call(d3v6.axisBottom(xScale));
 
     // add the x Axis label
     svg
@@ -106,7 +106,10 @@ export class BiowcHistogram extends LitElement {
       .style('text-anchor', 'middle')
       .text(`${this.xLabel}`);
 
-    return x;
+    return [xScale, xAxis] as [
+      d3v6.ScaleLinear<number, number, never>,
+      d3v6.Selection<SVGGElement, unknown, HTMLElement, any>
+    ];
   }
 
   private _drawYaxis(
@@ -193,16 +196,16 @@ export class BiowcHistogram extends LitElement {
   private static _plotKDE(
     svg: d3v6.Selection<SVGGElement, unknown, HTMLElement, any>,
     density: [number, number][],
-    xAxis: d3v6.ScaleLinear<number, number, never>,
-    yAxis: d3v6.ScaleLinear<number, number, never>,
+    xScale: d3v6.ScaleLinear<number, number, never>,
+    yScale: d3v6.ScaleLinear<number, number, never>,
     stroke = '#000',
     dasharray = '1 0'
   ) {
     const line = d3v6
       .line()
       .curve(d3v6.curveBasis)
-      .x(d => xAxis(d[0]))
-      .y(d => yAxis(d[1]));
+      .x(d => xScale(d[0]))
+      .y(d => yScale(d[1]));
 
     svg
       .append('path')
@@ -282,7 +285,7 @@ export class BiowcHistogram extends LitElement {
     }
 
     // X axis: scale and draw:
-    const xAxis = this._drawXaxis(data, svg, plotWidth, plotHeight);
+    const [xScale, xAxis] = this._drawXaxis(data, svg, plotWidth, plotHeight);
 
     const minX = d3v6.min(data) || 0;
     const maxX = d3v6.max(data) || 0;
@@ -292,7 +295,7 @@ export class BiowcHistogram extends LitElement {
     // set the parameters for the histogram
     const histogram = d3v6
       .bin()
-      .domain(xAxis.domain() as [number, number]) // then the domain of the graphic
+      .domain(xScale.domain() as [number, number]) // then the domain of the graphic
       .thresholds(thresholds);
 
     // And apply this function to data to get the bins
@@ -301,13 +304,17 @@ export class BiowcHistogram extends LitElement {
     const maxCount = d3v6.max(bins, d => d.length) || 0;
 
     // Y axis: scale and draw:
-    const yAxis = this._drawYaxis(maxCount, svg, plotHeight);
+    const yScale = this._drawYaxis(maxCount, svg, plotHeight);
 
     // tooltip mouseover event handler
     const [tipMouseover, tipMouseout] = this._addTooltip(mainDiv);
 
+    const brushElement = svg.append('g').attr('class', 'brush');
+
     // append the bar rectangles to the svg element
-    svg
+    const clippedArea = svg.append('g').attr('clip-path', 'url(#clip)');
+
+    clippedArea
       .selectAll('rect')
       .data(bins)
       .join('rect')
@@ -315,13 +322,19 @@ export class BiowcHistogram extends LitElement {
       .attr('x', 1)
       .attr(
         'transform',
-        d => `translate(${xAxis(d.x0 || 0)} , ${yAxis(d.length)})`
+        d => `translate(${xScale(d.x0 || 0)} , ${yScale(d.length)})`
       )
-      .attr('width', d => xAxis(d.x1 || 0) - xAxis(d.x0 || 0) - 1)
-      .attr('height', d => plotHeight - yAxis(d.length))
+      .attr('width', d => xScale(d.x1 || 0) - xScale(d.x0 || 0) - 1)
+      .attr('height', d => plotHeight - yScale(d.length))
       .style('fill', this.barColor)
       .on('mousemove', tipMouseover)
       .on('mouseout', tipMouseout);
+    // starting brushzoom on top of bars does not work yet...
+    // .on('mousedown', (e: MouseEvent) => {
+    //   const brushEl = svg.select<SVGGElement>(".brush").node();
+    //   const newClickEvent = new MouseEvent('mousedown', {screenX: e.pageX, screenY: e.pageY, clientX: e.clientX, clientY: e.clientY});
+    //   brushEl!.dispatchEvent(newClickEvent);
+    // });
 
     if (this.plotKDE) {
       // Kernel density estimate graph
@@ -334,9 +347,71 @@ export class BiowcHistogram extends LitElement {
       );
       // Scale the range of the data in the y domain
       const maxDensity = d3v6.max(density.map(d => d[1])) || 0;
-      yAxis.domain([0, maxDensity * 1.1]);
+      yScale.domain([0, maxDensity * 1.1]);
 
-      BiowcHistogram._plotKDE(svg, density, xAxis, yAxis);
+      BiowcHistogram._plotKDE(svg, density, xScale, yScale);
     }
+    // brushZoom implementation
+    // Add a clipPath: everything out of this area won't be drawn.
+    svg
+      .append('defs')
+      .append('svg:clipPath')
+      .attr('id', 'clip')
+      .append('svg:rect')
+      .attr('width', plotWidth)
+      .attr('height', plotHeight)
+      .attr('x', 0)
+      .attr('y', 0);
+
+    // A function that set idleTimeOut to null
+    let idleTimeout: any;
+    function idled() {
+      idleTimeout = null;
+    }
+
+    const brush = d3v6.brushX(); // Add the brush feature using the d3.brush function
+
+    // A function that update the chart for given boundaries
+    function updateChart(event: d3v6.D3BrushEvent<[number, number]>) {
+      const extent = event.selection;
+      // If no selection, back to initial coordinate. Otherwise, update X axis domain
+      if (!extent) {
+        if (!idleTimeout) {
+          idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+          return;
+        }
+        xScale.domain([minX, maxX]);
+      } else {
+        xScale.domain([
+          xScale.invert(extent[0] as number),
+          xScale.invert(extent[1] as number),
+        ]);
+        svg.select<SVGGElement>('.brush').call(brush.move, null); // This remove the grey brush area as soon as the selection has been done
+      }
+
+      // Update axis and circle position
+      xAxis.transition().duration(1000).call(d3v6.axisBottom(xScale));
+      svg
+        .selectAll<SVGGElement, { length: any; x0: any; x1: any }>(
+          'rect.histogramBar'
+        )
+        .transition()
+        .duration(1000)
+        .attr(
+          'transform',
+          d => `translate(${xScale(d.x0 || 0)} , ${yScale(d.length)})`
+        )
+        .attr('width', d => xScale(d.x1 || 0) - xScale(d.x0 || 0) - 1);
+    }
+    // Add brushing
+    brush
+      .extent([
+        [0, 0],
+        [plotWidth, plotHeight],
+      ]) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+      .on('end', updateChart); // Each time the brush selection changes, trigger the 'updateChart' function
+
+    // Add the brushing
+    brushElement.call(brush);
   }
 }
