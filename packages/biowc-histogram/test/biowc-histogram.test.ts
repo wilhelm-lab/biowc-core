@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import { fixture, expect } from '@open-wc/testing';
+import { fixture, expect, aTimeout } from '@open-wc/testing';
 import { BiowcHistogram } from '../src/BiowcHistogram.js';
 import HistogramFixture from './fixtures/HistogramFixture.js';
 // import * as d3v6 from 'd3'; // this will be used for brush-zoom test
@@ -220,15 +220,15 @@ describe('Demo regular histogram', async () => {
     expect(histogram.shadowRoot!.querySelectorAll<SVGRectElement>(
       'rect.histogramBar')[1].width.baseVal.value).to.be.closeTo(2 * initHistogramBarWidth, 0.001);
   });
+*/
 
   it('sets the opacity of the tooltip to 0.9 when user hovers over it', async () => {
-    const rect = el.shadowRoot!.querySelector('rect');
+    const rect = el.shadowRoot!.querySelector('rect.histogramBar');
     rect!.dispatchEvent(new MouseEvent('mousemove'));
     await aTimeout(250);
     const tooltip = el.shadowRoot!.querySelector('.tooltip') as HTMLElement;
     expect(tooltip!.style.opacity).to.equal('0.9');
   });
-*/
 
   it('passes the a11y audit', async () => {
     await expect(el).shadowDom.to.be.accessible();
