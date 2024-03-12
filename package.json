@@ -2,7 +2,8 @@
   "name": "root",
   "dependencies": {
     "biowc-scatter": "file:packages/biowc-scatter",
-    "download-button": "file:packages/download-button"
+    "download-button": "file:packages/download-button",
+    "biowc-histogram": "file:packages/biowc-histogram"
   },
   "private": true,
   "workspaces": [
