@@ -33,6 +33,24 @@ describe('BiowcHistogram', async () => {
     expect(el.xValues.length).to.equal(0);
   });
 
+  it('has width 460 and height 400 by default', async () => {
+    const el = await fixture<BiowcHistogram>(
+      html`<biowc-histogram></biowc-histogram>`
+    );
+
+    expect(el.height).to.equal(400);
+    expect(el.width).to.equal(460);
+  });
+
+  it('can override height and width via attribute', async () => {
+    const el = await fixture<BiowcHistogram>(
+      html`<biowc-histogram .height=${200} .width=${300}></biowc-histogram>`
+    );
+
+    expect(el.height).to.equal(200);
+    expect(el.width).to.equal(300);
+  });
+
   it('can override the x and y labels via attribute', async () => {
     const el = await fixture<BiowcHistogram>(
       html`<biowc-histogram

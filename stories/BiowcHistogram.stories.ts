@@ -14,6 +14,8 @@ export default {
     xValues: { control: 'object' },
     barColor: { control: 'text'},
     numBins: { control: 'number'},
+    width: {control: 'number'},
+    height: {control: 'number'},
     plotKDE: { control: 'boolean'}
   },
 };
@@ -35,6 +37,8 @@ const Template: Story<ArgTypes> = (args: ArgTypes) => html`
     .xValues="${args.xValues}"
     .barColor="${args.barColor}"
     .numBins="${args.numBins}"
+    .height="${args.height}"
+    .width="${args.width}"
     .plotKDE="${args.plotKDE}"
   >
   </biowc-histogram>
@@ -48,6 +52,13 @@ CustomLabels.args = {
   ...Regular.args,
   xLabel: 'xLabel',
   yLabel: 'yLabel',
+};
+
+export const CustomSize = Template.bind({});
+CustomSize.args = {
+  ...Regular.args,
+  height: 200,
+  width: 300,
 };
 
 export const CustomColor = Template.bind({});

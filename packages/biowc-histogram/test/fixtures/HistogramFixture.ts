@@ -12,6 +12,8 @@ export default {
     yLabel: 'counts',
     barColor: '#69b3a2',
     numBins: 30,
+    width: 460,
+    height: 400,
   },
   naHistogram: {
     idKey: 'Sample name',
@@ -28,6 +30,8 @@ export default {
     yLabel: 'counts',
     barColor: '#69b3a2',
     numBins: 30,
+    width: 460,
+    height: 400,
   },
   kdeHistogram: {
     idKey: 'Sample name',
@@ -44,6 +48,8 @@ export default {
     yLabel: 'counts',
     barColor: '#69b3a2',
     numBins: 30,
+    width: 460,
+    height: 400,
     plotKDE: true,
   },
   largeHistogram: {
@@ -755,5 +761,7 @@ export default {
     yLabel: 'counts',
     barColor: '#69b3a2',
     numBins: 30,
+    width: 460,
+    height: 400,
   },
 };
