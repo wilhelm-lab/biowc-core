@@ -48,6 +48,7 @@
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint",
     "clean": "lerna run clean",
-    "test": "lerna run test"
+    "test": "lerna run test",
+    "version": "lerna version --no-private"
   }
 }
