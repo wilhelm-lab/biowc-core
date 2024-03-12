@@ -2,7 +2,6 @@ import { html } from 'lit';
 import { fixture, expect, aTimeout } from '@open-wc/testing';
 import { BiowcHistogram } from '../src/BiowcHistogram.js';
 import HistogramFixture from './fixtures/HistogramFixture.js';
-// import * as d3v6 from 'd3'; // this will be used for brush-zoom test
 
 window.customElements.define('biowc-histogram', BiowcHistogram);
 
@@ -203,31 +202,39 @@ describe('Demo regular histogram', async () => {
   });
 
   /*
-
-// CURRENTLY NOT WORKING!
-// this test (should) simulates the zoom-in by mouse-brush by a factor of 2 and then checks if the width of a bar doubled.
+  // CURRENTLY NOT WORKING!
+  // this test should simulate the zoom-in by mouse-brush by a factor of 2 and then check if the width of a bar doubled.
+  // it does not seem to be possible to trigger the brush event with just MouseEvents because event.target cannot be set.
+  // might need Selenium (https://github.com/d3/d3-brush/issues/16).
 
   it('updates bar width on mousebrush', async () => {
-    const brush = histogram.shadowRoot!.querySelector<SVGRectElement>('rect.overlay');
+    const brush = el.shadowRoot!.querySelector<SVGRectElement>('g.brush');
     const initHistogramBarWidth =
-      histogram.shadowRoot!.querySelectorAll<SVGRectElement>(
+      el.shadowRoot!.querySelectorAll<SVGRectElement>(
         'rect.histogramBar')[1].width.baseVal.value
-    brush!.dispatchEvent(new MouseEvent('mousedown', { screenX: histogram.margin.left, screenY: 100 }));
-    brush!.dispatchEvent(new MouseEvent('mousemove', { screenX: 185, screenY: 100 }));
-    brush!.dispatchEvent(new MouseEvent('mouseup', { screenX: 185, screenY: 100 }));
+    
+    console.log(el);
+    brush!.dispatchEvent(new MouseEvent('mousedown', { view: window, screenX: 250, screenY: 150 }));
+    brush!.dispatchEvent(new MouseEvent('mousemove', { view: window, screenX: 250, screenY: 150 }));
+    brush!.dispatchEvent(new MouseEvent('mouseup', { view: window, screenX: 250, screenY: 150 }));
 
     await aTimeout(1250);
-    expect(histogram.shadowRoot!.querySelectorAll<SVGRectElement>(
+    expect(el.shadowRoot!.querySelectorAll<SVGRectElement>(
       'rect.histogramBar')[1].width.baseVal.value).to.be.closeTo(2 * initHistogramBarWidth, 0.001);
   });
 */
 
-  it('sets the opacity of the tooltip to 0.9 when user hovers over it', async () => {
+  it('sets the opacity of the tooltip to 0.9 when user hovers over it and back to 0 when moving away', async () => {
     const rect = el.shadowRoot!.querySelector('rect.histogramBar');
+    const tooltip = el.shadowRoot!.querySelector('.tooltip') as HTMLElement;
+
     rect!.dispatchEvent(new MouseEvent('mousemove'));
     await aTimeout(250);
-    const tooltip = el.shadowRoot!.querySelector('.tooltip') as HTMLElement;
     expect(tooltip!.style.opacity).to.equal('0.9');
+
+    rect!.dispatchEvent(new MouseEvent('mouseout'));
+    await aTimeout(350);
+    expect(tooltip!.style.opacity).to.equal('0');
   });
 
   it('passes the a11y audit', async () => {

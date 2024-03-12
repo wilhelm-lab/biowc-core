@@ -51,7 +51,7 @@ export class BiowcHistogram extends LitElement {
     </div>`;
   }
 
-  public exportsvg() {
+  public exportSvg() {
     return this.shadowRoot?.querySelector('svg')?.outerHTML;
   }
 
