@@ -2,7 +2,6 @@ import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import * as d3 from 'd3';
-import { ScaleLinear } from 'd3';
 import styles from './biowc-violinplot.css';
 import '../../../download-button/dist/src/download-button.js';
 
@@ -24,7 +23,7 @@ type ViolinPropertiesType = {
   results: ExpressionData[];
   width: number;
   localDomain: number[];
-  xScale: ScaleLinear<number, number, never>;
+  xScale: d3.ScaleLinear<number, number, never>;
   imposeMax: number;
   violinColor: string;
   resolution: number;
@@ -109,7 +108,7 @@ export class BiowcViolinplot extends LitElement {
   clippedSelectionLine: boolean = false;
 
   @property({ attribute: false })
-  yAxisLabel: string = 'yAxis';
+  yLabel: string = '';
 
   @property({ attribute: false })
   margin: {
@@ -135,7 +134,7 @@ export class BiowcViolinplot extends LitElement {
   render(): HTMLTemplateResult {
     return html`
       <div style="display: flex">
-        <div class="sapProteomicsdbViolinPlot"></div>
+        <div class="violinPlot"></div>
         <download-button
           .svgComponent="${this}"
           style="margin-left: 20px;"
@@ -158,7 +157,7 @@ export class BiowcViolinplot extends LitElement {
   private _getMainDiv() {
     // TODO: Fix without ignore
     // @ts-ignore
-    return d3.select(this.shadowRoot).select('.sapProteomicsdbViolinPlot');
+    return d3.select(this.shadowRoot).select('.violinPlot');
   }
 
   _dataObjectHasChilds() {
@@ -173,7 +172,6 @@ export class BiowcViolinplot extends LitElement {
   }
 
   drawChartWithData() {
-    const oControl = this;
     // Create SVG element. Remove old ones.
     const svgs = this._getMainDiv().selectAll('svg');
     svgs.remove();
@@ -205,15 +203,12 @@ export class BiowcViolinplot extends LitElement {
       );
     };
 
-    // var results = oControl.getChartData();
     const results = this.chartData;
 
     // copy the dataarray and sort it
     const oSortedData: ExpressionData[][] = [];
     let min = Number.MAX_VALUE;
     let max = Number.MIN_VALUE;
-    // var aDataPath = oControl.getDataPath().split('/');
-    // const aDataPath = this.dataPath.split('/')
     const oDomains: number[][] = [];
     results.forEach((e, i) => {
       // slice to copy the array
@@ -267,7 +262,7 @@ export class BiowcViolinplot extends LitElement {
         path,
         index: j,
       };
-      this.oChartObjects.oSelections[i] = oControl.addViolin(oViolinProperties);
+      this.oChartObjects.oSelections[i] = this.addViolin(oViolinProperties);
       BiowcViolinplot.addBoxPlot(
         g,
         oSortedElement,
@@ -328,7 +323,7 @@ export class BiowcViolinplot extends LitElement {
           }
         );
       }
-      oControl.addSelectionBoundingBox(
+      this.addSelectionBoundingBox(
         g,
         plotWidth,
         plotHeight,
@@ -337,7 +332,7 @@ export class BiowcViolinplot extends LitElement {
       );
 
       g.on('click', () => {
-        oControl._selectViolin(results[parseInt(i, 10)]);
+        this._selectViolin(results[parseInt(i, 10)]);
       });
       j += 1;
     } // end of for loop
@@ -359,7 +354,7 @@ export class BiowcViolinplot extends LitElement {
       .style('text-anchor', 'middle')
       .style('font-family', this.fontFamily)
       .style('font-size', this.fontSize)
-      .text(this.yAxisLabel);
+      .text(this.yLabel);
 
     if (this.simpleLabel) {
       this.plotLabelExtraFields.forEach((extraLabel: string, index: number) => {
@@ -375,8 +370,8 @@ export class BiowcViolinplot extends LitElement {
           .style('font-size', this.fontSize);
       });
     }
-    if (oControl.selectedElement) {
-      oControl.selectElement(oControl.selectedElement);
+    if (this.selectedElement) {
+      this.selectElement(this.selectedElement);
     }
   }
 
@@ -437,11 +432,10 @@ export class BiowcViolinplot extends LitElement {
   }
 
   selectElement(prop: string) {
-    const oControl = this;
-    const aPropertyPath = oControl.propertyPath.split('/');
+    const aPropertyPath = this.propertyPath.split('/');
     const { oChartObjects } = this;
 
-    const { valuePath } = oControl;
+    const { valuePath } = this;
     const aValuePath = valuePath.split('/');
 
     for (const [plotId, plot] of Object.entries(oChartObjects.oSortedData)) {
@@ -459,14 +453,14 @@ export class BiowcViolinplot extends LitElement {
         }
       }
       if (element) {
-        oControl.selectElementByValue(
+        this.selectElementByValue(
           element[
             aValuePath[aValuePath.length - 1] as keyof ExpressionData
           ] as number,
           parseInt(plotId, 10)
         );
       } else {
-        oControl.removeSelectionMarker(parseInt(plotId, 10));
+        this.removeSelectionMarker(parseInt(plotId, 10));
       }
     }
   }
@@ -841,8 +835,7 @@ export class BiowcViolinplot extends LitElement {
       throw new RangeError('No expression data provided');
     }
 
-    const oControl = this;
-    const path = oControl.valuePath;
+    const path = this.valuePath;
     const aPath = path.split('/');
     let minIndex = 0;
     let maxIndex = array.length - 1;

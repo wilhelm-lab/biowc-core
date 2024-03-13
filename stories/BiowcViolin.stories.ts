@@ -8,7 +8,7 @@ export default {
   argTypes: {
     plotLabelExtraFields: {control: 'object' },
     chartData: { control: 'object' },
-    yAxisLabel: { control: 'text' },
+    yLabel: { control: 'text' },
     simpleLabel: {control: 'boolean'}
   },
 };
@@ -22,13 +22,13 @@ interface Story<T> {
 interface ArgTypes {
   plotLabelExtraFields: string[];
     chartData: { [key: string]: number | string | {[key: string]: number | string}[] }[];
-  yAxisLabel: string;
+  yLabel: string;
   simpleLabel: boolean;
 }
 
 const Template: Story<ArgTypes> = (args: ArgTypes) => html`
   <biowc-violinplot
-    .yAxisLabel="${args.yAxisLabel}"
+    .yLabel="${args.yLabel}"
     .simpleLabel="${args.simpleLabel}"
     .plotLabelExtraFields="${args.plotLabelExtraFields}"
     .chartData="${args.chartData}"

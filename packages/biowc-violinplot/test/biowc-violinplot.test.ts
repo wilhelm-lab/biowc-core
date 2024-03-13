@@ -27,15 +27,13 @@ describe('BiowcViolinplot', async () => {
     expect(el.height).to.equal(500);
   });
 
-  // change yAxisLabel
+  // change yLabel
   it('can change Y axis label via attribute', async () => {
     const el = await fixture<BiowcViolinplot>(
-      html`<biowc-violinplot
-        .yAxisLabel=${'some random label'}
-      ></biowc-violinplot>`
+      html`<biowc-violinplot .yLabel=${'some random label'}></biowc-violinplot>`
     );
 
-    expect(el.yAxisLabel).to.equal('some random label');
+    expect(el.yLabel).to.equal('some random label');
   });
 
   it('contains 3 data entries', () => {

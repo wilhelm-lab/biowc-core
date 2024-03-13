@@ -47,7 +47,7 @@ export default css`
     text-rendering: geometricPrecision !important;
   }
 
-  .sapProteomicsdbViolinPlot {
+  .violinPlot {
     position: relative;
   }
 
