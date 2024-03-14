@@ -190,6 +190,9 @@ export class BiowcScatter extends LitElement {
       .range([height, 0]);
     svg.append('g').call(d3v6.axisLeft(y));
 
+    // remove tooltip if it exists from a previous render
+    mainDiv.select('div.tooltip').remove();
+
     // Add the tooltip container to the vis container
     // it's invisible and its position/contents are defined during mouseover
     const tooltip = mainDiv
@@ -256,5 +259,14 @@ export class BiowcScatter extends LitElement {
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
       .text(`${this.yLabel}`);
+  }
+
+  protected updated(_changedProperties: PropertyValues) {
+    if (
+      _changedProperties.has('xValues') ||
+      _changedProperties.has('yValues')
+    ) {
+      this._plotScatter();
+    }
   }
 }
