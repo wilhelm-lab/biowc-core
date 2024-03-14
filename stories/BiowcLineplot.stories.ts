@@ -26,7 +26,7 @@ interface MetaDataAttributes {
 
 
 export default {
-  title: 'LinePlotFixture',
+  title: 'BiowcLineplot',
   component: 'biowc-lineplot',
   argTypes: {
     inputData: { control: 'object' },
