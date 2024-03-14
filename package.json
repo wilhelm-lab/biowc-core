@@ -1,9 +1,10 @@
 {
   "name": "root",
   "dependencies": {
-    "biowc-scatter": "^0.0.0",
+    "biowc-scatter": "file:packages/biowc-scatter",
     "biowc-swarmplot": "file:packages/biowc-swarmplot",
     "download-button": "file:packages/download-button",
+    "biowc-lineplot": "file:packages/biowc-lineplot",
     "biowc-violinplot": "file:packages/biowc-violinplot",
     "biowc-histogram": "file:packages/biowc-histogram"
   },
