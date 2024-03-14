@@ -4,7 +4,7 @@
       <div class="violinbuttonarea">
         <template v-for="(plot, index) in chartData">
           <label
-            v-if="!simpleLabel && _dataObjectHasChilds()"
+            v-if="!xLabelShowExtra && _dataObjectHasChilds()"
             :key="plot[keyValue]"
             class="violin-label"
             :style="labelOffsetStyles[index]"

@@ -6,10 +6,10 @@ export default {
   title: 'BiowcViolinplot',
   component: 'biowc-violinplot',
   argTypes: {
-    plotLabelExtraFields: {control: 'object' },
-    chartData: { control: 'object' },
     yLabel: { control: 'text' },
-    simpleLabel: {control: 'boolean'}
+    xLabelShowExtra: { control: 'boolean' },
+    xLabelExtraKeys: { control: 'object' },
+    chartData: { control: 'object' }
   },
 };
 
@@ -20,17 +20,17 @@ interface Story<T> {
 }
 
 interface ArgTypes {
-  plotLabelExtraFields: string[];
-    chartData: { [key: string]: number | string | {[key: string]: number | string}[] }[];
   yLabel: string;
-  simpleLabel: boolean;
+  xLabelShowExtra: boolean;
+  xLabelExtraKeys: string[];
+  chartData: { [key: string]: number | string | { [key: string]: number | string }[] }[];
 }
 
 const Template: Story<ArgTypes> = (args: ArgTypes) => html`
   <biowc-violinplot
     .yLabel="${args.yLabel}"
-    .simpleLabel="${args.simpleLabel}"
-    .plotLabelExtraFields="${args.plotLabelExtraFields}"
+    .xLabelShowExtra="${args.xLabelShowExtra}"
+    .xLabelExtraKeys="${args.xLabelExtraKeys}"
     .chartData="${args.chartData}"
   >
   </biowc-violinplot>
@@ -42,7 +42,7 @@ Regular.args = ViolinPlotFixture.violinPlot;
 export const CustomLabels = Template.bind({});
 CustomLabels.args = {
   ...Regular.args,
-  plotLabelExtraFields: [],
+  xLabelExtraKeys: [],
 };
 
 export const CustomData = Template.bind({});

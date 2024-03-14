@@ -1,9 +1,8 @@
 export default {
   violinPlot: {
     yLabel: 'EC50',
-    // plotLabelExtraFields: [],
-    plotLabelExtraFields: ['idKey', 'catds', 'catds'],
-    simpleLabel: true,
+    xLabelExtraKeys: ['idKey', 'catds', 'catds'],
+    xLabelShowExtra: true,
     chartData: [
       {
         idKey: 103,
