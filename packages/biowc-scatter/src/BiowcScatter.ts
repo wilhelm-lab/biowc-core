@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import styles from './biowc-scatter.css';
-import '../../../download-button/dist/src/download-button.js';
+import 'download-button/download-button.js';
 
 export class BiowcScatter extends LitElement {
   static styles = styles;
