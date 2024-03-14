@@ -1,6 +1,6 @@
 import { html, TemplateResult } from 'lit';
 import '../packages/biowc-bar-scatter-plot/dist/src/biowc-bar-scatter-plot';
-import BarScatterPlotFixture from "biowc-bar-scatter-plot/test/fixtures/BarScatterPlotFixture";
+import BarScatterPlotFixture from "../packages/biowc-bar-scatter-plot/test/fixtures/BarScatterPlotFixture";
 
 export default {
   title: 'BiowcBarScatterPlot',

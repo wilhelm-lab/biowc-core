@@ -257,13 +257,4 @@ export class BiowcScatter extends LitElement {
       .style('text-anchor', 'middle')
       .text(`${this.yLabel}`);
   }
-
-  protected updated(_changedProperties: PropertyValues) {
-    if (
-      _changedProperties.has('xValues') ||
-      _changedProperties.has('yValues')
-    ) {
-      this._plotScatter();
-    }
-  }
 }

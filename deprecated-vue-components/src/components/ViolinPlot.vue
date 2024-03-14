@@ -1,10 +1,10 @@
 <template>
   <div class="analytics-selectivity violin-plot-container">
-    <div class="sapProteomicsdbViolinPlot">
+    <div class="violinPlot">
       <div class="violinbuttonarea">
         <template v-for="(plot, index) in chartData">
           <label
-            v-if="!simpleLabel && _dataObjectHasChilds()"
+            v-if="!xLabelShowExtra && _dataObjectHasChilds()"
             :key="plot[keyValue]"
             class="violin-label"
             :style="labelOffsetStyles[index]"
@@ -159,14 +159,14 @@ export default {
     drawChartWithData: function drawChartWithData () {
       const oControl = this
       // Create SVG element. Remove old ones.
-      const svgs = d3.select('.sapProteomicsdbViolinPlot').selectAll('svg')
+      const svgs = d3.select('.violinPlot').selectAll('svg')
       svgs.remove()
 
       const plotHeight = this.height
       const plotWidth = this.violinWidth
       const plotSpacing = 10
 
-      const svg = d3.select('.sapProteomicsdbViolinPlot').append('svg:svg')
+      const svg = d3.select('.violinPlot').append('svg:svg')
       this.oChartObjects.svg = svg
 
       const resolution = this.resolution
@@ -713,7 +713,7 @@ export default {
 
   }
 
-  .sapProteomicsdbViolinPlot{
+  .violinPlot{
     position: relative;
   }
 

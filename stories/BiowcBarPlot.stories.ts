@@ -1,6 +1,6 @@
 import { html, TemplateResult } from 'lit';
 import '../packages/biowc-barplot/dist/src/biowc-barplot';
-import BarPlotFixture from "biowc-barplot/test/fixtures/BarPlotFixture";
+import BarPlotFixture from "../packages/biowc-barplot/test/fixtures/BarPlotFixture";
 
 export default {
   title: 'BiowcBarplot',
@@ -28,7 +28,13 @@ interface ArgTypes {
   barWidth: number;
   title: string;
   multiSelection: boolean;
-  data: { [key: string]: number | string }[];
+  data: {
+    [key: string]: number | string | {
+      [key: string]: number | string | {
+        [key: string]: number | string
+      }[]
+    } | number[]
+  }
   sSelectedModelIds: number[];
 }
 
