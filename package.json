@@ -3,6 +3,7 @@
   "dependencies": {
     "biowc-scatter": "file:packages/biowc-scatter",
     "download-button": "file:packages/download-button",
+    "biowc-violinplot": "file:packages/biowc-violinplot",
     "biowc-histogram": "file:packages/biowc-histogram"
   },
   "private": true,
