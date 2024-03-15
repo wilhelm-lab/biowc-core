@@ -1,9 +1,9 @@
 import { html, TemplateResult } from 'lit';
-import '../packages/biowc-bar-scatter-plot/dist/src/biowc-bar-scatter-plot';
-import BarScatterPlotFixture from "../packages/biowc-bar-scatter-plot/test/fixtures/BarScatterPlotFixture";
+import BarScatterPlotFixture from "./fixtures/BarScatterPlotFixture";
+import './BiowcBarPlotScatter.ts'
 
 export default {
-  title: 'BiowcBarScatterPlot',
+  title: 'Combining BioWCs',
   component: 'biowc-bar-scatter-plot',
   argTypes: {
     scatterProperties: { control: 'any' },

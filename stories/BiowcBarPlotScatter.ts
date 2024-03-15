@@ -1,19 +1,11 @@
 import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { HTMLTemplateResult } from 'lit/development';
-import styles from './biowc-bar-scatter-plot.css';
-
-import '../../../biowc-scatter/dist/src/biowc-scatter.js';
-import '../../../biowc-barplot/dist/src/biowc-barplot.js';
+import '../packages/biowc-scatter/dist/src/biowc-scatter.js';
+import '../packages/biowc-barplot/dist/src/biowc-barplot.js';
 
 // eslint-disable-next-line lit/no-native-attributes
-export class BiowcBarScatterPlot extends LitElement {
-  static styles = styles;
-
-  @property({ type: String }) title = 'Hey there';
-
-  @property({ type: Number }) counter = 5;
-
+class BiowcBarScatterPlot extends LitElement {
   @property({ attribute: false })
   barplotProperties: any = [];
 
@@ -37,10 +29,6 @@ export class BiowcBarScatterPlot extends LitElement {
 
   @property({ attribute: false })
   selIndeces: any[] = [];
-
-  __increment() {
-    this.counter += 1;
-  }
 
   render(): HTMLTemplateResult {
     this.initScatterValues();
@@ -74,7 +62,7 @@ export class BiowcBarScatterPlot extends LitElement {
     this.selectedIds = this.barplotProperties.sSelectedModelIds;
   }
 
-  inputChanged(event: any) {
+  inputChanged(event: CustomEvent) {
     this.selectedIds = event.detail.sSelectedModelIds;
     if (this.selectedIds.length > 0) {
       this.selIndeces = this.selectedIds.split(';').map(Number);
@@ -83,14 +71,12 @@ export class BiowcBarScatterPlot extends LitElement {
     }
     this.xValuesSel = this.selIndeces.map(x => this.xValues[x]);
     this.yValuesSel = this.selIndeces.map(x => this.yValues[x]);
-  }
 
-  /* protected updated(_changedProperties: PropertyValues) {
-    _changedProperties.forEach((oldValue, propName) => {
-      if (propName === 'xValuesSel' || propName === 'yValuesSel') {
-        this._getScatterPlot().attr('xValues', this.xValuesSel);
-        this._getScatterPlot().attr('yValues', this.yValuesSel);
-      }
-    });
-  } */
+    // need to explicitly request update for this to work in storybook:
+    // https://stackoverflow.com/questions/70768243/lit-components-do-not-automatically-request-an-update-on-property-change-proble
+    // this can be removed when not running in storybook
+    this.requestUpdate();
+  }
 }
+
+window.customElements.define('biowc-bar-scatter-plot', BiowcBarScatterPlot);
