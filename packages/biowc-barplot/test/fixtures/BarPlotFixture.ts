@@ -1,10 +1,11 @@
 export default {
   barPlot: {
-    minWidth: 600,
-    minHeight: 400,
+    width: 600,
+    height: 400,
     barWidth: 11,
-    myTitle: 'another Example Bar Plot',
+    plotTitle: 'another Example Bar Plot',
     multiSelection: true,
+    yLabel: 'AUC',
     data: {
       attributeType: 'Attribute type',
       dataset: 'Dataset',

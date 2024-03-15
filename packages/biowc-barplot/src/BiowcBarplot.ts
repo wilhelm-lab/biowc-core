@@ -6,6 +6,7 @@ import * as d3 from 'd3';
 import styles from './biowc-barplot.css';
 import '../../../download-button/dist/src/download-button.js';
 
+// TODO:
 // clean code
 // support stacked bars
 // support horizontal visualization
@@ -31,16 +32,17 @@ interface IData {
 export class BiowcBarplot extends LitElement {
   static styles = styles;
 
-  @property({ type: Number }) counter = 5;
+  @property({ attribute: false })
+  plotTitle: string = '';
 
   @property({ attribute: false })
-  myTitle: string = '';
+  yLabel: string = 'y label';
 
   @property({ attribute: false })
-  minWidth: number = 200;
+  width: number = 200;
 
   @property({ attribute: false })
-  minHeight: number = 300;
+  height: number = 400;
 
   @property({ attribute: false })
   barWidth: number = 11;
@@ -147,8 +149,6 @@ export class BiowcBarplot extends LitElement {
   }
 
   drawPlot(oData: IData) {
-    const that = this;
-
     this.clearSelectedModelIds();
 
     const margin = {
@@ -158,7 +158,7 @@ export class BiowcBarplot extends LitElement {
       left: 50,
     };
 
-    const height = this.minHeight - margin.top - margin.bottom;
+    const height = this.height - margin.top - margin.bottom;
     const width = Math.max(
       oData.data.length * this.barWidth,
       Number(this._getMainDiv().attr('width'))
@@ -210,7 +210,7 @@ export class BiowcBarplot extends LitElement {
       .attr('transform', 'rotate(-90)')
       .attr('x', -height / 2)
       .attr('y', -40)
-      .text(oData.attributeType); // y axis that is empty
+      .text(this.yLabel);
 
     // DATA BARS
     const bars = content.append('g');
@@ -260,9 +260,11 @@ export class BiowcBarplot extends LitElement {
       .attr('transform', `rotate(-65 0,${height + 3})`)
       .text(d => d.label);
 
+    // remove tooltip if it exists from a previous render
+    this._getMainDiv().select('div.tooltip').remove();
+
     // create a tooltip
-    const tooltip = that
-      ._getMainDiv()
+    const tooltip = this._getMainDiv()
       .append('div')
       .attr('class', 'tooltip')
       .style('font-family', 'Arial,Helvetica,sans-serif')
@@ -282,21 +284,23 @@ export class BiowcBarplot extends LitElement {
       .attr('height', height)
       .attr('width', this.barWidth - 1)
       .attr('modelId', d => d.modelId)
-      .on('mouseover', () => tooltip.style('opacity', 0.9))
+      .on('mouseover', () => {
+        tooltip.style('opacity', 0.9);
+      })
       .on('mousemove', (event, d: IContent) => {
-        const labels = that.getFullLabel(d);
+        const labels = this.getFullLabel(d);
         tooltip
           .html(labels.join('<br />'))
-          .style('width', `${that.getLabelSize(labels)}px`)
+          .style('width', `${this.getLabelSize(labels)}px`)
           .style('left', `${event.pageX + 10}px`)
           .style('top', `${event.pageY - 10}px`);
       })
       .on('mouseout', () => tooltip.style('opacity', 0));
 
-    function onBarClick(f: IContent) {
-      const div = that._getMainDiv();
-      if (that.selectedModelIds) {
-        if (that.selectedModelIds.some((id: number) => id === f.modelId)) {
+    const onBarClick = (f: IContent) => {
+      const div = this._getMainDiv();
+      if (this.selectedModelIds) {
+        if (this.selectedModelIds.some((id: number) => id === f.modelId)) {
           div
             .selectAll('.Bar')
             .filter((e: any) => e.modelId === f.modelId)
@@ -305,10 +309,10 @@ export class BiowcBarplot extends LitElement {
             .selectAll('.BackgroundBar')
             .filter((e: any) => e.modelId === f.modelId)
             .attr('class', 'BackgroundBar');
-          that.selectedModelIds = that.selectedModelIds.filter(
+          this.selectedModelIds = this.selectedModelIds.filter(
             e => e !== f.modelId
           );
-        } else if (that.multiSelection) {
+        } else if (this.multiSelection) {
           div
             .selectAll('.Bar')
             .filter((e: any) => e.modelId === f.modelId)
@@ -317,7 +321,7 @@ export class BiowcBarplot extends LitElement {
             .selectAll('.BackgroundBar')
             .filter((e: any) => e.modelId === f.modelId)
             .attr('class', 'BackgroundBar Highlight');
-          that.selectedModelIds.push(f.modelId);
+          this.selectedModelIds.push(f.modelId);
         } else {
           // first deselect
           div.selectAll('.Bar').attr('class', 'Bar');
@@ -331,7 +335,7 @@ export class BiowcBarplot extends LitElement {
             .selectAll('.BackgroundBar')
             .filter((e: any) => e.modelId === f.modelId)
             .attr('class', 'BackgroundBar Highlight');
-          that.selectedModelIds = [f.modelId];
+          this.selectedModelIds = [f.modelId];
         }
       } else {
         div
@@ -342,11 +346,11 @@ export class BiowcBarplot extends LitElement {
           .selectAll('.BackgroundBar')
           .filter((e: any) => e.modelId === f.modelId)
           .attr('class', 'BackgroundBar Highlight');
-        that.selectedModelIds = [f.modelId];
+        this.selectedModelIds = [f.modelId];
       }
 
-      that.onSelect();
-    }
+      this.onSelect();
+    };
 
     // TPS Explorer uses d3v6, ProteomicsDB uses D3v5. This if/else makes the component compatible with both
     if (d3.version.startsWith(String(6))) {
@@ -452,7 +456,7 @@ export class BiowcBarplot extends LitElement {
       .attr('x', margin.left)
       .attr('y', 28)
       .attr('text-anchor', 'start')
-      .text(this.myTitle);
+      .text(this.plotTitle);
 
     BiowcBarplot.expandChartSizeToTitle(svg, title, width, margin);
   }
@@ -514,7 +518,7 @@ export class BiowcBarplot extends LitElement {
   */
 
   public exportSvg() {
-    const head = `<svg class='BarContainer' title="${this.myTitle}" xmlns="http://www.w3.org/2000/svg">`;
+    const head = `<svg class='BarContainer' title="${this.plotTitle}" xmlns="http://www.w3.org/2000/svg">`;
     const data = this.shadowRoot?.querySelector('svg')?.innerHTML;
     return `${head} <style>${styles.toString()}</style> ${data} </svg>`;
   }

@@ -6,10 +6,10 @@ export default {
   title: 'BiowcBarplot',
   component: 'biowc-barplot',
   argTypes: {
-    minWidth: { control: 'number' },
-    minHeight: { control: 'number' },
+    width: { control: 'number' },
+    height: { control: 'number' },
     barWidth: { control: 'number' },
-    title: { control: 'text' },
+    plotTitle: { control: 'text' },
     multiSelection: { control: 'boolean' },
     data: { control: 'object' },
     sSelectedModelIds: { control: 'object' },
@@ -23,10 +23,10 @@ interface Story<T> {
 }
 
 interface ArgTypes {
-  minWidth: number;
-  minHeight: number;
+  width: number;
+  height: number;
   barWidth: number;
-  myTitle: string;
+  plotTitle: string;
   multiSelection: boolean;
   data: any;
   sSelectedModelIds: number[];
@@ -34,10 +34,10 @@ interface ArgTypes {
 
 const Template: Story<ArgTypes> = (args: ArgTypes) => html`
   <biowc-barplot
-    .minWidth="${args.minWidth}"
-    .minHeight="${args.minHeight}"
+    .width="${args.width}"
+    .height="${args.height}"
     .barWidth="${args.barWidth}"
-    .myTitle="${args.myTitle}"
+    .plotTitle="${args.plotTitle}"
     .multiSelection="${args.multiSelection}"
     .data="${args.data}"
     .sSelectedModelIds="${args.sSelectedModelIds}"
