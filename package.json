@@ -1,12 +1,13 @@
 {
   "name": "root",
   "dependencies": {
+    "biowc-barplot": "file:packages/biowc-barplot",
+    "biowc-histogram": "file:packages/biowc-histogram",
+    "biowc-lineplot": "file:packages/biowc-lineplot",
     "biowc-scatter": "file:packages/biowc-scatter",
     "biowc-swarmplot": "file:packages/biowc-swarmplot",
-    "download-button": "file:packages/download-button",
-    "biowc-lineplot": "file:packages/biowc-lineplot",
     "biowc-violinplot": "file:packages/biowc-violinplot",
-    "biowc-histogram": "file:packages/biowc-histogram"
+    "download-button": "file:packages/download-button"
   },
   "private": true,
   "workspaces": [
@@ -17,6 +18,7 @@
     "@custom-elements-manifest/analyzer": "^0.4.17",
     "@open-wc/eslint-config": "^9.2.0",
     "@open-wc/testing": "^3.1.7",
+    "@playwright/test": "^1.29.2",
     "@storybook/addon-actions": "^6.5.15",
     "@storybook/addon-essentials": "^6.5.15",
     "@storybook/addon-links": "^6.5.15",
@@ -24,6 +26,7 @@
     "@storybook/manager-webpack4": "^6.5.15",
     "@storybook/web-components": "^6.5.15",
     "@types/d3": "^7.4.0",
+    "@types/estree": "^1.0.5",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
     "@web/dev-server": "^0.1.35",
@@ -34,6 +37,7 @@
     "concurrently": "^5.3.0",
     "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.6.0",
+    "html-webpack-plugin": "^5.6.0",
     "husky": "^8.0.0",
     "lerna": "^6.1.0",
     "lint-staged": "^10.5.4",
