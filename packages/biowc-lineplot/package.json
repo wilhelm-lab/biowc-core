@@ -7,7 +7,7 @@
     "Julian Müller",
     "Katharina Neuhaus"
   ],
-  "version": "0.1.6",
+  "version": "0.2.0",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "exports": {
@@ -26,7 +26,7 @@
     "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\""
   },
   "dependencies": {
-    "@biowc/download-button": "^0.1.6",
+    "@biowc/download-button": "^0.2.0",
     "d3": "^6.2.0",
     "lit": "^2.0.2"
   },
