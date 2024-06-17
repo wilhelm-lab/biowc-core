@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "d3": "^6.2.0",
+    "download-button": "^0.1.5",
     "lit": "^2.0.2"
   },
   "devDependencies": {

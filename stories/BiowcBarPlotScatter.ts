@@ -77,6 +77,14 @@ class BiowcBarScatterPlot extends LitElement {
     // this can be removed when not running in storybook
     this.requestUpdate();
   }
+
+  // override performUpdate to prevent throwing the error
+  // https://lit.dev/docs/components/properties/#avoiding-issues-with-class-fields
+  // this can be removed when not running in storybook
+  protected performUpdate(): void | Promise<unknown> {
+    this.hasUpdated = true;
+    super.performUpdate();
+  }
 }
 
 window.customElements.define('biowc-bar-scatter-plot', BiowcBarScatterPlot);
