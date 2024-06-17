@@ -90,5 +90,8 @@
   "files": [
     "dist/bundle.js"
   ],
-  "unpkg": "dist/bundle.js"
+  "unpkg": "dist/bundle.js",
+  "publishConfig": {
+    "access": "public"
+  }
 }
