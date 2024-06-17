@@ -3,8 +3,11 @@
   "description": "Webcomponent biowc-swarmplot following open-wc recommendations",
   "license": "Apache-2.0",
   "author": "Matthew The <matthew.the@tum.de>",
-  "contributors": ["Henry Webel", "Cecilia Jensen"],
-  "version": "0.0.0",
+  "contributors": [
+    "Henry Webel",
+    "Cecilia Jensen"
+  ],
+  "version": "0.2.0",
   "type": "module",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",

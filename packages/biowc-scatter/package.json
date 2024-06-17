@@ -3,8 +3,10 @@
   "description": "Webcomponent biowc-scatter following open-wc recommendations",
   "license": "Apache-2.0",
   "author": "Matthew The <matthew.the@tum.de>",
-  "contributors": ["Julian Mueller"],
-  "version": "0.1.5",
+  "contributors": [
+    "Julian Mueller"
+  ],
+  "version": "0.2.0",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "exports": {

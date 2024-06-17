@@ -3,8 +3,11 @@
   "description": "Webcomponent biowc-barplot following open-wc recommendations",
   "license": "Apache-2.0",
   "author": "Matthew The <matthew.the@tum.de>",
-  "contributors": ["Alexandre Burel", "Chiara Sopegno"],
-  "version": "0.0.0",
+  "contributors": [
+    "Alexandre Burel",
+    "Chiara Sopegno"
+  ],
+  "version": "0.2.0",
   "type": "module",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",

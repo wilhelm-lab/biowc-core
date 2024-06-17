@@ -3,8 +3,11 @@
   "description": "Webcomponent biowc-lineplot following open-wc recommendations",
   "license": "Apache-2.0",
   "author": "Matthew The <matthew.the@tum.de>",
-  "contributors": ["Julian Müller", "Katharina Neuhaus"],
-  "version": "0.0.0",
+  "contributors": [
+    "Julian Müller",
+    "Katharina Neuhaus"
+  ],
+  "version": "0.2.0",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "exports": {
