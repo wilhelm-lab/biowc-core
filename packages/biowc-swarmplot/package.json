@@ -27,7 +27,7 @@
     "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\""
   },
   "dependencies": {
-    "@biowc/download-button": "*",
+    "@biowc/download-button": "^0.2.0",
     "d3": "^6.2.0",
     "lit": "^2.0.2"
   },
