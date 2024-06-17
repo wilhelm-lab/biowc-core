@@ -4,7 +4,7 @@ import { HTMLTemplateResult } from 'lit/development';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as d3 from 'd3';
 import styles from './biowc-barplot.css';
-import '../../../download-button/dist/src/download-button.js';
+import 'download-button/download-button.js';
 
 // TODO:
 // clean code

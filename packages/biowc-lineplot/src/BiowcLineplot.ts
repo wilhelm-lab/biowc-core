@@ -4,7 +4,7 @@ import * as d3v6 from 'd3';
 import { ScaleLinear, ValueFn } from 'd3';
 import styles from './biowc-lineplot.css';
 // import * as scale from "d3-scale";
-import '../../../download-button/dist/src/download-button.js';
+import 'download-button/download-button.js';
 
 type CurveParameterList = {
   [key: string]: number;

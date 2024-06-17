@@ -1,8 +1,9 @@
 {
-  "name": "biowc-histogram",
+  "name": "@biowc/histogram",
   "description": "Webcomponent biowc-histogram following open-wc recommendations",
-  "license": "MIT",
-  "author": "biowc-histogram",
+  "license": "Apache-2.0",
+  "author": "Matthew The <matthew.the@tum.de>",
+  "contributors": ["Christian Schori"],
   "version": "0.1.5",
   "type": "module",
   "main": "dist/src/index.js",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "d3": "^6.2.0",
+    "download-button": "^0.1.5",
     "lit": "^2.0.2"
   },
   "devDependencies": {

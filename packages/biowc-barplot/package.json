@@ -1,8 +1,9 @@
 {
-  "name": "biowc-barplot",
+  "name": "@biowc/barplot",
   "description": "Webcomponent biowc-barplot following open-wc recommendations",
-  "license": "MIT",
-  "author": "biowc-barplot",
+  "license": "Apache-2.0",
+  "author": "Matthew The <matthew.the@tum.de>",
+  "contributors": ["Alexandre Burel", "Chiara Sopegno"],
   "version": "0.0.0",
   "type": "module",
   "main": "dist/src/index.js",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "d3": "^6.2.0",
+    "download-button": "^0.1.5",
     "lit": "^2.0.2"
   },
   "devDependencies": {
