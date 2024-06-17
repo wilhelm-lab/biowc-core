@@ -1,8 +1,9 @@
 {
-  "name": "biowc-swarmplot",
+  "name": "@biowc/swarmplot",
   "description": "Webcomponent biowc-swarmplot following open-wc recommendations",
-  "license": "MIT",
-  "author": "biowc-swarmplot",
+  "license": "Apache-2.0",
+  "author": "Matthew The <matthew.the@tum.de>",
+  "contributors": ["Henry Webel", "Cecilia Jensen"],
   "version": "0.0.0",
   "type": "module",
   "main": "dist/src/index.js",

@@ -1,8 +1,9 @@
 {
-  "name": "biowc-scatter",
+  "name": "@biowc/scatter",
   "description": "Webcomponent biowc-scatter following open-wc recommendations",
-  "license": "MIT",
-  "author": "biowc-scatter",
+  "license": "Apache-2.0",
+  "author": "Matthew The <matthew.the@tum.de>",
+  "contributors": ["Julian Mueller"],
   "version": "0.1.5",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",

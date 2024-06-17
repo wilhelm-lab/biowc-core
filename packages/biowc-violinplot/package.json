@@ -1,8 +1,9 @@
 {
-  "name": "biowc-violinplot",
+  "name": "@biowc/violinplot",
   "description": "Webcomponent biowc-violinplot following open-wc recommendations",
-  "license": "MIT",
-  "author": "biowc-violinplot",
+  "license": "Apache-2.0",
+  "author": "Matthew The <matthew.the@tum.de>",
+  "contributors": ["Patroklos Samaras", "Karolína Kryštofová"],
   "version": "0.0.0",
   "type": "module",
   "main": "dist/src/index.js",
