@@ -24,3 +24,5 @@ storybook-static
 custom-elements.json
 
 .rollup.cache
+
+lerna-debug.log
