@@ -13,14 +13,14 @@
 
   <script type="module">
     import { html, render } from 'lit';
-    import '../dist/src/download-button.js';
+    import '../dist/src/export-button.js';
 
     const title = 'Hello owc World!';
     render(
       html`
-        <download-button .title=${title}>
+        <export-button .title=${title}>
           some light-dom
-        </download-button>
+        </export-button>
       `,
       document.querySelector('#demo')
     );

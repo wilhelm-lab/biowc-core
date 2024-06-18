@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import styles from './biowc-scatter.css';
-import 'download-button/download-button.js';
+import 'export-button/export-button.js';
 
 export class BiowcScatter extends LitElement {
   static styles = styles;
@@ -33,10 +33,10 @@ export class BiowcScatter extends LitElement {
     this.valuesInCommon = this._getValuesInCommon();
     return html` <div style="display: flex">
       <div id="scatterplot"></div>
-      <download-button
+      <export-button
         .svgComponent="${this}"
         style="margin-left: 20px;"
-      ></download-button>
+      ></export-button>
     </div>`;
   }
 

@@ -1,11 +1,11 @@
 import { property } from 'lit/decorators.js';
 import { html, LitElement, PropertyValues } from 'lit';
 import { HTMLTemplateResult } from 'lit/development';
-import styles from './download-button.css'
+import styles from './export-button.css'
 import { ExportSvgComponent } from './ExportSvgComponent';
 
 
-export class DownloadButton extends LitElement {
+export class ExportButton extends LitElement {
   static styles = styles;
 
   @property({ attribute: false })

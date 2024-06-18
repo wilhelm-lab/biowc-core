@@ -4,7 +4,7 @@ import { HTMLTemplateResult } from 'lit/development';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as d3 from 'd3';
 import styles from './biowc-barplot.css';
-import 'download-button/download-button.js';
+import 'export-button/export-button.js';
 
 // TODO:
 // clean code
@@ -73,10 +73,10 @@ export class BiowcBarplot extends LitElement {
         >
           Clear selection
         </button>
-        <download-button
+        <export-button
           .svgComponent="${this}"
           style="margin-left: 20px;"
-        ></download-button>
+        ></export-button>
       </div>
     `;
   }

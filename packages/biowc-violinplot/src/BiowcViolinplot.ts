@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import * as d3 from 'd3';
 import styles from './biowc-violinplot.css';
-import 'download-button/download-button.js';
+import 'export-button/export-button.js';
 
 type JSONValue =
   | string
@@ -144,10 +144,10 @@ export class BiowcViolinplot extends LitElement {
     return html`
       <div style="display: flex">
         <div class="violinPlot"></div>
-        <download-button
+        <export-button
           .svgComponent="${this}"
           style="margin-left: 20px;"
-        ></download-button>
+        ></export-button>
       </div>
     `;
   }

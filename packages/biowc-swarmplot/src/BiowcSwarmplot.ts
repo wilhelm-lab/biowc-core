@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import * as d3 from 'd3';
 import styles from './biowc-swarmplot.css';
-import 'download-button/download-button.js';
+import 'export-button/export-button.js';
 
 type marginType = { top: number; right: number; bottom: number; left: number };
 type swarmDataType = {
@@ -66,10 +66,10 @@ export class BiowcSwarmplot extends LitElement {
   render(): HTMLTemplateResult {
     return html` <div style="display: flex">
       <div id="swarmplot"></div>
-      <download-button
+      <export-button
         .svgComponent="${this}"
         style="margin-left: 20px;"
-      ></download-button>
+      ></export-button>
     </div>`;
   }
 

@@ -1,6 +1,6 @@
 {
-  "name": "@biowc/download-button",
-  "description": "Webcomponent download-button following open-wc recommendations",
+  "name": "@biowc/export-button",
+  "description": "Webcomponent export-button following open-wc recommendations",
   "license": "Apache-2.0",
   "author": "Matthew The <matthew.the@tum.de>",
   "contributors": [
@@ -11,7 +11,7 @@
   "module": "dist/src/index.js",
   "exports": {
     ".": "./dist/src/index.js",
-    "./download-button.js": "./dist/src/download-button.js"
+    "./export-button.js": "./dist/src/export-button.js"
   },
   "scripts": {
     "analyze": "cem analyze --litelement",
@@ -85,5 +85,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "69d6c65397017c843dcbab425aeb90c234227c9d"
 }

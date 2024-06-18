@@ -7,7 +7,7 @@
     "biowc-scatter": "file:packages/biowc-scatter",
     "biowc-swarmplot": "file:packages/biowc-swarmplot",
     "biowc-violinplot": "file:packages/biowc-violinplot",
-    "download-button": "file:packages/download-button"
+    "export-button": "file:packages/export-button"
   },
   "private": true,
   "workspaces": [

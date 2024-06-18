@@ -1,21 +1,21 @@
-# \<download-button>
+# \<export-button>
 
 This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
 
 ## Installation
 
 ```bash
-npm i download-button
+npm i export-button
 ```
 
 ## Usage
 
 ```html
 <script type="module">
-  import 'download-button/download-button.js';
+  import 'export-button/export-button.js';
 </script>
 
-<download-button></download-button>
+<export-button></export-button>
 ```
 
 ## Linting and formatting

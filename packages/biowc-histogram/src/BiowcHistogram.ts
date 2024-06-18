@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
 import styles from './biowc-histogram.css';
-import 'download-button/download-button.js';
+import 'export-button/export-button.js';
 
 export class BiowcHistogram extends LitElement {
   static styles = styles;
@@ -44,10 +44,10 @@ export class BiowcHistogram extends LitElement {
   render(): HTMLTemplateResult {
     return html` <div style="display: flex">
       <div id="histogram"></div>
-      <download-button
+      <export-button
         .svgComponent="${this}"
         style="margin-left: 20px;"
-      ></download-button>
+      ></export-button>
     </div>`;
   }
 
