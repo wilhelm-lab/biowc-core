@@ -6,7 +6,7 @@
   "contributors": [
     "Julian Mueller"
   ],
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "exports": {
@@ -26,7 +26,7 @@
     "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\""
   },
   "dependencies": {
-    "@biowc/export-button": "^0.2.1",
+    "@biowc/export-button": "^0.2.2",
     "d3": "^6.2.0",
     "lit": "^2.0.2"
   },
