@@ -16,5 +16,6 @@ export default {
       { 'Sample name': 'sample4', abundance: 3 },
       { 'Sample name': 'sample5', abundance: -2.5 },
     ],
+    showTrendline: true,
   },
 };

@@ -2,6 +2,7 @@ import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
 import { HTMLTemplateResult, PropertyValues } from 'lit/development';
+import { ScaleLinear } from 'd3';
 import styles from './biowc-scatter.css';
 
 export class BiowcScatter extends LitElement {
@@ -27,6 +28,9 @@ export class BiowcScatter extends LitElement {
 
   @property({ attribute: false })
   yLabel: string = '';
+
+  @property({ attribute: false })
+  showTrendline: boolean = false;
 
   render(): HTMLTemplateResult {
     this.valuesInCommon = this._getValuesInCommon();
@@ -120,6 +124,43 @@ export class BiowcScatter extends LitElement {
     return d3v6.select(this.shadowRoot).select('#scatterplot');
   }
 
+  private _addTrendline(
+    minValueX: number,
+    maxValueX: number,
+    minValueY: number,
+    maxValueY: number,
+    x: ScaleLinear<number, number>,
+    y: ScaleLinear<number, number>,
+    svg: d3v6.Selection<SVGGElement, unknown, HTMLElement, any>
+  ) {
+    // Calculate Trendline parameters
+    const XaxisData: number[] = [];
+    const YaxisData: number[] = [];
+    Object.entries(this.valuesInCommon).forEach(Element => {
+      XaxisData.push(Element[1].xValue);
+      YaxisData.push(Element[1].yValue);
+    });
+    const equation = BiowcScatter._linearRegression(YaxisData, XaxisData);
+    let y1 = equation.slope * minValueX + equation.intercept;
+    let y2 = equation.slope * maxValueX + equation.intercept;
+
+    y1 = Math.min(Math.max(y1, minValueY), maxValueY);
+    const x1 = (y1 - equation.intercept) / equation.slope;
+
+    y2 = Math.min(Math.max(y2, minValueY), maxValueY);
+    const x2 = (y2 - equation.intercept) / equation.slope;
+
+    // adding trendline to the plot
+    svg
+      .append('line')
+      .attr('class', 'regression-line')
+      .attr('x1', x(x1))
+      .attr('x2', x(x2))
+      .attr('y1', y(y1))
+      .attr('y2', y(y2))
+      .attr('stroke', 'black');
+  }
+
   private _plotScatter() {
     // set the dimensions and margins of the graph
     const margin = { top: 10, right: 30, bottom: 30, left: 60 };
@@ -165,23 +206,6 @@ export class BiowcScatter extends LitElement {
       3.0,
       Math.max(...this.valuesInCommon.map(d => d.yValue))
     );
-
-    // trendline parameters
-    const XaxisData: number[] = [];
-    const YaxisData: number[] = [];
-    Object.entries(this.valuesInCommon).forEach(Element => {
-      XaxisData.push(Element[1].xValue);
-      YaxisData.push(Element[1].yValue);
-    });
-    const equation = BiowcScatter._linearRegression(YaxisData, XaxisData);
-    let y1 = equation.slope * minValueX + equation.intercept;
-    let y2 = equation.slope * maxValueX + equation.intercept;
-
-    y1 = Math.min(Math.max(y1, minValueY), maxValueY);
-    const x1 = (y1 - equation.intercept) / equation.slope;
-
-    y2 = Math.min(Math.max(y2, minValueY), maxValueY);
-    const x2 = (y2 - equation.intercept) / equation.slope;
 
     const y = d3v6
       .scaleLinear()
@@ -232,16 +256,10 @@ export class BiowcScatter extends LitElement {
       .on('mousemove', tipMouseover)
       .on('mouseout', tipMouseout);
 
-    // adding trendline to the plot
-    svg
-      .append('line')
-      .attr('class', 'regression-line')
-      .attr('x1', x(x1))
-      .attr('x2', x(x2))
-      .attr('y1', y(y1))
-      .attr('y2', y(y2))
-      .attr('stroke', 'black');
-
+    // Optionally, add trendline
+    if (this.showTrendline) {
+      this._addTrendline(minValueX, maxValueX, minValueY, maxValueY, x, y, svg);
+    }
     // add the x Axis
     svg
       .append('text')

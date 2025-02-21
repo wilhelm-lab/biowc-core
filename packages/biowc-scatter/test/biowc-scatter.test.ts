@@ -14,6 +14,7 @@ describe('BiowcScatter', async () => {
       .yLabel="${ScatterPlotFixture.scatterPlot.yLabel}"
       .xValues="${ScatterPlotFixture.scatterPlot.xValues}"
       .yValues="${ScatterPlotFixture.scatterPlot.yValues}"
+      .showTrendline="${ScatterPlotFixture.scatterPlot.showTrendline}"
     />`
   );
 
