@@ -7,8 +7,14 @@ export default css`
     color: var(--biowc-scatter-text-color, #000);
   }
 
-  #scatterplot {
+  #container {
     display: flex;
+    gap: 5px;
+  }
+
+  #scatterplot {
+    flex: 1;
+    flex-grow: 0;
   }
 
   .tooltip {
@@ -18,5 +24,17 @@ export default css`
     height: auto;
     pointer-events: none;
     background-color: white;
+  }
+
+  .legend-horizontal {
+    flex-direction: row; /* Legend beside plot */
+    align-items: start;
+  }
+  .legend-vertical {
+    flex-direction: column; /* Legend below plot */
+    align-items: flex-start;
+  }
+  .legend-container {
+    flex-shrink: 0; /* Prevent legend from resizing */
   }
 `;

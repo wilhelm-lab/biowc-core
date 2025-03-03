@@ -9,7 +9,12 @@ export class BiowcScatter extends LitElement {
   static styles = styles;
 
   @property({ attribute: false })
-  valuesInCommon: { id: string; xValue: number; yValue: number }[] = [];
+  valuesInCommon: {
+    id: string;
+    xValue: number;
+    yValue: number;
+    category: number | string;
+  }[] = [];
 
   @property({ attribute: false })
   idKey: string = 'id';
@@ -24,6 +29,12 @@ export class BiowcScatter extends LitElement {
   yValues: { [key: string]: number | string }[] = [];
 
   @property({ attribute: false })
+  categories: { [key: string | 'category']: number | string }[] = [];
+
+  @property({ attribute: false })
+  colors: { [key: string | number]: string } = {};
+
+  @property({ attribute: false })
   xLabel: string = '';
 
   @property({ attribute: false })
@@ -32,15 +43,33 @@ export class BiowcScatter extends LitElement {
   @property({ attribute: false })
   showTrendline: boolean = false;
 
+  @property({ attribute: false })
+  showLegend: boolean = false;
+
+  @property({ attribute: false })
+  dotSize: number = 4;
+
+  @property({ attribute: false })
+  legendPosition: 'side' | 'bottom' | null = 'bottom';
+
   render(): HTMLTemplateResult {
     this.valuesInCommon = this._getValuesInCommon();
-    return html` <div style="display: flex">
-      <div id="scatterplot"></div>
-      <export-button
-        .svgComponent="${this}"
-        style="margin-left: 20px;"
-      ></export-button>
-    </div>`;
+    return html`
+      <div
+        id="container"
+        class="${this.legendPosition === 'side'
+          ? 'legend-horizontal'
+          : 'legend-vertical'}"
+        style="display: flex"
+      >
+        <div id="scatterplot"></div>
+        <export-button
+          .svgComponent="${this}"
+          style="margin-left: 20px;"
+        ></export-button>
+        <div id="legendContainer"></div>
+      </div>
+    `;
   }
 
   public exportSvg() {
@@ -57,6 +86,7 @@ export class BiowcScatter extends LitElement {
     id: string;
     xValue: number;
     yValue: number;
+    category: number | string;
   }[] {
     interface valuesById {
       [key: string]: number;
@@ -70,6 +100,12 @@ export class BiowcScatter extends LitElement {
       {},
       ...this.yValues.map(x => ({ [x[this.idKey]]: x[this.valueKey] }))
     );
+
+    const categoriesById: valuesById = Object.assign(
+      {},
+      ...this.categories.map(x => ({ [x[this.idKey]]: x.category }))
+    );
+
     const valuesInCommon = [];
     for (const [key, value] of Object.entries(xValuesById)) {
       if (key in yValuesById) {
@@ -77,6 +113,7 @@ export class BiowcScatter extends LitElement {
           id: key,
           xValue: value,
           yValue: yValuesById[key],
+          category: categoriesById[key],
         });
       }
     }
@@ -122,6 +159,29 @@ export class BiowcScatter extends LitElement {
     // TODO: Fix without ignore
     // @ts-ignore
     return d3v6.select(this.shadowRoot).select('#scatterplot');
+  }
+
+  private _addDots(
+    tipMouseover: (e: MouseEvent, d: { id: any }) => void,
+    tipMouseout: () => void,
+    x: ScaleLinear<number, number>,
+    y: ScaleLinear<number, number>,
+    svg: d3v6.Selection<SVGGElement, unknown, HTMLElement, any>
+  ) {
+    // Add dots
+    svg
+      .append('g')
+      .selectAll('dot')
+      .data(this.valuesInCommon)
+      .enter()
+      .append('circle')
+      .attr('cx', d => x(d.xValue))
+      .attr('cy', d => y(d.yValue))
+      .attr('r', this.dotSize)
+      // .style('fill', '#69b3a2')
+      .style('fill', d => this.colors[d.category])
+      .on('mousemove', tipMouseover)
+      .on('mouseout', tipMouseout);
   }
 
   private _addTrendline(
@@ -242,19 +302,7 @@ export class BiowcScatter extends LitElement {
         .style('opacity', 0); // don't care about position!
     };
 
-    // Add dots
-    svg
-      .append('g')
-      .selectAll('dot')
-      .data(this.valuesInCommon)
-      .enter()
-      .append('circle')
-      .attr('cx', d => x(d.xValue))
-      .attr('cy', d => y(d.yValue))
-      .attr('r', 4)
-      .style('fill', '#69b3a2')
-      .on('mousemove', tipMouseover)
-      .on('mouseout', tipMouseout);
+    this._addDots(tipMouseover, tipMouseout, x, y, svg);
 
     // Optionally, add trendline
     if (this.showTrendline) {
@@ -276,6 +324,44 @@ export class BiowcScatter extends LitElement {
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
       .text(`${this.yLabel}`);
+
+    // Add the legend
+    if (this.showLegend) {
+      this._renderLegend();
+    }
+  }
+
+  private _renderLegend() {
+    const legendContainer = d3v6
+      // @ts-ignore
+      .select(this.shadowRoot)
+      .select('#legendContainer');
+
+    // Remove previous legend
+    legendContainer.select('svg').remove();
+
+    const legend = legendContainer
+      .append('svg')
+      .selectAll('.legend-item')
+      .data(Object.keys(this.colors))
+      .enter()
+      .append('g')
+      .attr('class', 'legend-item')
+      .attr('transform', (_, i) => `translate(10, ${i * 25})`);
+
+    legend
+      .append('circle')
+      .attr('cx', this.dotSize)
+      .attr('cy', 10 + this.dotSize)
+      .attr('r', this.dotSize)
+      .attr('fill', d => this.colors[d]);
+
+    legend
+      .append('text')
+      .attr('x', 20 + this.dotSize)
+      .attr('y', 20 + this.dotSize / 2)
+      .attr('alignment-baseline', 'middle')
+      .text(d => d);
   }
 
   protected updated(_changedProperties: PropertyValues) {
