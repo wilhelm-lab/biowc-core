@@ -13,7 +13,7 @@ export default {
     yValues: [
       { 'Sample name': 'sample1', abundance: 1 },
       { 'Sample name': 'sample2', abundance: 2 },
-      { 'Sample name': 'sample4', abundance: 3 },
+      { 'Sample name': 'sample4', abundance: 3.012893 },
       { 'Sample name': 'sample5', abundance: -2.5 },
     ],
     categories: [

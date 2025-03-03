@@ -162,7 +162,7 @@ export class BiowcScatter extends LitElement {
   }
 
   private _addDots(
-    tipMouseover: (e: MouseEvent, d: { id: any }) => void,
+    tipMouseover: (e: MouseEvent, d: any) => void,
     tipMouseout: () => void,
     x: ScaleLinear<number, number>,
     y: ScaleLinear<number, number>,
@@ -284,12 +284,17 @@ export class BiowcScatter extends LitElement {
       .style('opacity', 0);
 
     // tooltip mouseover event handler
-    const tipMouseover = (e: MouseEvent, d: { id: any }) => {
-      const htmlElement = d.id;
+    const tipMouseover = (
+      e: MouseEvent,
+      d: { id: string; xValue: number; yValue: number }
+    ) => {
+      const htmlElement = `${d.id} (x=${parseFloat(
+        d.xValue.toFixed(3)
+      )} y=${parseFloat(d.yValue.toFixed(3))})`;
       tooltip
         .html(htmlElement)
-        .style('left', `${e.pageX + 10}px`)
-        .style('top', `${e.pageY - 10}px`)
+        .style('left', `${e.offsetX + 10}px`)
+        .style('top', `${e.offsetY + 10}px`)
         .transition()
         .duration(200) // ms
         .style('opacity', 0.9); // started as 0!
