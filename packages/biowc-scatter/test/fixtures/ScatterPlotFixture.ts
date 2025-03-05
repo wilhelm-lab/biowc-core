@@ -34,5 +34,9 @@ export default {
       { slope: 1, intercept: 3, color: '#ee9b1a', dashes: '8 3', width: 2 },
       { slope: -1, intercept: 0 },
     ],
+    xMin: -5,
+    xMax: 5,
+    yMin: -5,
+    yMax: 5,
   },
 };

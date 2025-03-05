@@ -29,6 +29,18 @@ export class BiowcScatter extends LitElement {
   yValues: { [key: string]: number | string }[] = [];
 
   @property({ attribute: false })
+  xMin: number = Infinity;
+
+  @property({ attribute: false })
+  xMax: number = -Infinity;
+
+  @property({ attribute: false })
+  yMin: number = Infinity;
+
+  @property({ attribute: false })
+  yMax: number = -Infinity;
+
+  @property({ attribute: false })
   categories: { [key: string | 'category']: number | string }[] = [];
 
   @property({ attribute: false })
@@ -265,13 +277,14 @@ export class BiowcScatter extends LitElement {
 
     // Add X axis
     const minValueX = Math.min(
-      -3.0,
-      Math.min(...this.valuesInCommon.map(d => d.xValue))
+      ...this.valuesInCommon.map(d => d.xValue),
+      this.xMin
     );
     const maxValueX = Math.max(
-      3.0,
-      Math.max(...this.valuesInCommon.map(d => d.xValue))
+      ...this.valuesInCommon.map(d => d.xValue),
+      this.xMax
     );
+
     const x = d3v6
       .scaleLinear()
       .domain([minValueX, maxValueX])
@@ -283,12 +296,12 @@ export class BiowcScatter extends LitElement {
 
     // Add Y axis
     const minValueY = Math.min(
-      -3.0,
-      Math.min(...this.valuesInCommon.map(d => d.yValue))
+      ...this.valuesInCommon.map(d => d.yValue),
+      this.yMin
     );
     const maxValueY = Math.max(
-      3.0,
-      Math.max(...this.valuesInCommon.map(d => d.yValue))
+      ...this.valuesInCommon.map(d => d.yValue),
+      this.yMax
     );
 
     const y = d3v6
