@@ -30,5 +30,9 @@ export default {
     showTrendline: true,
     showLegend: true,
     legendPosition: 'side',
+    lines: [
+      { slope: 1, intercept: 3, color: '#ee9b1a', dashes: '8 3', width: 2 },
+      { slope: -1, intercept: 0 },
+    ],
   },
 };

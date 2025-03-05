@@ -52,6 +52,15 @@ export class BiowcScatter extends LitElement {
   @property({ attribute: false })
   legendPosition: 'side' | 'bottom' | null = 'bottom';
 
+  @property({ attribute: false })
+  lines: {
+    slope: number;
+    intercept: number;
+    color?: string;
+    dashes?: string;
+    width?: number;
+  }[] = [];
+
   render(): HTMLTemplateResult {
     this.valuesInCommon = this._getValuesInCommon();
     return html`
@@ -77,6 +86,14 @@ export class BiowcScatter extends LitElement {
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
+    // Optionally, add trendline to list of auxiliary lines
+    if (this.showTrendline) {
+      if (!this.lines) {
+        this.lines = [];
+      }
+      this.lines.push(this._linearRegression());
+    }
+
     this._plotScatter();
 
     super.firstUpdated(_changedProperties);
@@ -120,39 +137,32 @@ export class BiowcScatter extends LitElement {
     return valuesInCommon;
   }
 
-  private static _linearRegression(
-    y: number[],
-    x: number[]
-  ): { slope: number; intercept: number; correlation: number } {
-    const lr: { slope: number; intercept: number; correlation: number } = {
-      slope: 0,
-      intercept: 0,
-      correlation: 0,
-    };
+  private _linearRegression(): { slope: number; intercept: number } {
+    const x: number[] = [];
+    const y: number[] = [];
+    Object.entries(this.valuesInCommon).forEach(Element => {
+      x.push(Element[1].xValue);
+      y.push(Element[1].yValue);
+    });
+
     const n = y.length;
     let sumX = 0;
     let sumY = 0;
     let sumXy = 0;
     let sumXx = 0;
-    let sumYy = 0;
 
     for (let i = 0; i < y.length; i += 1) {
       sumX += x[i];
       sumY += y[i];
       sumXy += x[i] * y[i];
       sumXx += x[i] * x[i];
-      sumYy += y[i] * y[i];
     }
 
-    lr.slope = (n * sumXy - sumX * sumY) / (n * sumXx - sumX * sumX);
-    lr.intercept = (sumY - lr.slope * sumX) / n;
-    let r2 =
-      ((n * sumXy - sumX * sumY) /
-        Math.sqrt((n * sumXx - sumX * sumX) * (n * sumYy - sumY * sumY))) **
-      2;
-    r2 = Math.sqrt(r2);
-    lr.correlation = Math.round(r2 * 100) / 100;
-    return lr;
+    const slope = (n * sumXy - sumX * sumY) / (n * sumXx - sumX * sumX);
+    return {
+      slope,
+      intercept: (sumY - slope * sumX) / n,
+    };
   }
 
   private _getMainDiv() {
@@ -184,41 +194,55 @@ export class BiowcScatter extends LitElement {
       .on('mouseout', tipMouseout);
   }
 
-  private _addTrendline(
-    minValueX: number,
-    maxValueX: number,
-    minValueY: number,
-    maxValueY: number,
-    x: ScaleLinear<number, number>,
-    y: ScaleLinear<number, number>,
-    svg: d3v6.Selection<SVGGElement, unknown, HTMLElement, any>
+  private _addLines(
+    svg: d3v6.Selection<SVGGElement, unknown, HTMLElement, any>,
+    xScale: ScaleLinear<number, number>,
+    yScale: ScaleLinear<number, number>
   ) {
-    // Calculate Trendline parameters
-    const XaxisData: number[] = [];
-    const YaxisData: number[] = [];
-    Object.entries(this.valuesInCommon).forEach(Element => {
-      XaxisData.push(Element[1].xValue);
-      YaxisData.push(Element[1].yValue);
+    // First, remove any previously created lines
+    svg.selectAll('.auxiliary-line').remove();
+
+    const xMin = xScale.domain()[0];
+    const xMax = xScale.domain()[1];
+    const yMin = yScale.domain()[0];
+    const yMax = yScale.domain()[1];
+
+    this.lines.forEach(line => {
+      const equation = (x: number) => line.slope * x + line.intercept;
+
+      let x1 = xMin;
+      let x2 = xMax;
+      let y1 = equation(xMin);
+      let y2 = equation(xMax);
+
+      // Ensure y values stay within the visible y-axis range
+      if (y1 < yMin) {
+        x1 = (yMin - equation(0)) / (equation(1) - equation(0));
+        y1 = yMin;
+      } else if (y1 > yMax) {
+        x1 = (yMax - equation(0)) / (equation(1) - equation(0));
+        y1 = yMax;
+      }
+
+      if (y2 < yMin) {
+        x2 = (yMin - equation(0)) / (equation(1) - equation(0));
+        y2 = yMin;
+      } else if (y2 > yMax) {
+        x2 = (yMax - equation(0)) / (equation(1) - equation(0));
+        y2 = yMax;
+      }
+
+      svg
+        .append('line')
+        .attr('class', 'auxiliary-line')
+        .attr('x1', xScale(x1))
+        .attr('x2', xScale(x2))
+        .attr('y1', yScale(y1))
+        .attr('y2', yScale(y2))
+        .attr('stroke', line.color || '#000000')
+        .attr('stroke-dasharray', line.dashes || '')
+        .attr('stroke-width', line.width || 1);
     });
-    const equation = BiowcScatter._linearRegression(YaxisData, XaxisData);
-    let y1 = equation.slope * minValueX + equation.intercept;
-    let y2 = equation.slope * maxValueX + equation.intercept;
-
-    y1 = Math.min(Math.max(y1, minValueY), maxValueY);
-    const x1 = (y1 - equation.intercept) / equation.slope;
-
-    y2 = Math.min(Math.max(y2, minValueY), maxValueY);
-    const x2 = (y2 - equation.intercept) / equation.slope;
-
-    // adding trendline to the plot
-    svg
-      .append('line')
-      .attr('class', 'regression-line')
-      .attr('x1', x(x1))
-      .attr('x2', x(x2))
-      .attr('y1', y(y1))
-      .attr('y2', y(y2))
-      .attr('stroke', 'black');
   }
 
   private _plotScatter() {
@@ -309,10 +333,8 @@ export class BiowcScatter extends LitElement {
 
     this._addDots(tipMouseover, tipMouseout, x, y, svg);
 
-    // Optionally, add trendline
-    if (this.showTrendline) {
-      this._addTrendline(minValueX, maxValueX, minValueY, maxValueY, x, y, svg);
-    }
+    this._addLines(svg, x, y);
+
     // add the x Axis
     svg
       .append('text')

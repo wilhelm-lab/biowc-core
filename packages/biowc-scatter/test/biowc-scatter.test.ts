@@ -15,6 +15,7 @@ describe('BiowcScatter', async () => {
       .xValues="${ScatterPlotFixture.scatterPlot.xValues}"
       .yValues="${ScatterPlotFixture.scatterPlot.yValues}"
       .showTrendline="${ScatterPlotFixture.scatterPlot.showTrendline}"
+      .lines="${ScatterPlotFixture.scatterPlot.lines}"
     />`
   );
 
@@ -82,11 +83,11 @@ describe('BiowcScatter', async () => {
     expect(el.valuesInCommon.length).to.equal(0);
   });
 
-  it('renders 4 circles and 1 line', async () => {
+  it('renders 4 circles and 3 lines', async () => {
     const circles = scatterplot.shadowRoot!.querySelectorAll('circle');
     expect(circles.length).to.equal(4);
-    const lines = scatterplot.shadowRoot!.querySelectorAll('.regression-line');
-    expect(lines.length).to.equal(1);
+    const lines = scatterplot.shadowRoot!.querySelectorAll('.auxiliary-line');
+    expect(lines.length).to.equal(3);
   });
 
   it('renders an invisible tooltip at first', async () => {
