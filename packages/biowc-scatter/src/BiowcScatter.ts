@@ -358,9 +358,9 @@ export class BiowcScatter extends LitElement {
         .style('opacity', 0); // don't care about position!
     };
 
-    this._addDots(tipMouseover, tipMouseout, x, y, svg);
-
     this._addLines(svg, x, y);
+
+    this._addDots(tipMouseover, tipMouseout, x, y, svg);
 
     // add the x Axis
     svg
