@@ -66,8 +66,9 @@ export class BiowcScatter extends LitElement {
 
   @property({ attribute: false })
   lines: {
-    slope: number;
-    intercept: number;
+    slope?: number; // For sloped lines
+    intercept?: number; // For sloped lines
+    xValue?: number; // For vertical lines
     color?: string;
     dashes?: string;
     width?: number;
@@ -220,40 +221,53 @@ export class BiowcScatter extends LitElement {
     const yMax = yScale.domain()[1];
 
     this.lines.forEach(line => {
-      const equation = (x: number) => line.slope * x + line.intercept;
+      let x1;
+      let x2;
+      let y1;
+      let y2;
+      if (line.slope != null && line.intercept != null) {
+        const equation = (x: number) => line.slope! * x + line.intercept!;
 
-      let x1 = xMin;
-      let x2 = xMax;
-      let y1 = equation(xMin);
-      let y2 = equation(xMax);
+        x1 = xMin;
+        x2 = xMax;
+        y1 = equation(xMin);
+        y2 = equation(xMax);
 
-      // Ensure y values stay within the visible y-axis range
-      if (y1 < yMin) {
-        x1 = (yMin - equation(0)) / (equation(1) - equation(0));
+        // Ensure y values stay within the visible y-axis range
+        if (y1 < yMin) {
+          x1 = (yMin - equation(0)) / (equation(1) - equation(0));
+          y1 = yMin;
+        } else if (y1 > yMax) {
+          x1 = (yMax - equation(0)) / (equation(1) - equation(0));
+          y1 = yMax;
+        }
+
+        if (y2 < yMin) {
+          x2 = (yMin - equation(0)) / (equation(1) - equation(0));
+          y2 = yMin;
+        } else if (y2 > yMax) {
+          x2 = (yMax - equation(0)) / (equation(1) - equation(0));
+          y2 = yMax;
+        }
+      } else if (line.xValue != null) {
+        x1 = line.xValue;
+        x2 = line.xValue;
         y1 = yMin;
-      } else if (y1 > yMax) {
-        x1 = (yMax - equation(0)) / (equation(1) - equation(0));
-        y1 = yMax;
-      }
-
-      if (y2 < yMin) {
-        x2 = (yMin - equation(0)) / (equation(1) - equation(0));
-        y2 = yMin;
-      } else if (y2 > yMax) {
-        x2 = (yMax - equation(0)) / (equation(1) - equation(0));
         y2 = yMax;
       }
 
-      svg
-        .append('line')
-        .attr('class', 'auxiliary-line')
-        .attr('x1', xScale(x1))
-        .attr('x2', xScale(x2))
-        .attr('y1', yScale(y1))
-        .attr('y2', yScale(y2))
-        .attr('stroke', line.color || '#000000')
-        .attr('stroke-dasharray', line.dashes || '')
-        .attr('stroke-width', line.width || 1);
+      if (x1 != null && x2 != null && y1 != null && y2 != null) {
+        svg
+          .append('line')
+          .attr('class', 'auxiliary-line')
+          .attr('x1', xScale(x1))
+          .attr('x2', xScale(x2))
+          .attr('y1', yScale(y1))
+          .attr('y2', yScale(y2))
+          .attr('stroke', line.color || '#000000')
+          .attr('stroke-dasharray', line.dashes || '')
+          .attr('stroke-width', line.width || 1);
+      }
     });
   }
 
