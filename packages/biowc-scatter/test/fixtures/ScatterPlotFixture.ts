@@ -1,20 +1,21 @@
 export default {
   scatterPlot: {
     idKey: 'Sample name',
-    valueKey: 'abundance',
+    xValueKey: 'x_value',
+    yValueKey: 'y_value',
     xLabel: 'abundance Gene_X',
     xValues: [
-      { 'Sample name': 'sample1', abundance: 1 },
-      { 'Sample name': 'sample2', abundance: 3 },
-      { 'Sample name': 'sample4', abundance: 3 },
-      { 'Sample name': 'sample5', abundance: 2 },
+      { 'Sample name': 'sample1', x_value: 1 },
+      { 'Sample name': 'sample2', x_value: 3 },
+      { 'Sample name': 'sample4', x_value: 3 },
+      { 'Sample name': 'sample5', x_value: 2 },
     ],
     yLabel: 'abundance Gene_Y',
     yValues: [
-      { 'Sample name': 'sample1', abundance: 1 },
-      { 'Sample name': 'sample2', abundance: 2 },
-      { 'Sample name': 'sample4', abundance: 3.012893 },
-      { 'Sample name': 'sample5', abundance: -2.5 },
+      { 'Sample name': 'sample1', y_value: 1 },
+      { 'Sample name': 'sample2', y_value: 2 },
+      { 'Sample name': 'sample4', y_value: 3.012893 },
+      { 'Sample name': 'sample5', y_value: -2.5 },
     ],
     categories: [
       { 'Sample name': 'sample1', category: 'B' },

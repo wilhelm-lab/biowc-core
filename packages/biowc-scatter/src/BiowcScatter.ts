@@ -20,7 +20,10 @@ export class BiowcScatter extends LitElement {
   idKey: string = 'id';
 
   @property({ attribute: false })
-  valueKey: string = 'value';
+  xValueKey: string = 'xValue';
+
+  @property({ attribute: false })
+  yValueKey: string = 'yValue';
 
   @property({ attribute: false })
   xValues: { [key: string]: number | string }[] = [];
@@ -124,11 +127,11 @@ export class BiowcScatter extends LitElement {
 
     const xValuesById: valuesById = Object.assign(
       {},
-      ...this.xValues.map(x => ({ [x[this.idKey]]: x[this.valueKey] }))
+      ...this.xValues.map(x => ({ [x[this.idKey]]: x[this.xValueKey] }))
     );
     const yValuesById: valuesById = Object.assign(
       {},
-      ...this.yValues.map(x => ({ [x[this.idKey]]: x[this.valueKey] }))
+      ...this.yValues.map(x => ({ [x[this.idKey]]: x[this.yValueKey] }))
     );
 
     const categoriesById: valuesById = Object.assign(
@@ -339,13 +342,13 @@ export class BiowcScatter extends LitElement {
       e: MouseEvent,
       d: { id: string; xValue: number; yValue: number }
     ) => {
-      const htmlElement = `${d.id} (x=${parseFloat(
-        d.xValue.toFixed(3)
-      )} y=${parseFloat(d.yValue.toFixed(3))})`;
+      const htmlElement = `<pre>${d.id}:
+  ${this.xValueKey} = ${parseFloat(d.xValue.toFixed(3))},
+  ${this.yValueKey} = ${parseFloat(d.yValue.toFixed(3))}</pre>`;
       tooltip
         .html(htmlElement)
-        .style('left', `${e.offsetX + 10}px`)
-        .style('top', `${e.offsetY + 10}px`)
+        .style('left', `${e.offsetX + 45}px`)
+        .style('top', `${e.offsetY + 25}px`)
         .transition()
         .duration(200) // ms
         .style('opacity', 0.9); // started as 0!

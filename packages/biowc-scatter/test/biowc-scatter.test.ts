@@ -9,7 +9,8 @@ describe('BiowcScatter', async () => {
   const scatterplot = await fixture<BiowcScatter>(
     html` <biowc-scatter
       .idKey="${ScatterPlotFixture.scatterPlot.idKey}"
-      .valueKey="${ScatterPlotFixture.scatterPlot.valueKey}"
+      .xValueKey="${ScatterPlotFixture.scatterPlot.xValueKey}"
+      .yValueKey="${ScatterPlotFixture.scatterPlot.yValueKey}"
       .xLabel="${ScatterPlotFixture.scatterPlot.xLabel}"
       .yLabel="${ScatterPlotFixture.scatterPlot.yLabel}"
       .xValues="${ScatterPlotFixture.scatterPlot.xValues}"
