@@ -77,6 +77,12 @@ export class BiowcScatter extends LitElement {
     width?: number;
   }[] = [];
 
+  @property({ attribute: false })
+  highlightedDots: string[] = [];
+
+  @property({ attribute: false })
+  highlightColor: string | undefined;
+
   render(): HTMLTemplateResult {
     this.valuesInCommon = this._getValuesInCommon();
     return html`
@@ -197,17 +203,37 @@ export class BiowcScatter extends LitElement {
     // Add dots
     svg
       .append('g')
-      .selectAll('dot')
+      .selectAll('.dot')
       .data(this.valuesInCommon)
-      .enter()
-      .append('circle')
+      .join('circle')
+      .attr('class', 'dot')
       .attr('cx', d => x(d.xValue))
       .attr('cy', d => y(d.yValue))
       .attr('r', this.dotSize)
       // .style('fill', '#69b3a2')
-      .style('fill', d => this.colors[d.category])
+      .attr('fill', d => this.colors[d.category])
       .on('mousemove', tipMouseover)
       .on('mouseout', tipMouseout);
+  }
+
+  private _addHighlights(
+    x: ScaleLinear<number, number>,
+    y: ScaleLinear<number, number>,
+    svg: d3v6.Selection<SVGGElement, unknown, HTMLElement, any>
+  ) {
+    svg
+      .selectAll('.highlight-ring')
+      .data(
+        this.valuesInCommon.filter(dot => this.highlightedDots.includes(dot.id))
+      )
+      .join('circle')
+      .attr('class', 'highlight-ring')
+      .attr('cx', d => x(d.xValue))
+      .attr('cy', d => y(d.yValue))
+      .attr('r', this.dotSize + 2)
+      .attr('fill', 'none')
+      .attr('stroke', this.highlightColor || 'yellow')
+      .attr('stroke-width', 5);
   }
 
   private _addLines(
@@ -363,6 +389,7 @@ export class BiowcScatter extends LitElement {
 
     this._addLines(svg, x, y);
 
+    this._addHighlights(x, y, svg);
     this._addDots(tipMouseover, tipMouseout, x, y, svg);
 
     // add the x Axis
@@ -401,8 +428,7 @@ export class BiowcScatter extends LitElement {
       .append('svg')
       .selectAll('.legend-item')
       .data(Object.keys(this.colors))
-      .enter()
-      .append('g')
+      .join('g')
       .attr('class', 'legend-item')
       .attr('transform', (_, i) => `translate(10, ${i * 25})`);
 

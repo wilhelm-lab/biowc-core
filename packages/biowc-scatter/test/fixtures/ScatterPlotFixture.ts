@@ -23,6 +23,8 @@ export default {
       { 'Sample name': 'sample4', category: 'LongText' },
       { 'Sample name': 'sample5', category: 'C' },
     ],
+    highlightedDots: ['sample1', 'notASample', 'sample4'],
+    highlightColor: '#FFC000',
     colors: {
       LongText: '#d20d0d',
       B: '#0d62d2',
