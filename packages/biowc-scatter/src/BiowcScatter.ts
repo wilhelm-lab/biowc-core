@@ -213,7 +213,10 @@ export class BiowcScatter extends LitElement {
       // .style('fill', '#69b3a2')
       .attr('fill', d => this.colors[d.category])
       .on('mousemove', tipMouseover)
-      .on('mouseout', tipMouseout);
+      .on('mouseout', tipMouseout)
+      .on('click', (e, d) =>
+        this.dispatchEvent(new CustomEvent('onDotClicked', { detail: d }))
+      );
   }
 
   private _addHighlights(
