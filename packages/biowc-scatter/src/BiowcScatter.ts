@@ -83,6 +83,9 @@ export class BiowcScatter extends LitElement {
   @property({ attribute: false })
   highlightColor: string | undefined;
 
+  @property({ attribute: false })
+  dotOpacity: number | undefined;
+
   render(): HTMLTemplateResult {
     this.valuesInCommon = this._getValuesInCommon();
     return html`
@@ -212,6 +215,7 @@ export class BiowcScatter extends LitElement {
       .attr('r', this.dotSize)
       // .style('fill', '#69b3a2')
       .attr('fill', d => this.colors[d.category])
+      .attr('opacity', this.dotOpacity || 1)
       .on('mousemove', tipMouseover)
       .on('mouseout', tipMouseout)
       .on('click', (e, d) =>
@@ -440,7 +444,8 @@ export class BiowcScatter extends LitElement {
       .attr('cx', this.dotSize)
       .attr('cy', 10 + this.dotSize)
       .attr('r', this.dotSize)
-      .attr('fill', d => this.colors[d]);
+      .attr('fill', d => this.colors[d])
+      .attr('opacity', this.dotOpacity || 1);
 
     legend
       .append('text')

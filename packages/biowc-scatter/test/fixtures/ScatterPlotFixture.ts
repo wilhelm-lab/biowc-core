@@ -30,6 +30,7 @@ export default {
       B: '#0d62d2',
       C: '#a80086',
     },
+    dotOpacity: 0.8,
     showTrendline: true,
     showLegend: true,
     legendPosition: 'side',
