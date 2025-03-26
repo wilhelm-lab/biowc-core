@@ -140,7 +140,7 @@ export class BiowcScatter extends LitElement {
     );
     const yValuesById: valuesById = Object.assign(
       {},
-      ...this.yValues.map(x => ({ [x[this.idKey]]: x[this.yValueKey] }))
+      ...this.yValues.map(y => ({ [y[this.idKey]]: y[this.yValueKey] }))
     );
 
     const categoriesById: valuesById = Object.assign(
