@@ -154,7 +154,8 @@ const parabola = [
 const userInput = [
   {
     id: 'dataset1',
-    formula: 'return x+abscissa',
+    formula: 'return x+$abscissa$',
+    escapeCharacter: '$',
     curveParameters: { abscissa: 2 },
     dataPoints: [
       [0, 1],
@@ -169,7 +170,8 @@ const userInput = [
 
   {
     id: 'dataset2',
-    formula: 'return x**2+abscissa',
+    formula: 'return x**2+#abscissa#',
+    escapeCharacter: '#',
     curveParameters: { abscissa: 2 },
     dataPoints: [
       [1, 7],
@@ -200,7 +202,8 @@ const plotMetaAttributes = {
 const userInputLogarithmic = [
   {
     id: 'LogDataset1',
-    formula: 'return d+(a-d)/(1+(x/c)**b)',
+    formula: 'return $d$+($a$-$d$)/(1+(x/$c$)**$b$)',
+    escapeCharacter: '$',
     curveParameters: {
       a: 40, // Min
       b: 5, // Slope

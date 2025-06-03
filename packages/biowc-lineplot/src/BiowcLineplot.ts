@@ -12,6 +12,7 @@ type CurveParameterList = {
 interface InputDataset {
   id: string;
   formula: string;
+  escapeCharacter: string;
   curveParameters: CurveParameterList;
   dataPoints: number[][];
   color: string;
@@ -112,6 +113,7 @@ export class BiowcLineplot extends LitElement {
       if (this.inputData[i].formula && this.inputData[i].curveParameters) {
         this.inputData[i].curveFunction = BiowcLineplot.createCurveFunction(
           this.inputData[i].formula,
+          this.inputData[i].escapeCharacter,
           this.inputData[i].curveParameters
         );
         this.inputData[i].curvePoints = this.calculateCurvePoints(
@@ -513,14 +515,16 @@ export class BiowcLineplot extends LitElement {
 
   static createCurveFunction(
     formula: string,
+    escapeCharacter: string,
     curveParameterList: CurveParameterList
   ) {
     let replacedFormula = formula;
     Object.keys(curveParameterList).forEach(key => {
+      const escapedKey = `${escapeCharacter}${key}${escapeCharacter}`;
       // returns -1 if no seach result in string
-      while (replacedFormula.search(key) !== -1) {
+      while (replacedFormula.indexOf(escapedKey) !== -1) {
         replacedFormula = replacedFormula.replace(
-          key,
+          escapedKey,
           curveParameterList[key].toString()
         );
       }
