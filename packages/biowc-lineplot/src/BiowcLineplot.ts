@@ -49,8 +49,6 @@ export class BiowcLineplot extends LitElement {
       height: 400,
       xScale: 'linear',
       yScale: 'linear',
-      curveMinX: -5,
-      curveMaxX: 5,
       curveOpacity: 1,
       connectDots: true,
       dotSize: 4,
@@ -118,7 +116,8 @@ export class BiowcLineplot extends LitElement {
           this.inputData[i].curveParameters
         );
         this.inputData[i].curvePoints = this.calculateCurvePoints(
-          <Function>this.inputData[i].curveFunction
+          <Function>this.inputData[i].curveFunction,
+          this.inputData[i].dataPoints
         );
       }
     }
@@ -231,6 +230,8 @@ export class BiowcLineplot extends LitElement {
       this._metaDataAttr.curveMaxX!,
     ];
 
+    // If the user did not provide limits for the y axis, the min/max of the function values are used
+    // Limits for the x axis are guaranteed at this point
     const allCurveYValues = this.inputData
       .filter(dataset => dataset.curvePoints)
       .map(dataset => (<number[][]>dataset.curvePoints).map(point => point[1]))
@@ -534,7 +535,19 @@ export class BiowcLineplot extends LitElement {
     return Function('x', replacedFormula);
   }
 
-  calculateCurvePoints(curveFunction: Function) {
+  calculateCurvePoints(curveFunction: Function, dataPoints: number[][]) {
+    if (!this._metaDataAttr.curveMinX && dataPoints.length > 0) {
+      this._metaDataAttr.curveMinX = Math.min(
+        ...dataPoints.map(coordinates => coordinates[0])
+      );
+    }
+
+    if (!this._metaDataAttr.curveMaxX && dataPoints.length > 0) {
+      this._metaDataAttr.curveMaxX = Math.max(
+        ...dataPoints.map(coordinates => coordinates[0])
+      );
+    }
+
     const curveStep =
       (this._metaDataAttr.curveMaxX! - this._metaDataAttr.curveMinX!) / 1000;
     const curvePoints: number[][] = [];
