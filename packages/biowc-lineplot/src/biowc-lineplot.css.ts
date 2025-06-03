@@ -18,4 +18,14 @@ export default css`
     pointer-events: none;
     background-color: white;
   }
+
+  .legend-horizontal {
+    flex-direction: row; /* Legend beside plot */
+  }
+  .legend-vertical {
+    flex-direction: column; /* Legend below plot */
+  }
+  .legend-container {
+    flex-shrink: 0; /* Prevent legend from resizing */
+  }
 `;

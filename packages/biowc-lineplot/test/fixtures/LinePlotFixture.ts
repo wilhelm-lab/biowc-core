@@ -164,6 +164,7 @@ const userInput = [
       [4, 6],
     ],
     color: '#58631c',
+    legendText: 'Dataset 1',
   },
 
   {
@@ -177,6 +178,8 @@ const userInput = [
       [2, 5],
       [-2, -2],
     ],
+    color: '#393dfc',
+    legendText: 'Dataset 2',
   },
 ];
 
@@ -187,7 +190,11 @@ const plotMetaAttributes = {
   yAxisLabel: 'This is the y Axis',
   curveMinX: -10,
   curveMaxX: 5,
-  connectDots: false,
+  connectDots: true,
+  showLegend: true,
+  legendPosition: 'side',
+  dotOpacity: 0.75,
+  curveOpacity: 0.9,
 };
 
 export default {

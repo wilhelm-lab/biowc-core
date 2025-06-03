@@ -2,6 +2,7 @@ import { html, LitElement, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
 import { ScaleLinear, ValueFn } from 'd3';
+import { HTMLTemplateResult } from 'lit/development';
 import styles from './biowc-lineplot.css';
 // import * as scale from "d3-scale";
 
@@ -17,34 +18,52 @@ interface InputDataset {
   color: string;
   curveFunction?: Function;
   curvePoints?: number[][];
+  legendText?: string;
 }
 
 interface MetaDataAttributes {
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   xAxisLabel?: string;
   yAxisLabel?: string;
-  curveMinX: number;
-  curveMaxX: number;
+  curveMinX?: number;
+  curveMaxX?: number;
   curveMinY?: number;
   curveMaxY?: number;
-  connectDots: boolean; // TODO: Add check in component
+  curveOpacity?: number;
+  connectDots?: boolean;
+  dotSize?: number;
+  dotOpacity?: number;
+  showLegend?: boolean;
+  legendPosition?: 'side' | 'bottom' | null;
 }
 
 export class BiowcLineplot extends LitElement {
+  set metaDataAttr(value: MetaDataAttributes) {
+    // Initialize everything in metaData with default values
+    this._metaDataAttr = {
+      width: 400,
+      height: 400,
+      curveMinX: -5,
+      curveMaxX: 5,
+      curveOpacity: 1,
+      connectDots: true,
+      dotSize: 4,
+      dotOpacity: 0.1,
+      showLegend: false,
+      legendPosition: 'bottom',
+      // This overwrites the default with the custom values, if defined
+      ...value,
+    };
+  }
+
   static styles = styles;
 
   @property({ attribute: false })
   inputData: InputDataset[] = [];
 
   @property({ attribute: false })
-  metaDataAttr: MetaDataAttributes = {
-    width: 400,
-    height: 400,
-    curveMinX: -5,
-    curveMaxX: 5,
-    connectDots: true,
-  };
+  private _metaDataAttr!: MetaDataAttributes;
 
   svgXAxis: ScaleLinear<any, any> = d3v6.scaleLinear();
 
@@ -64,13 +83,20 @@ export class BiowcLineplot extends LitElement {
 
   // margin = { top: 0, right: 0, bottom: 0, left: 0 };
 
-  render() {
-    return html` <div style="display: flex">
+  render(): HTMLTemplateResult {
+    return html` <div
+      id="container"
+      class="${this._metaDataAttr.legendPosition === 'side'
+        ? 'legend-horizontal'
+        : 'legend-vertical'}"
+      style="display: flex"
+    >
       <div id="lineplot"></div>
       <export-button
         .svgComponent="${this}"
         style="margin-left: 20px;"
       ></export-button>
+      <div id="legendContainer"></div>
     </div>`;
   }
 
@@ -96,6 +122,11 @@ export class BiowcLineplot extends LitElement {
     this._initializeAuxiliaryLines();
     this._plotDots();
     this._plotCurves();
+
+    // Add the legend
+    if (this._metaDataAttr.showLegend) {
+      this._renderLegend();
+    }
 
     super.firstUpdated(_changedProperties);
   }
@@ -159,12 +190,12 @@ export class BiowcLineplot extends LitElement {
 
   private createAxes() {
     const widthRelativeToMargin =
-      this.metaDataAttr.width -
+      this._metaDataAttr.width! -
       this.margin.left -
       this.margin.right -
       this.margin.yAxis;
     const heightRelativeToMargin =
-      this.metaDataAttr.height -
+      this._metaDataAttr.height! -
       this.margin.top -
       this.margin.bottom -
       this.margin.xAxis;
@@ -174,8 +205,8 @@ export class BiowcLineplot extends LitElement {
     // append the svg object to the body of the page
     const svg = mainDiv
       .append('svg')
-      .attr('width', this.metaDataAttr.width)
-      .attr('height', this.metaDataAttr.height);
+      .attr('width', this._metaDataAttr.width!)
+      .attr('height', this._metaDataAttr.height!);
 
     const svgGroup = svg
       .append('g')
@@ -190,20 +221,20 @@ export class BiowcLineplot extends LitElement {
         .filter(dataset => dataset.dataPoints)
         .map(dataset => dataset.dataPoints.map(point => point[0]))
         .flat(),
-      this.metaDataAttr.curveMinX,
-      this.metaDataAttr.curveMaxX,
+      this._metaDataAttr.curveMinX!,
+      this._metaDataAttr.curveMaxX!,
     ];
 
     const allCurveYValues = this.inputData
       .filter(dataset => dataset.curvePoints)
       .map(dataset => (<number[][]>dataset.curvePoints).map(point => point[1]))
       .flat();
-    if (!this.metaDataAttr.curveMinY && allCurveYValues.length > 0) {
-      this.metaDataAttr.curveMinY = Math.min(...allCurveYValues);
+    if (!this._metaDataAttr.curveMinY && allCurveYValues.length > 0) {
+      this._metaDataAttr.curveMinY = Math.min(...allCurveYValues);
     }
 
-    if (!this.metaDataAttr.curveMaxY && allCurveYValues.length > 0) {
-      this.metaDataAttr.curveMaxY = Math.max(...allCurveYValues);
+    if (!this._metaDataAttr.curveMaxY && allCurveYValues.length > 0) {
+      this._metaDataAttr.curveMaxY = Math.max(...allCurveYValues);
     }
 
     const allYValues = [
@@ -212,12 +243,12 @@ export class BiowcLineplot extends LitElement {
         .map(dataset => dataset.dataPoints.map(point => point[1]))
         .flat(),
     ];
-    if (this.metaDataAttr.curveMinY) {
-      allYValues.push(this.metaDataAttr.curveMinY);
+    if (this._metaDataAttr.curveMinY) {
+      allYValues.push(this._metaDataAttr.curveMinY);
     }
 
-    if (this.metaDataAttr.curveMaxY) {
-      allYValues.push(this.metaDataAttr.curveMaxY);
+    if (this._metaDataAttr.curveMaxY) {
+      allYValues.push(this._metaDataAttr.curveMaxY);
     }
 
     // Add x and y axis
@@ -251,16 +282,16 @@ export class BiowcLineplot extends LitElement {
         'transform',
         `translate(
       ${
-        (this.metaDataAttr.width -
+        (this._metaDataAttr.width! -
           this.margin.yAxis -
           this.margin.right -
           this.margin.left) /
         2
       },
-      ${this.metaDataAttr.height - this.margin.xAxis})`
+      ${this._metaDataAttr.height! - this.margin.xAxis})`
       )
       .style('text-anchor', 'middle')
-      .text(`${this.metaDataAttr.xAxisLabel}`);
+      .text(`${this._metaDataAttr.xAxisLabel}`);
 
     svgGroup
       .append('text')
@@ -270,7 +301,7 @@ export class BiowcLineplot extends LitElement {
         `translate(
       ${-this.margin.yAxis},
       ${
-        (this.metaDataAttr.height -
+        (this._metaDataAttr.height! -
           this.margin.xAxis -
           this.margin.bottom -
           this.margin.top) /
@@ -278,7 +309,7 @@ export class BiowcLineplot extends LitElement {
       }) rotate(-90)`
       )
       .style('text-anchor', 'middle')
-      .text(`${this.metaDataAttr.yAxisLabel}`);
+      .text(`${this._metaDataAttr.yAxisLabel}`);
   }
 
   private _plotDots() {
@@ -303,9 +334,9 @@ export class BiowcLineplot extends LitElement {
           .join('circle')
           .attr('cx', point => this.svgXAxis((<Number[]>point)[0]))
           .attr('cy', point => this.svgYAxis((<Number[]>point)[1]))
-          .attr('r', 4)
-          // .style('fill', colors(i))
-          .style('fill', d3v6.schemeSet2[i])
+          .attr('r', this._metaDataAttr.dotSize!)
+          .style('fill', this.inputData[i].color || d3v6.schemeSet2[i])
+          .attr('opacity', this._metaDataAttr.dotOpacity || 1)
           .on('mousemove', (e, d) =>
             this._showTooltip(e, {
               x: d[0].toPrecision(4),
@@ -316,7 +347,7 @@ export class BiowcLineplot extends LitElement {
 
         // Connect dots with a line
 
-        if (this.metaDataAttr.connectDots) {
+        if (this._metaDataAttr.connectDots) {
           dotlistGroup
             .append('path')
             .attr('class', 'dotconnector')
@@ -334,9 +365,9 @@ export class BiowcLineplot extends LitElement {
                 null
               >
             )
-            // .style('stroke', colors(i))
-            .style('stroke', d3v6.schemeSet2[i])
-            .style('fill', 'none');
+            .style('stroke', this.inputData[i].color || d3v6.schemeSet2[i])
+            .style('fill', 'none')
+            .attr('opacity', this._metaDataAttr.dotOpacity || 1);
         }
       }
     }
@@ -365,7 +396,8 @@ export class BiowcLineplot extends LitElement {
         .attr('stroke-width', strokeWidth)
         .attr('d', line as ValueFn<SVGPathElement, number[][], null>)
         .style('stroke', strokeColor)
-        .style('fill', 'none');
+        .style('fill', 'none')
+        .attr('opacity', this._metaDataAttr.curveOpacity || 1);
 
     for (let i = 0; i < this.inputData.length; i += 1) {
       if (this.inputData[i].curvePoints) {
@@ -373,13 +405,13 @@ export class BiowcLineplot extends LitElement {
         plotCurve(
           <number[][]>this.inputData[i].curvePoints,
           1.5,
-          d3v6.schemeSet2[i]
+          this.inputData[i].color || d3v6.schemeSet2[i]
         );
         // Add thicker invisible curve - for better mouseover functionality
         const invisibleCurve = plotCurve(
           <number[][]>this.inputData[i].curvePoints,
           10,
-          d3v6.schemeSet2[i]
+          this.inputData[i].color || d3v6.schemeSet2[i]
         );
         invisibleCurve
           .style('opacity', 0)
@@ -440,6 +472,39 @@ export class BiowcLineplot extends LitElement {
     }
   }
 
+  private _renderLegend() {
+    const legendContainer = d3v6
+      // @ts-ignore
+      .select(this.shadowRoot)
+      .select('#legendContainer');
+
+    // Remove previous legend
+    legendContainer.select('svg').remove();
+
+    const legend = legendContainer
+      .append('svg')
+      .selectAll('.legend-item')
+      .data(this.inputData)
+      .join('g')
+      .attr('class', 'legend-item')
+      .attr('transform', (_, i) => `translate(10, ${(i + 1) * 25})`);
+
+    legend
+      .append('circle')
+      .attr('cx', this._metaDataAttr.dotSize!)
+      .attr('cy', 10 + this._metaDataAttr.dotSize!)
+      .attr('r', this._metaDataAttr.dotSize!)
+      .attr('fill', d => d.color || 'black')
+      .attr('opacity', this._metaDataAttr.dotOpacity || 1);
+
+    legend
+      .append('text')
+      .attr('x', 20 + this._metaDataAttr.dotSize!)
+      .attr('y', 20 + this._metaDataAttr.dotSize! / 2)
+      .attr('alignment-baseline', 'middle')
+      .text(d => d.legendText || '');
+  }
+
   static createCurveFunction(
     formula: string,
     curveParameterList: CurveParameterList
@@ -461,12 +526,12 @@ export class BiowcLineplot extends LitElement {
 
   calculateCurvePoints(curveFunction: Function) {
     const curveStep =
-      (this.metaDataAttr.curveMaxX - this.metaDataAttr.curveMinX) / 1000;
+      (this._metaDataAttr.curveMaxX! - this._metaDataAttr.curveMinX!) / 1000;
     const curvePoints: number[][] = [];
 
     for (
-      let x = this.metaDataAttr.curveMinX;
-      x <= this.metaDataAttr.curveMaxX;
+      let x = this._metaDataAttr.curveMinX!;
+      x <= this._metaDataAttr.curveMaxX!;
       x += curveStep
     ) {
       curvePoints.push([x, curveFunction(x)]);
