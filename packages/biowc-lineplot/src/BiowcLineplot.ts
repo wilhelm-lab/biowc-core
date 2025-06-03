@@ -1,10 +1,9 @@
 import { html, LitElement, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import * as d3v6 from 'd3';
-import { ScaleLinear, ValueFn } from 'd3';
+import { ScaleContinuousNumeric, ValueFn } from 'd3';
 import { HTMLTemplateResult } from 'lit/development';
 import styles from './biowc-lineplot.css';
-// import * as scale from "d3-scale";
 
 type CurveParameterList = {
   [key: string]: number;
@@ -13,7 +12,7 @@ type CurveParameterList = {
 interface InputDataset {
   id: string;
   formula: string;
-  curveParameters: CurveParameterList; // TODO: Why are you not throwing errors?
+  curveParameters: CurveParameterList;
   dataPoints: number[][];
   color: string;
   curveFunction?: Function;
@@ -24,6 +23,8 @@ interface InputDataset {
 interface MetaDataAttributes {
   width?: number;
   height?: number;
+  xScale?: 'linear' | 'logarithmic';
+  yScale?: 'linear' | 'logarithmic';
   xAxisLabel?: string;
   yAxisLabel?: string;
   curveMinX?: number;
@@ -44,6 +45,8 @@ export class BiowcLineplot extends LitElement {
     this._metaDataAttr = {
       width: 400,
       height: 400,
+      xScale: 'linear',
+      yScale: 'linear',
       curveMinX: -5,
       curveMaxX: 5,
       curveOpacity: 1,
@@ -65,9 +68,9 @@ export class BiowcLineplot extends LitElement {
   @property({ attribute: false })
   private _metaDataAttr!: MetaDataAttributes;
 
-  svgXAxis: ScaleLinear<any, any> = d3v6.scaleLinear();
+  svgXAxis!: ScaleContinuousNumeric<any, any>;
 
-  svgYAxis: ScaleLinear<any, any> = d3v6.scaleLinear();
+  svgYAxis!: ScaleContinuousNumeric<any, any>;
 
   minX!: number;
 
@@ -257,8 +260,12 @@ export class BiowcLineplot extends LitElement {
     this.minY = Math.min(...allYValues);
     this.maxY = Math.max(...allYValues);
 
-    this.svgXAxis = d3v6
-      .scaleLinear()
+    const xScale =
+      this._metaDataAttr.xScale === 'linear'
+        ? d3v6.scaleLinear()
+        : d3v6.scaleLog();
+
+    this.svgXAxis = xScale
       .domain([this.minX, this.maxX])
       .range([0, widthRelativeToMargin]);
 
@@ -267,8 +274,12 @@ export class BiowcLineplot extends LitElement {
       .attr('transform', `translate(0,${heightRelativeToMargin})`)
       .call(d3v6.axisBottom(this.svgXAxis));
 
-    this.svgYAxis = d3v6
-      .scaleLinear()
+    const yScale =
+      this._metaDataAttr.yScale === 'linear'
+        ? d3v6.scaleLinear()
+        : d3v6.scaleLog();
+
+    this.svgYAxis = yScale
       .domain([this.minY, this.maxY])
       .range([heightRelativeToMargin, 0]);
 
@@ -319,11 +330,6 @@ export class BiowcLineplot extends LitElement {
 
     // Add dots
     const dotlistGroup = svgGroup.append('g').attr('id', 'dotlistGroup');
-
-    // const colors = scale
-    // .scaleLinear<string>()
-    // .domain([0, this.dataPoints.length])
-    // .range(["#f44336", "#3b73b4"]);
 
     for (let i = 0; i < this.inputData.length; i += 1) {
       if (this.inputData[i].dataPoints) {

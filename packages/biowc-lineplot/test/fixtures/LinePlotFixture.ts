@@ -197,6 +197,45 @@ const plotMetaAttributes = {
   curveOpacity: 0.9,
 };
 
+const userInputLogarithmic = [
+  {
+    id: 'LogDataset1',
+    formula: 'return d+(a-d)/(1+(x/c)**b)',
+    curveParameters: {
+      a: 40, // Min
+      b: 5, // Slope
+      c: 2, // Inflection
+      d: 20, // Max
+    },
+
+    dataPoints: [
+      [1, 2],
+      [2, 5],
+      [3, 4],
+      [4, 6],
+      [5, 10],
+    ],
+    color: '#58631c',
+    legendText: 'Logarithmic Dataset 1',
+  },
+];
+
+const plotMetaAttributesLogarithmic = {
+  width: 800,
+  height: 500,
+  xAxisLabel: 'Log x',
+  yAxisLabel: 'y',
+  curveMinX: 1,
+  curveMaxX: 10,
+  connectDots: true,
+  showLegend: true,
+  legendPosition: 'side',
+  dotOpacity: 0.75,
+  curveOpacity: 0.9,
+  xScale: 'logarithmic',
+  yScale: 'linear',
+};
+
 export default {
   basicLineplot,
   oneDotLineplot,
@@ -205,4 +244,6 @@ export default {
   complexLineplot,
   userInput,
   plotMetaAttributes,
+  userInputLogarithmic,
+  plotMetaAttributesLogarithmic,
 };
