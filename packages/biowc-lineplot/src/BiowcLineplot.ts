@@ -84,7 +84,7 @@ export class BiowcLineplot extends LitElement {
 
   // The D3 axes will exceed the width & height a bit, so we define a hard-coded margin
   // https://gist.github.com/mbostock/3019563
-  margin = { top: 20, right: 20, bottom: 30, left: 30, xAxis: 30, yAxis: 30 };
+  margin = { top: 20, right: 20, bottom: 30, left: 30, xAxis: 30, yAxis: 45 };
 
   // margin = { top: 0, right: 0, bottom: 0, left: 0 };
 
@@ -312,7 +312,7 @@ export class BiowcLineplot extends LitElement {
       .attr(
         'transform',
         `translate(
-      ${-this.margin.yAxis - 15},
+      ${-this.margin.yAxis},
       ${
         (this._metaDataAttr.height! -
           this.margin.xAxis -
