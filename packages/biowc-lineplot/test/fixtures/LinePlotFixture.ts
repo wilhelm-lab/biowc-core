@@ -154,7 +154,8 @@ const parabola = [
 const userInput = [
   {
     id: 'dataset1',
-    formula: 'return x+abscissa',
+    formula: 'return x+$abscissa$',
+    escapeCharacter: '$',
     curveParameters: { abscissa: 2 },
     dataPoints: [
       [0, 1],
@@ -164,11 +165,13 @@ const userInput = [
       [4, 6],
     ],
     color: '#58631c',
+    legendText: 'Dataset 1',
   },
 
   {
     id: 'dataset2',
-    formula: 'return x**2+abscissa',
+    formula: 'return x**2+#abscissa#',
+    escapeCharacter: '#',
     curveParameters: { abscissa: 2 },
     dataPoints: [
       [1, 7],
@@ -177,6 +180,8 @@ const userInput = [
       [2, 5],
       [-2, -2],
     ],
+    color: '#393dfc',
+    legendText: 'Dataset 2',
   },
 ];
 
@@ -187,7 +192,51 @@ const plotMetaAttributes = {
   yAxisLabel: 'This is the y Axis',
   curveMinX: -10,
   curveMaxX: 5,
-  connectDots: false,
+  connectDots: true,
+  showLegend: true,
+  legendPosition: 'side',
+  dotOpacity: 0.75,
+  curveOpacity: 0.9,
+};
+
+const userInputLogarithmic = [
+  {
+    id: 'LogDataset1',
+    formula: 'return $d$+($a$-$d$)/(1+(x/$c$)**$b$)',
+    escapeCharacter: '$',
+    curveParameters: {
+      a: 40, // Min
+      b: 5, // Slope
+      c: 2, // Inflection
+      d: 20, // Max
+    },
+
+    dataPoints: [
+      [1, 2],
+      [2, 5],
+      [3, 4],
+      [4, 6],
+      [5, 10],
+    ],
+    color: '#58631c',
+    legendText: 'Logarithmic Dataset 1',
+  },
+];
+
+const plotMetaAttributesLogarithmic = {
+  width: 800,
+  height: 500,
+  xAxisLabel: 'Log x',
+  yAxisLabel: 'y',
+  // curveMinX: 1,
+  // curveMaxX: 10,
+  connectDots: true,
+  showLegend: true,
+  legendPosition: 'side',
+  dotOpacity: 0.75,
+  curveOpacity: 0.9,
+  xScale: 'logarithmic',
+  yScale: 'linear',
 };
 
 export default {
@@ -198,4 +247,6 @@ export default {
   complexLineplot,
   userInput,
   plotMetaAttributes,
+  userInputLogarithmic,
+  plotMetaAttributesLogarithmic,
 };
