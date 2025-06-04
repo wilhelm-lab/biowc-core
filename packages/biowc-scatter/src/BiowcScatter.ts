@@ -458,7 +458,8 @@ export class BiowcScatter extends LitElement {
   protected updated(_changedProperties: PropertyValues) {
     if (
       _changedProperties.has('xValues') ||
-      _changedProperties.has('yValues')
+      _changedProperties.has('yValues') ||
+      _changedProperties.has('highlightedDots')
     ) {
       this._plotScatter();
     }
