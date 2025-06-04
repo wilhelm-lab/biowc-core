@@ -613,17 +613,30 @@ export class BiowcLineplot extends LitElement {
       );
     }
 
-    const curveStep =
-      (this._metaDataAttr.curveMaxX! - this._metaDataAttr.curveMinX!) / 1000;
+    const nIntervals = 1000;
     const curvePoints: number[][] = [];
+    let x = this._metaDataAttr.curveMinX!;
 
-    for (
-      let x = this._metaDataAttr.curveMinX!;
-      x <= this._metaDataAttr.curveMaxX!;
-      x += curveStep
-    ) {
-      curvePoints.push([x, curveFunction(x)]);
+    if (this._metaDataAttr.xScale === 'linear') {
+      const curveStep =
+        (this._metaDataAttr.curveMaxX! - this._metaDataAttr.curveMinX!) /
+        nIntervals;
+      for (let i = 1; i < nIntervals; i += 1) {
+        curvePoints.push([x, curveFunction(x)]);
+        x += curveStep;
+      }
+    } else {
+      const curveStep = Math.exp(
+        (Math.log(this._metaDataAttr.curveMaxX!) -
+          Math.log(this._metaDataAttr.curveMinX!)) /
+          nIntervals
+      );
+      for (let i = 1; i < nIntervals; i += 1) {
+        curvePoints.push([x, curveFunction(x)]);
+        x *= curveStep;
+      }
     }
+
     return curvePoints;
   }
 }
