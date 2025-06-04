@@ -20,6 +20,7 @@ interface InputDataset {
   curveFunction?: Function;
   curvePoints?: number[][];
   legendText?: string;
+  tooltipTextHTML?: string;
 }
 
 interface MetaDataAttributes {
@@ -158,19 +159,10 @@ export class BiowcLineplot extends LitElement {
       .style('opacity', 0);
   }
 
-  // Todo: The coordinates are NOT used to position the tooltip, they are just used for the tooltip text
-  // This is potentially misleading. Instead, format the tooltip text outside this function and pass it here
-  // as tooltipText or even tooltipTextHTML
-  private _showTooltip(
-    e: MouseEvent,
-    coordinates: { x: string; y: string },
-    tooltipTextHTML: String
-  ) {
-    this.tooltip!.html(
-      `<p>x=${coordinates.x}, y=${coordinates.y}${tooltipTextHTML}</p>`
-    )
+  private _showTooltip(e: MouseEvent, tooltipText: String) {
+    this.tooltip!.html(`<p>${tooltipText}</p>`)
       .style('left', `${e.offsetX + 45}px`)
-      .style('top', `${e.offsetY + 25}px`)
+      .style('top', `${e.offsetY + 35}px`)
       .transition()
       .duration(200) // ms
       .style('opacity', 0.9); // started as 0!
@@ -178,7 +170,7 @@ export class BiowcLineplot extends LitElement {
 
   private _hideTooltip() {
     this.tooltip!.transition()
-      .duration(300) // ms
+      .duration(200) // ms
       .style('opacity', 0);
   }
 
@@ -371,11 +363,9 @@ export class BiowcLineplot extends LitElement {
           .on('mousemove', (e, d) =>
             this._showTooltip(
               e,
-              {
-                x: d[0].toPrecision(4),
-                y: d[1].toPrecision(4),
-              },
-              '<b>HelloHTML</b>'
+              `${this.inputData[i].tooltipTextHTML || ''}x=${d[0].toPrecision(
+                4
+              )}, y=${d[1].toPrecision(4)}`
             )
           )
           .on('mouseout', () => this._hideTooltip());
@@ -402,7 +392,11 @@ export class BiowcLineplot extends LitElement {
             )
             .style('stroke', this.inputData[i].color || d3v6.schemeSet2[i])
             .style('fill', 'none')
-            .attr('opacity', this._metaDataAttr.dotOpacity || 1);
+            .attr('opacity', this._metaDataAttr.dotOpacity || 1)
+            .on('mousemove', e =>
+              this._showTooltip(e, this.inputData[i].tooltipTextHTML || '')
+            )
+            .on('mouseout', () => this._hideTooltip());
         }
       }
     }
@@ -489,11 +483,9 @@ export class BiowcLineplot extends LitElement {
 
             this._showTooltip(
               e,
-              {
-                x: xValue.toPrecision(4),
-                y: yValue.toPrecision(4),
-              },
-              '<b>HelloAlsoFromHeres</b>'
+              `${this.inputData[i].tooltipTextHTML || ''}x=${xValue.toPrecision(
+                4
+              )}, y=${yValue.toPrecision(4)}`
             );
           })
           .on('mouseout', () => {

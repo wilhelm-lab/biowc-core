@@ -166,6 +166,8 @@ const userInput = [
     ],
     color: '#58631c',
     legendText: 'Dataset 1',
+    tooltipTextHTML:
+      "<pre style='text-align: left'>I am Number <b>One</b>!</pre>",
   },
 
   {
@@ -182,6 +184,8 @@ const userInput = [
     ],
     color: '#393dfc',
     legendText: 'Dataset 2',
+    tooltipTextHTML:
+      "<pre style='text-align: left'><i>I</i> am Number <b>Two</b>!</pre>",
   },
 ];
 
