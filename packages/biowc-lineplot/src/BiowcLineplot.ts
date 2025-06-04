@@ -86,6 +86,10 @@ export class BiowcLineplot extends LitElement {
 
   // margin = { top: 0, right: 0, bottom: 0, left: 0 };
 
+  private tooltip:
+    | d3v6.Selection<HTMLDivElement, unknown, HTMLElement, any>
+    | undefined;
+
   render(): HTMLTemplateResult {
     return html` <div
       id="container"
@@ -144,29 +148,37 @@ export class BiowcLineplot extends LitElement {
   }
 
   private _initializeTooltip() {
-    this._getMainDiv()
+    // remove tooltip if it exists from a previous render
+    this.tooltip?.remove();
+
+    const mainDiv = this._getMainDiv();
+    this.tooltip = mainDiv
       .append('div')
-      .attr('id', 'tooltip')
       .attr('class', 'tooltip')
       .style('opacity', 0);
   }
 
-  private _showTooltip(e: MouseEvent, coordinates: { x: string; y: string }) {
-    this._getMainDiv()
-      .select('#tooltip')
-      .html(`<p>x=${coordinates.x}, y=${coordinates.y}</p>`)
-      .style('left', `${e.pageX + 10}px`)
-      .style('top', `${e.pageY - 10}px`)
+  // Todo: The coordinates are NOT used to position the tooltip, they are just used for the tooltip text
+  // This is potentially misleading. Instead, format the tooltip text outside this function and pass it here
+  // as tooltipText or even tooltipTextHTML
+  private _showTooltip(
+    e: MouseEvent,
+    coordinates: { x: string; y: string },
+    tooltipTextHTML: String
+  ) {
+    this.tooltip!.html(
+      `<p>x=${coordinates.x}, y=${coordinates.y}${tooltipTextHTML}</p>`
+    )
+      .style('left', `${e.offsetX + 45}px`)
+      .style('top', `${e.offsetY + 25}px`)
       .transition()
-      .duration(100) // ms
+      .duration(200) // ms
       .style('opacity', 0.9); // started as 0!
   }
 
   private _hideTooltip() {
-    this._getMainDiv()
-      .select('#tooltip')
-      .transition()
-      .duration(100) // ms
+    this.tooltip!.transition()
+      .duration(300) // ms
       .style('opacity', 0);
   }
 
@@ -357,10 +369,14 @@ export class BiowcLineplot extends LitElement {
           .style('fill', this.inputData[i].color || d3v6.schemeSet2[i])
           .attr('opacity', this._metaDataAttr.dotOpacity || 1)
           .on('mousemove', (e, d) =>
-            this._showTooltip(e, {
-              x: d[0].toPrecision(4),
-              y: d[1].toPrecision(4),
-            })
+            this._showTooltip(
+              e,
+              {
+                x: d[0].toPrecision(4),
+                y: d[1].toPrecision(4),
+              },
+              '<b>HelloHTML</b>'
+            )
           )
           .on('mouseout', () => this._hideTooltip());
 
@@ -471,10 +487,14 @@ export class BiowcLineplot extends LitElement {
               .attr('y2', this.svgYAxis(yValue))
               .style('opacity', 1);
 
-            this._showTooltip(e, {
-              x: xValue.toPrecision(4),
-              y: yValue.toPrecision(4),
-            });
+            this._showTooltip(
+              e,
+              {
+                x: xValue.toPrecision(4),
+                y: yValue.toPrecision(4),
+              },
+              '<b>HelloAlsoFromHeres</b>'
+            );
           })
           .on('mouseout', () => {
             this._getMainDiv()
