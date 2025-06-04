@@ -40,6 +40,7 @@ interface MetaDataAttributes {
   dotOpacity?: number;
   showLegend?: boolean;
   legendPosition?: 'side' | 'bottom' | null;
+  legendFontSize?: number;
 }
 
 export class BiowcLineplot extends LitElement {
@@ -104,7 +105,12 @@ export class BiowcLineplot extends LitElement {
         .svgComponent="${this}"
         style="margin-left: 20px;"
       ></export-button>
-      <div id="legendContainer"></div>
+      <div
+        id="legendContainer"
+        style="${this._metaDataAttr.legendPosition === 'bottom'
+          ? 'margin-left: 20px'
+          : ''}"
+      ></div>
     </div>`;
   }
 
@@ -518,7 +524,7 @@ export class BiowcLineplot extends LitElement {
       .data(this.inputData)
       .join('g')
       .attr('class', 'legend-item')
-      .attr('transform', (_, i) => `translate(10, ${(i + 1) * 25})`);
+      .attr('transform', (_, i) => `translate(10, ${i * 25})`);
 
     legend
       .append('circle')
@@ -531,8 +537,10 @@ export class BiowcLineplot extends LitElement {
     legend
       .append('text')
       .attr('x', 20 + this._metaDataAttr.dotSize!)
-      .attr('y', 20 + this._metaDataAttr.dotSize! / 2)
-      .attr('alignment-baseline', 'middle')
+      .attr('y', 10 + this._metaDataAttr.dotSize!)
+      .attr('font-size', this._metaDataAttr.legendFontSize || 'medium')
+      .attr('text-anchor', 'start')
+      .attr('dominant-baseline', 'central')
       .text(d => d.legendText || '');
   }
 

@@ -198,9 +198,10 @@ const plotMetaAttributes = {
   curveMaxX: 5,
   connectDots: true,
   showLegend: true,
-  legendPosition: 'side',
+  legendPosition: 'bottom',
   dotOpacity: 0.75,
   curveOpacity: 0.9,
+  legendFontSize: 12,
 };
 
 const userInputLogarithmic = [
