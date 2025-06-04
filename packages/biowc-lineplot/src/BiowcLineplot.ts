@@ -131,6 +131,10 @@ export class BiowcLineplot extends LitElement {
           this.inputData[i].dataPoints
         );
       }
+      // Add default color if it was not supplied
+      if (!this.inputData[i].color) {
+        this.inputData[i].color = d3v6.schemeCategory10[i];
+      }
     }
 
     this.createAxes();
@@ -364,14 +368,14 @@ export class BiowcLineplot extends LitElement {
           .attr('cx', point => this.svgXAxis((<Number[]>point)[0]))
           .attr('cy', point => this.svgYAxis((<Number[]>point)[1]))
           .attr('r', this._metaDataAttr.dotSize!)
-          .style('fill', this.inputData[i].color || d3v6.schemeSet2[i])
+          .style('fill', this.inputData[i].color)
           .attr('opacity', this._metaDataAttr.dotOpacity || 1)
           .on('mousemove', (e, d) =>
             this._showTooltip(
               e,
-              `${this.inputData[i].tooltipTextHTML || ''}x=${d[0].toPrecision(
-                4
-              )}, y=${d[1].toPrecision(4)}`
+              `${
+                this.inputData[i].tooltipTextHTML || ''
+              }<i>x=${d[0].toPrecision(4)}, y=${d[1].toPrecision(4)}</i>`
             )
           )
           .on('mouseout', () => this._hideTooltip());
@@ -396,7 +400,7 @@ export class BiowcLineplot extends LitElement {
                 null
               >
             )
-            .style('stroke', this.inputData[i].color || d3v6.schemeSet2[i])
+            .style('stroke', this.inputData[i].color)
             .style('fill', 'none')
             .attr('opacity', this._metaDataAttr.dotOpacity || 1)
             .on('mousemove', e =>
@@ -440,13 +444,13 @@ export class BiowcLineplot extends LitElement {
         plotCurve(
           <number[][]>this.inputData[i].curvePoints,
           1.5,
-          this.inputData[i].color || d3v6.schemeSet2[i]
+          this.inputData[i].color
         );
         // Add thicker invisible curve - for better mouseover functionality
         const invisibleCurve = plotCurve(
           <number[][]>this.inputData[i].curvePoints,
           10,
-          this.inputData[i].color || d3v6.schemeSet2[i]
+          this.inputData[i].color
         );
         invisibleCurve
           .style('opacity', 0)
@@ -489,9 +493,9 @@ export class BiowcLineplot extends LitElement {
 
             this._showTooltip(
               e,
-              `${this.inputData[i].tooltipTextHTML || ''}x=${xValue.toPrecision(
-                4
-              )}, y=${yValue.toPrecision(4)}`
+              `${
+                this.inputData[i].tooltipTextHTML || ''
+              }<i>x=${xValue.toPrecision(4)}, y=${yValue.toPrecision(4)}</i>`
             );
           })
           .on('mouseout', () => {
@@ -531,7 +535,7 @@ export class BiowcLineplot extends LitElement {
       .attr('cx', this._metaDataAttr.dotSize!)
       .attr('cy', 10 + this._metaDataAttr.dotSize!)
       .attr('r', this._metaDataAttr.dotSize!)
-      .attr('fill', d => d.color || 'black')
+      .attr('fill', d => d.color)
       .attr('opacity', this._metaDataAttr.dotOpacity || 1);
 
     legend
