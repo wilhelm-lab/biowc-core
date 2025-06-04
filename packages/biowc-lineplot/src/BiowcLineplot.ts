@@ -107,7 +107,7 @@ export class BiowcLineplot extends LitElement {
     return this.shadowRoot?.querySelector('svg')?.outerHTML;
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues) {
+  private _initLineplot() {
     for (let i = 0; i < this.inputData.length; i += 1) {
       if (this.inputData[i].formula && this.inputData[i].curveParameters) {
         this.inputData[i].curveFunction = BiowcLineplot.createCurveFunction(
@@ -132,8 +132,15 @@ export class BiowcLineplot extends LitElement {
     if (this._metaDataAttr.showLegend) {
       this._renderLegend();
     }
+  }
 
+  protected firstUpdated(_changedProperties: PropertyValues) {
+    this._initLineplot();
     super.firstUpdated(_changedProperties);
+  }
+
+  protected updated() {
+    this._initLineplot();
   }
 
   private _initializeTooltip() {
@@ -206,6 +213,9 @@ export class BiowcLineplot extends LitElement {
       this.margin.xAxis;
 
     const mainDiv = this._getMainDiv();
+
+    // Remove previous axes, if they exist
+    mainDiv.select('svg').remove();
 
     // append the svg object to the body of the page
     const svg = mainDiv
