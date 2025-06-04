@@ -175,6 +175,7 @@ const userInput = [
     formula: 'return x**2+#abscissa#',
     escapeCharacter: '#',
     curveParameters: { abscissa: 2 },
+    curveHighlights: [1.5, 3.5],
     dataPoints: [
       [1, 7],
       [-1, 0],

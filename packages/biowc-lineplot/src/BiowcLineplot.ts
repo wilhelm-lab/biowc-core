@@ -15,6 +15,7 @@ interface InputDataset {
   formula: string;
   escapeCharacter: string;
   curveParameters: CurveParameterList;
+  curveHighlights?: number[];
   dataPoints: number[][];
   color: string;
   curveFunction?: Function;
@@ -507,6 +508,36 @@ export class BiowcLineplot extends LitElement {
               .select('#auxiliaryVerticalLine')
               .style('opacity', 0);
 
+            this._hideTooltip();
+          });
+      }
+
+      // If supplied, add curve highlight points
+      if (this.inputData[i].curveHighlights) {
+        curveGroup
+          .append('g')
+          .selectAll('curveHighlightDot')
+          .data(this.inputData[i].curveHighlights!)
+          .join('circle')
+          .attr('cx', x => this.svgXAxis(x))
+          .attr('cy', x =>
+            this.svgYAxis((<Function>this.inputData[i].curveFunction)(x))
+          )
+          .attr('r', this._metaDataAttr.dotSize! + 2)
+          .style('fill', 'white')
+          .style('stroke-width', 3)
+          .style('stroke', this.inputData[i].color)
+          .on('mousemove', (e, x) => {
+            this._showTooltip(
+              e,
+              `${this.inputData[i].tooltipTextHTML || ''}<i>x=${x.toPrecision(
+                4
+              )}, y=${(<Function>this.inputData[i].curveFunction)(
+                x
+              ).toPrecision(4)}</i>`
+            );
+          })
+          .on('mouseout', () => {
             this._hideTooltip();
           });
       }
