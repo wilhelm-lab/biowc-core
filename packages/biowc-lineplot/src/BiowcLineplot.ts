@@ -326,13 +326,7 @@ export class BiowcLineplot extends LitElement {
       .attr(
         'transform',
         `translate(
-      ${
-        (this._metaDataAttr.width! -
-          this.margin.yAxis -
-          this.margin.right -
-          this.margin.left) /
-        2
-      },
+      ${widthRelativeToMargin / 2},
       ${this._metaDataAttr.height! - this.margin.xAxis})`
       )
       .style('text-anchor', 'middle')
