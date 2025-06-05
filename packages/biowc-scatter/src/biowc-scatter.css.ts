@@ -3,13 +3,11 @@ import { css } from 'lit';
 export default css`
   :host {
     display: block;
-    padding: 25px;
     color: var(--biowc-scatter-text-color, #000);
   }
 
   #container {
     display: flex;
-    gap: 5px;
   }
 
   #scatterplot {

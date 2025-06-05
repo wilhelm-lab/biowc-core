@@ -1,5 +1,7 @@
 export default {
   scatterPlot: {
+    width: 500,
+    height: 500,
     idKey: 'Sample name',
     xValueKey: 'x_value',
     yValueKey: 'y_value',
@@ -33,7 +35,8 @@ export default {
     dotOpacity: 0.8,
     showTrendline: true,
     showLegend: true,
-    legendPosition: 'side',
+    legendPosition: 'bottom',
+    legendFontSize: 12,
     lines: [
       { slope: 1, intercept: 3, color: '#ee9b1a', dashes: '8 3', width: 2 },
       { slope: -1, intercept: 0 },

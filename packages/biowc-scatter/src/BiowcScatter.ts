@@ -9,6 +9,12 @@ export class BiowcScatter extends LitElement {
   static styles = styles;
 
   @property({ attribute: false })
+  width: number = 400;
+
+  @property({ attribute: false })
+  height: number = 400;
+
+  @property({ attribute: false })
   valuesInCommon: {
     id: string;
     xValue: number;
@@ -68,6 +74,9 @@ export class BiowcScatter extends LitElement {
   legendPosition: 'side' | 'bottom' | null = 'bottom';
 
   @property({ attribute: false })
+  legendFontSize?: number | string = 'medium';
+
+  @property({ attribute: false })
   lines: {
     slope?: number; // For sloped lines
     intercept?: number; // For sloped lines
@@ -86,6 +95,10 @@ export class BiowcScatter extends LitElement {
   @property({ attribute: false })
   dotOpacity: number | undefined;
 
+  // The D3 axes will exceed the width & height a bit, so we define a hard-coded margin
+  // https://gist.github.com/mbostock/3019563
+  margin = { top: 20, right: 20, bottom: 30, left: 30, xAxis: 30, yAxis: 45 };
+
   render(): HTMLTemplateResult {
     this.valuesInCommon = this._getValuesInCommon();
     return html`
@@ -101,7 +114,10 @@ export class BiowcScatter extends LitElement {
           .svgComponent="${this}"
           style="margin-left: 20px;"
         ></export-button>
-        <div id="legendContainer"></div>
+        <div
+          id="legendContainer"
+          style="${this.legendPosition === 'bottom' ? 'margin-left: 20px' : ''}"
+        ></div>
       </div>
     `;
   }
@@ -314,9 +330,12 @@ export class BiowcScatter extends LitElement {
 
   private _plotScatter() {
     // set the dimensions and margins of the graph
-    const margin = { top: 10, right: 30, bottom: 30, left: 60 };
-    const width = 460 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+
+    const widthRelativeToMargin =
+      this.width! - this.margin.left - this.margin.right - this.margin.yAxis;
+
+    const heightRelativeToMargin =
+      this.height! - this.margin.top - this.margin.bottom - this.margin.xAxis;
 
     const mainDiv = this._getMainDiv();
 
@@ -325,10 +344,15 @@ export class BiowcScatter extends LitElement {
     // append the svg object to the body of the page
     const svg = mainDiv
       .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom + 30)
+      .attr('width', this.width!)
+      .attr('height', this.height);
+
+    const svgGroup = svg
       .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+      .attr(
+        'transform',
+        `translate(${this.margin.left + this.margin.xAxis},${this.margin.top})`
+      );
 
     // Add X axis
     const minValueX = Math.min(
@@ -343,10 +367,10 @@ export class BiowcScatter extends LitElement {
     const x = d3v6
       .scaleLinear()
       .domain([minValueX, maxValueX])
-      .range([0, width]);
-    svg
+      .range([0, widthRelativeToMargin]);
+    svgGroup
       .append('g')
-      .attr('transform', `translate(0,${height})`)
+      .attr('transform', `translate(0,${heightRelativeToMargin})`)
       .call(d3v6.axisBottom(x));
 
     // Add Y axis
@@ -362,8 +386,8 @@ export class BiowcScatter extends LitElement {
     const y = d3v6
       .scaleLinear()
       .domain([minValueY, maxValueY])
-      .range([height, 0]);
-    svg.append('g').call(d3v6.axisLeft(y));
+      .range([heightRelativeToMargin, 0]);
+    svgGroup.append('g').call(d3v6.axisLeft(y));
 
     // remove tooltip if it exists from a previous render
     mainDiv.select('div.tooltip').remove();
@@ -399,24 +423,29 @@ export class BiowcScatter extends LitElement {
         .style('opacity', 0); // don't care about position!
     };
 
-    this._addLines(svg, x, y);
+    this._addLines(svgGroup, x, y);
 
-    this._addHighlights(x, y, svg);
-    this._addDots(tipMouseover, tipMouseout, x, y, svg);
+    this._addHighlights(x, y, svgGroup);
+    this._addDots(tipMouseover, tipMouseout, x, y, svgGroup);
 
-    // add the x Axis
-    svg
+    // add the x Axis Label
+    svgGroup
       .append('text')
-      .attr('transform', `translate(${width / 2} ,${height + margin.top + 30})`)
+      .attr(
+        'transform',
+        `translate(${widthRelativeToMargin / 2} ,${
+          this.height! - this.margin.xAxis
+        })`
+      )
       .style('text-anchor', 'middle')
       .text(`${this.xLabel}`);
 
-    // add the y Axis
-    svg
+    // add the y Axis Label
+    svgGroup
       .append('text')
       .attr('transform', 'rotate(-90)')
-      .attr('y', 0 - margin.left)
-      .attr('x', 0 - height / 2)
+      .attr('y', 0 - this.margin.yAxis)
+      .attr('x', 0 - heightRelativeToMargin / 2)
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
       .text(`${this.yLabel}`);
@@ -455,8 +484,11 @@ export class BiowcScatter extends LitElement {
     legend
       .append('text')
       .attr('x', 20 + this.dotSize)
-      .attr('y', 20 + this.dotSize / 2)
+      .attr('y', 10 + this.dotSize)
       .attr('alignment-baseline', 'middle')
+      .attr('font-size', this.legendFontSize!)
+      .attr('text-anchor', 'start')
+      .attr('dominant-baseline', 'central')
       .text(d => d);
   }
 
