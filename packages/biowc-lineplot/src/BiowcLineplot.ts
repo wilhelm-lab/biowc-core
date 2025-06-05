@@ -332,6 +332,7 @@ export class BiowcLineplot extends LitElement {
       .style('text-anchor', 'middle')
       .text(`${this._metaDataAttr.xAxisLabel}`);
 
+    // Add y axis label
     svgGroup
       .append('text')
       .attr(
@@ -339,10 +340,7 @@ export class BiowcLineplot extends LitElement {
         `translate(
       ${-this.margin.yAxis},
       ${
-        (this._metaDataAttr.height! -
-          this.margin.xAxis -
-          this.margin.bottom -
-          this.margin.top) /
+        (heightRelativeToMargin) /
         2
       }) rotate(-90)`
       )
