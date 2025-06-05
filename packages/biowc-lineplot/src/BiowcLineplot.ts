@@ -115,6 +115,11 @@ export class BiowcLineplot extends LitElement {
     </div>`;
   }
 
+  public getSVG() {
+    return this._getMainDiv().selectAll('svg').node();
+  }
+
+  // This is for the ExportButton component. Keeping it for legacy reasons
   public exportSvg() {
     return this.shadowRoot?.querySelector('svg')?.outerHTML;
   }
