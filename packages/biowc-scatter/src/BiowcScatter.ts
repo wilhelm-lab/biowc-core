@@ -443,10 +443,12 @@ export class BiowcScatter extends LitElement {
     // add the y Axis Label
     svgGroup
       .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', 0 - this.margin.yAxis)
-      .attr('x', 0 - heightRelativeToMargin / 2)
-      .attr('dy', '1em')
+      .attr(
+        'transform',
+        `translate(
+      ${-this.margin.yAxis},
+      ${heightRelativeToMargin / 2}) rotate(-90)`
+      )
       .style('text-anchor', 'middle')
       .text(`${this.yLabel}`);
 
