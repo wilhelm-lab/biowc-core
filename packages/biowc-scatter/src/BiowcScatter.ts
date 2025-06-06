@@ -93,7 +93,13 @@ export class BiowcScatter extends LitElement {
   highlightColor: string | undefined;
 
   @property({ attribute: false })
+  highlightAddedSize: number = 2;
+
+  @property({ attribute: false })
   dotOpacity: number | undefined;
+
+  @property({ attribute: false })
+  enlargeOnHover: boolean = false;
 
   // The D3 axes will exceed the width & height a bit, so we define a hard-coded margin
   // https://gist.github.com/mbostock/3019563
@@ -238,7 +244,14 @@ export class BiowcScatter extends LitElement {
       .attr('fill', d => this.colors[d.category])
       .attr('opacity', this.dotOpacity || 1)
       .on('mousemove', tipMouseover)
-      .on('mouseout', tipMouseout)
+      .on('mouseover', (event, d) => {
+        if (this.enlargeOnHover) this._enlargeDotsOnHover(event, d);
+      })
+      .on('mouseout', event => {
+        // Hide the tooltip
+        tipMouseout();
+        if (this.enlargeOnHover) this._revertenlargeDotsOnHover(event);
+      })
       .on('click', (e, d) =>
         this.dispatchEvent(new CustomEvent('onDotClicked', { detail: d }))
       );
@@ -258,7 +271,7 @@ export class BiowcScatter extends LitElement {
       .attr('class', 'highlight-ring')
       .attr('cx', d => x(d.xValue))
       .attr('cy', d => y(d.yValue))
-      .attr('r', this.dotSize + 2)
+      .attr('r', this.dotSize + this.highlightAddedSize)
       .attr('fill', 'none')
       .attr('stroke', this.highlightColor || 'yellow')
       .attr('stroke-width', 5);
@@ -492,6 +505,38 @@ export class BiowcScatter extends LitElement {
       .attr('text-anchor', 'start')
       .attr('dominant-baseline', 'central')
       .text(d => d);
+  }
+
+  private _enlargeDotsOnHover(
+    hoverEvent: MouseEvent,
+    dot: {
+      id: string;
+      xValue: number;
+      yValue: number;
+      category: number | string;
+    }
+  ) {
+    // @ts-ignore
+    d3v6.select(hoverEvent.currentTarget).attr('r', this.dotSize * 2);
+
+    // Check if the dot has a highlightring and enlarge it
+    this._getMainDiv()
+      .selectAll<SVGCircleElement, { id: string }>('.highlight-ring')
+      .attr('r', d =>
+        d.id === dot.id
+          ? (this.dotSize + this.highlightAddedSize) * 2
+          : this.dotSize + this.highlightAddedSize
+      );
+  }
+
+  private _revertenlargeDotsOnHover(hoverEvent: MouseEvent) {
+    // @ts-ignore
+    d3v6.select(hoverEvent.currentTarget).attr('r', this.dotSize);
+
+    // Revert the enlargement of all highlight-rings (no need to check if this is actually necessary, doesn't make a difference)
+    this._getMainDiv()
+      .selectAll('.highlight-ring')
+      .attr('r', this.dotSize + this.highlightAddedSize);
   }
 
   protected updated(_changedProperties: PropertyValues) {
