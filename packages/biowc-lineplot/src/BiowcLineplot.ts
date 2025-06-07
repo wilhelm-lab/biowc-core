@@ -339,10 +339,7 @@ export class BiowcLineplot extends LitElement {
         'transform',
         `translate(
       ${-this.margin.yAxis},
-      ${
-        (heightRelativeToMargin) /
-        2
-      }) rotate(-90)`
+      ${heightRelativeToMargin / 2}) rotate(-90)`
       )
       .style('text-anchor', 'middle')
       .text(`${this._metaDataAttr.yAxisLabel}`);
@@ -550,8 +547,15 @@ export class BiowcLineplot extends LitElement {
     // Remove previous legend
     legendContainer.select('svg').remove();
 
-    const legend = legendContainer
-      .append('svg')
+    const legendSvg = legendContainer.append('svg');
+
+    if (this._metaDataAttr.legendPosition === 'bottom') {
+      legendSvg.attr('width', this._metaDataAttr.width!);
+    } else {
+      legendSvg.attr('height', this._metaDataAttr.height!);
+    }
+
+    const legend = legendSvg
       .selectAll('.legend-item')
       .data(this.inputData)
       .join('g')
