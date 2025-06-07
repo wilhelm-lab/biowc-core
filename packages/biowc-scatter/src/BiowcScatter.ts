@@ -483,8 +483,15 @@ export class BiowcScatter extends LitElement {
     // Remove previous legend
     legendContainer.select('svg').remove();
 
-    const legend = legendContainer
-      .append('svg')
+    const legendSvg = legendContainer.append('svg');
+
+    if (this.legendPosition === 'bottom') {
+      legendSvg.attr('width', this.width!);
+    } else {
+      legendSvg.attr('height', this.height!);
+    }
+
+    const legend = legendSvg
       .selectAll('.legend-item')
       .data(Object.keys(this.colors))
       .join('g')
