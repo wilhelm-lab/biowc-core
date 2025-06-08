@@ -173,6 +173,16 @@ export class BiowcScatter extends LitElement {
       ...this.yValues.map(y => ({ [y[this.idKey]]: y[this.yValueKey] }))
     );
 
+    if (!this.categories || this.categories.length === 0) {
+      this.categories = [];
+      // If categories have not been defined, define a single dummy category for all datapoints
+      for (const key of Object.keys(xValuesById)) {
+        if (key in yValuesById) {
+          this.categories.push({ [this.idKey]: key, category: '' });
+        }
+      }
+    }
+
     const categoriesById: valuesById = Object.assign(
       {},
       ...this.categories.map(x => ({ [x[this.idKey]]: x.category }))
@@ -550,11 +560,6 @@ export class BiowcScatter extends LitElement {
   }
 
   private _areColorsDefined() {
-    if (!this.categories || this.categories.length === 0) {
-      // We cannot yet handle colors when there are no categories, will be implemented soon
-      return true;
-    }
-
     if (!this.colors) return false;
 
     // If colors are defined, it might be that they are not yet defined for all categories. So check if there is a color for every category
