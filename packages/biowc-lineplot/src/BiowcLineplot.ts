@@ -266,13 +266,16 @@ export class BiowcLineplot extends LitElement {
       .filter(dataset => dataset.curvePoints)
       .map(dataset => (<number[][]>dataset.curvePoints).map(point => point[1]))
       .flat();
-    if (!this._metaDataAttr.curveMinY && allCurveYValues.length > 0) {
-      this._metaDataAttr.curveMinY = Math.min(...allCurveYValues);
-    }
 
-    if (!this._metaDataAttr.curveMaxY && allCurveYValues.length > 0) {
-      this._metaDataAttr.curveMaxY = Math.max(...allCurveYValues);
-    }
+    const minY =
+      !this._metaDataAttr.curveMinY && allCurveYValues.length > 0
+        ? Math.min(...allCurveYValues)
+        : this._metaDataAttr.curveMinY;
+
+    const maxY =
+      !this._metaDataAttr.curveMaxY && allCurveYValues.length > 0
+        ? Math.max(...allCurveYValues)
+        : this._metaDataAttr.curveMaxY;
 
     const allYValues = [
       ...this.inputData
@@ -280,13 +283,8 @@ export class BiowcLineplot extends LitElement {
         .map(dataset => dataset.dataPoints.map(point => point[1]))
         .flat(),
     ];
-    if (this._metaDataAttr.curveMinY) {
-      allYValues.push(this._metaDataAttr.curveMinY);
-    }
 
-    if (this._metaDataAttr.curveMaxY) {
-      allYValues.push(this._metaDataAttr.curveMaxY);
-    }
+    allYValues.push(...[minY!, maxY!]);
 
     // Add x and y axis
     this.minX = Math.min(...allXValues);
