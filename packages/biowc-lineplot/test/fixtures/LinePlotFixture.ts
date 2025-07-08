@@ -176,6 +176,10 @@ const userInput = [
     escapeCharacter: '#',
     curveParameters: { abscissa: 2 },
     curveHighlights: [1.5, 3.5],
+    curveHighlightErrorBarEndpoints: [
+      [1, 3],
+      [2.5, 4],
+    ],
     dataPoints: [
       [1, 7],
       [-1, 0],
@@ -216,7 +220,8 @@ const userInputLogarithmic = [
       c: 2, // Inflection
       d: 20, // Max
     },
-
+    curveHighlights: [2],
+    curveHighlightErrorBarEndpoints: [[1.5, 3]],
     dataPoints: [
       [1, 2],
       [2, 5],

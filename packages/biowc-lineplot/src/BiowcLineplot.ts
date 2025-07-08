@@ -16,7 +16,8 @@ interface InputDataset {
   escapeCharacter: string;
   curveParameters: CurveParameterList;
   curveHighlights?: number[];
-  dataPoints: number[][];
+  curveHighlightErrorBarEndpoints?: [[number, number]];
+  dataPoints: [[number, number]];
   color: string;
   curveFunction?: Function;
   curvePoints?: number[][];
@@ -511,6 +512,7 @@ export class BiowcLineplot extends LitElement {
           .selectAll('curveHighlightDot')
           .data(this.inputData[i].curveHighlights!)
           .join('circle')
+          .attr('class', 'curveHighlightDot')
           .attr('cx', x => this.svgXAxis(x))
           .attr('cy', x =>
             this.svgYAxis((<Function>this.inputData[i].curveFunction)(x))
@@ -532,6 +534,123 @@ export class BiowcLineplot extends LitElement {
           .on('mouseout', () => {
             this._hideTooltip();
           });
+        // If additionally supplied, add error bars
+        // Only if list of highlights has same length as list of error bars
+        if (
+          this.inputData[i].curveHighlightErrorBarEndpoints &&
+          this.inputData[i].curveHighlightErrorBarEndpoints!.length ===
+            this.inputData[i].curveHighlights!.length
+        ) {
+          /* eslint-disable @typescript-eslint/no-unused-vars */
+          curveGroup
+            .selectAll('curveHighlightDotErrorBar')
+            // As data, we need both the curve Highlights and the error bars
+            .data(
+              this.inputData[i].curveHighlightErrorBarEndpoints!.map(
+                (value, index) =>
+                  <[number, [number, number]]>[
+                    this.inputData[i].curveHighlights![index],
+                    value,
+                  ]
+              )
+            )
+            .join('line')
+            .attr('class', 'curveHighlightDotErrorBar')
+            .attr('x1', ([highlightXValue, [errorBarLeftEndpoint, _]]) =>
+              this.svgXAxis(errorBarLeftEndpoint)
+            )
+            .attr('x2', ([highlightXValue, [_, errorBarRightEndpoint]]) =>
+              this.svgXAxis(errorBarRightEndpoint)
+            )
+            .attr('y1', ([highlightXValue, _]) =>
+              this.svgYAxis(
+                (<Function>this.inputData[i].curveFunction)(highlightXValue)
+              )
+            )
+            .attr('y2', ([highlightXValue, _]) =>
+              this.svgYAxis(
+                (<Function>this.inputData[i].curveFunction)(highlightXValue)
+              )
+            )
+            .style('stroke-width', 2)
+            .style('stroke', this.inputData[i].color);
+          // Add perpendicular lines at both ends - this feels repetitive, but also seems like the D3 way to do it
+          const curveHighlightDotErrorBarEndHeight = 7;
+          curveGroup
+            .selectAll('curveHighlightDotErrorBarLeftEnd')
+            // As data, we need both the curve Highlights and the error bars
+            .data(
+              this.inputData[i].curveHighlightErrorBarEndpoints!.map(
+                (value, index) =>
+                  <[number, [number, number]]>[
+                    this.inputData[i].curveHighlights![index],
+                    value,
+                  ]
+              )
+            )
+            .join('line')
+            .attr('class', 'curveHighlightDotErrorBar')
+            .attr('x1', ([highlightXValue, [errorBarLeftEndpoint, _]]) =>
+              this.svgXAxis(errorBarLeftEndpoint)
+            )
+            .attr('x2', ([highlightXValue, [errorBarLeftEndpoint, _]]) =>
+              this.svgXAxis(errorBarLeftEndpoint)
+            )
+            .attr(
+              'y1',
+              ([highlightXValue, _]) =>
+                this.svgYAxis(
+                  (<Function>this.inputData[i].curveFunction)(highlightXValue)
+                ) - curveHighlightDotErrorBarEndHeight
+            )
+            .attr(
+              'y2',
+              ([highlightXValue, _]) =>
+                this.svgYAxis(
+                  (<Function>this.inputData[i].curveFunction)(highlightXValue)
+                ) + curveHighlightDotErrorBarEndHeight
+            )
+            .style('stroke-width', 2)
+            .style('stroke', this.inputData[i].color);
+
+          curveGroup
+            .selectAll('curveHighlightDotErrorBarRightEnd')
+            // As data, we need both the curve Highlights and the error bars
+            .data(
+              this.inputData[i].curveHighlightErrorBarEndpoints!.map(
+                (value, index) =>
+                  <[number, [number, number]]>[
+                    this.inputData[i].curveHighlights![index],
+                    value,
+                  ]
+              )
+            )
+            .join('line')
+            .attr('class', 'curveHighlightDotErrorBar')
+            .attr('x1', ([highlightXValue, [_, errorBarRightEndpoint]]) =>
+              this.svgXAxis(errorBarRightEndpoint)
+            )
+            .attr('x2', ([highlightXValue, [_, errorBarRightEndpoint]]) =>
+              this.svgXAxis(errorBarRightEndpoint)
+            )
+            .attr(
+              'y1',
+              ([highlightXValue, _]) =>
+                this.svgYAxis(
+                  (<Function>this.inputData[i].curveFunction)(highlightXValue)
+                ) - curveHighlightDotErrorBarEndHeight
+            )
+            .attr(
+              'y2',
+              ([highlightXValue, _]) =>
+                this.svgYAxis(
+                  (<Function>this.inputData[i].curveFunction)(highlightXValue)
+                ) + curveHighlightDotErrorBarEndHeight
+            )
+            .style('stroke-width', 2)
+            .style('stroke', this.inputData[i].color);
+          /* eslint-enable @typescript-eslint/no-unused-vars */
+        }
       }
     }
   }
