@@ -84,11 +84,11 @@ describe('BiowcScatter', async () => {
     expect(el.valuesInCommon.length).to.equal(0);
   });
 
-  it('renders 4 circles and 5 lines', async () => {
+  it('renders 5 circles and 4 lines', async () => {
     const circles = scatterplot.shadowRoot!.querySelectorAll('circle');
-    expect(circles.length).to.equal(4);
+    expect(circles.length).to.equal(5);
     const lines = scatterplot.shadowRoot!.querySelectorAll('.auxiliary-line');
-    expect(lines.length).to.equal(5);
+    expect(lines.length).to.equal(4);
   });
 
   it('renders an invisible tooltip at first', async () => {

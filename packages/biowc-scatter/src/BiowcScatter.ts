@@ -50,10 +50,23 @@ export class BiowcScatter extends LitElement {
   yMax: number = -Infinity;
 
   @property({ attribute: false })
-  categories: { [key: string | 'category']: number | string }[] = [];
+  useColorGradient: boolean = false;
 
   @property({ attribute: false })
-  colors: { [key: string | number]: string } = {};
+  categories: { [key in string | 'category']: number | string }[] = [];
+
+  @property({ attribute: false })
+  colorsByCategory: { [key in string | number]: string } = {};
+
+  @property({ attribute: false })
+  colorsByGradient: { [key: string]: number | string; colorValue: number }[] =
+    [];
+
+  @property({ attribute: false })
+  colorGradientAnchors: { color: string; value: number }[] = [];
+
+  @property({ attribute: false })
+  colorByGradientLegendTitle: string = '';
 
   @property({ attribute: false })
   xLabel: string = '';
@@ -138,8 +151,14 @@ export class BiowcScatter extends LitElement {
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
-    // Init colors if not defined
-    if (!this._areColorsDefined()) this._initColors();
+    if (this.useColorGradient) {
+      // Determine the color anchors if not defined
+      if (!this.colorGradientAnchors || this.colorGradientAnchors.length < 2) {
+        this._initColorGradientAnchors();
+      }
+    } else if (!this._areCategoricalColorsDefined())
+      // Init categorical colors if not defined
+      this._initCategoricalColors();
 
     // Optionally, add trendline to list of auxiliary lines
     if (this.showTrendline) {
@@ -254,7 +273,14 @@ export class BiowcScatter extends LitElement {
       .attr('cy', d => y(d.yValue))
       .attr('r', this.dotSize)
       // .style('fill', '#69b3a2')
-      .attr('fill', d => this.colors[d.category])
+      .attr('fill', d =>
+        this.useColorGradient
+          ? this._computeColorForValue(
+              this.colorsByGradient.find(c => c[this.idKey] === d.id)!
+                .colorValue
+            )
+          : this.colorsByCategory[d.category]
+      )
       .attr('opacity', this.dotOpacity || 1)
       .on('mousemove', tipMouseover)
       .on('mouseover', (event, d) => {
@@ -480,11 +506,13 @@ export class BiowcScatter extends LitElement {
 
     // Add the legend
     if (this.showLegend) {
-      this._renderLegend();
+      const legendSvg = this._initLegend();
+      if (this.useColorGradient) this._renderLegendGradient(legendSvg);
+      else this._renderLegendCategorical(legendSvg);
     }
   }
 
-  private _renderLegend() {
+  private _initLegend() {
     const legendContainer = d3v6
       // @ts-ignore
       .select(this.shadowRoot)
@@ -501,9 +529,15 @@ export class BiowcScatter extends LitElement {
       legendSvg.attr('height', this.height!);
     }
 
+    return legendSvg;
+  }
+
+  private _renderLegendCategorical(
+    legendSvg: d3v6.Selection<SVGSVGElement, unknown, HTMLElement, any>
+  ) {
     const legend = legendSvg
       .selectAll('.legend-item')
-      .data(Object.keys(this.colors))
+      .data(Object.keys(this.colorsByCategory))
       .join('g')
       .attr('class', 'legend-item')
       .attr('transform', (_, i) => `translate(10, ${i * 25})`);
@@ -513,7 +547,7 @@ export class BiowcScatter extends LitElement {
       .attr('cx', this.dotSize)
       .attr('cy', 10 + this.dotSize)
       .attr('r', this.dotSize)
-      .attr('fill', d => this.colors[d])
+      .attr('fill', d => this.colorsByCategory[d])
       .attr('opacity', this.dotOpacity || 1);
 
     legend
@@ -525,6 +559,83 @@ export class BiowcScatter extends LitElement {
       .attr('text-anchor', 'start')
       .attr('dominant-baseline', 'central')
       .text(d => d);
+  }
+
+  private _renderLegendGradient(
+    legendSvg: d3v6.Selection<SVGSVGElement, unknown, HTMLElement, any>
+  ) {
+    const legendWidth = 200;
+
+    // Add the linear gradient as a def
+
+    // Add title
+    legendSvg
+      .append('text')
+      .attr('class', 'legend')
+      .attr('x', 0)
+      .attr('y', 25)
+      .text(this.colorByGradientLegendTitle);
+
+    // Generate the linear gradient for the color legend
+    // (https://www.visualcinnamon.com/2016/05/smooth-color-legend-d3-svg-gradient/)
+    const linearGradient = legendSvg
+      .append('defs')
+      .append('linearGradient')
+      .attr('id', 'color-legend-linear-gradient');
+
+    const colorLegendGroup = legendSvg
+      .append('g')
+      .attr('transform', `translate(10,40)`);
+
+    colorLegendGroup
+      .append('rect')
+      .attr('width', legendWidth - 25)
+      .attr('height', 20)
+      .style('fill', 'url(#color-legend-linear-gradient)');
+
+    const steps = 100;
+    const gradientMin = Math.min(
+      ...this.colorGradientAnchors.map(anchor => anchor.value)
+    );
+    const gradientMax = Math.max(
+      ...this.colorGradientAnchors.map(anchor => anchor.value)
+    );
+
+    const gradientRange = Array.from(
+      { length: steps + 1 },
+      (_, i) => i / steps
+    );
+
+    const colorLegendXAxisScale = d3v6.scalePoint();
+    const colorLegendXAxis = d3v6.axisBottom(colorLegendXAxisScale);
+
+    linearGradient
+      .selectAll('stop')
+      .data(gradientRange)
+      .enter()
+      .append('stop')
+      .attr('offset', gradientFraction => gradientFraction)
+      .attr('stop-color', gradientFraction =>
+        this._computeColorForValue(
+          gradientMin + gradientFraction * (gradientMax - gradientMin)
+        )
+      );
+
+    colorLegendXAxisScale
+      .domain(
+        this.colorGradientAnchors
+          .map(anchor => anchor.value)
+          .sort()
+          .map(val => val.toPrecision(2))
+      )
+      .range([0, legendWidth - 25]);
+
+    colorLegendXAxis.ticks(4);
+
+    colorLegendGroup
+      .append('g')
+      .attr('transform', 'translate(0,25)')
+      .call(colorLegendXAxis!);
   }
 
   private _enlargeDotsOnHover(
@@ -559,12 +670,12 @@ export class BiowcScatter extends LitElement {
       .attr('r', this.dotSize + this.highlightAddedSize);
   }
 
-  private _areColorsDefined() {
-    if (!this.colors) return false;
+  private _areCategoricalColorsDefined() {
+    if (!this.colorsByCategory) return false;
 
     // If colors are defined, it might be that they are not yet defined for all categories. So check if there is a color for every category
     const allCategories = new Set(this.categories.map(cat => cat.category));
-    const allCategoriesWithColors = new Set(Object.keys(this.colors));
+    const allCategoriesWithColors = new Set(Object.keys(this.colorsByCategory));
 
     // Check for set equality
     return (
@@ -574,16 +685,60 @@ export class BiowcScatter extends LitElement {
     );
   }
 
-  private _initColors() {
+  private _initCategoricalColors() {
     const allCategories = [
       ...new Set(this.categories.map(cat => cat.category)),
     ];
 
-    if (!this.colors) this.colors = {};
+    if (!this.colorsByCategory) this.colorsByCategory = {};
 
     allCategories.forEach((cat: string | number, i: number) => {
-      this.colors[cat] = this.colors[cat] || d3v6.schemeCategory10[i];
+      this.colorsByCategory[cat] =
+        this.colorsByCategory[cat] || d3v6.schemeCategory10[i];
     });
+  }
+
+  private _initColorGradientAnchors() {
+    // If not defined, default to a grayscale color gradient with two anchors
+    this.colorGradientAnchors = [
+      {
+        value: Math.min(...this.colorsByGradient.map(d => d.colorValue)),
+        color: '#FFFFFF',
+      },
+      {
+        value: Math.max(...this.colorsByGradient.map(d => d.colorValue)),
+        color: '#000000',
+      },
+    ];
+  }
+
+  private _computeColorForValue(colorValue: number) {
+    // When using a color gradient, determine which node a color gets by...
+    // ...first checking between which two anchors its color value lies...
+    const smallAnchorValue = Math.min(
+      ...this.colorGradientAnchors
+        .map(anchor => anchor.value)
+        .filter(val => val >= colorValue)
+    );
+    const smallAnchorColor = this.colorGradientAnchors.find(
+      anchor => anchor.value === smallAnchorValue
+    )!.color;
+    const bigAnchorValue = Math.max(
+      ...this.colorGradientAnchors
+        .map(anchor => anchor.value)
+        .filter(val => val <= colorValue)
+    );
+    const bigAnchorColor = this.colorGradientAnchors.find(
+      anchor => anchor.value === bigAnchorValue
+    )!.color;
+
+    // ...and then doing a linear interpolation between the two colors based on the value.
+    const colorValueRelative =
+      (colorValue - smallAnchorValue) / (bigAnchorValue - smallAnchorValue);
+    return d3v6.interpolate(
+      smallAnchorColor,
+      bigAnchorColor
+    )(colorValueRelative);
   }
 
   protected updated(_changedProperties: PropertyValues) {
@@ -592,7 +747,7 @@ export class BiowcScatter extends LitElement {
       _changedProperties.has('yValues') ||
       _changedProperties.has('highlightedDots')
     ) {
-      if (!this._areColorsDefined()) this._initColors();
+      if (!this._areCategoricalColorsDefined()) this._initCategoricalColors();
       this._plotScatter();
     }
   }
