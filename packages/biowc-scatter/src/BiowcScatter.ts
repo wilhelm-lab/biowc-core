@@ -153,10 +153,7 @@ export class BiowcScatter extends LitElement {
           .svgComponent="${this}"
           style="margin-left: 20px;"
         ></export-button>
-        <div
-          id="legendContainer"
-          style="${this.legendPosition === 'bottom' ? 'margin-left: 20px' : ''}"
-        ></div>
+        <div id="legendContainer"></div>
       </div>
     `;
   }
@@ -539,6 +536,12 @@ export class BiowcScatter extends LitElement {
   private _renderLegendCategorical(
     legendSvg: d3v6.Selection<SVGSVGElement, unknown, HTMLElement, any>
   ) {
+    if (this.legendPosition === 'bottom') {
+      legendSvg.style('margin-left', `${this.margin.yAxis}px`);
+    } else {
+      legendSvg.style('margin-top', `${this.margin.top}px`);
+    }
+
     const legend = legendSvg
       .selectAll('.legend-item')
       .data(Object.keys(this.colorsByCategory))
@@ -570,7 +573,11 @@ export class BiowcScatter extends LitElement {
   ) {
     const legendWidth = 200;
 
-    // Add the linear gradient as a def
+    if (this.legendPosition === 'bottom') {
+      legendSvg.style('margin-left', `${this.margin.yAxis}px`);
+    } else {
+      legendSvg.style('margin-top', `${this.margin.top}px`);
+    }
 
     // Add title
     legendSvg
@@ -578,6 +585,7 @@ export class BiowcScatter extends LitElement {
       .attr('class', 'legend')
       .attr('x', 0)
       .attr('y', 25)
+      .attr('font-size', this.legendFontSize!)
       .text(this.colorByGradientLegendTitle);
 
     // Generate the linear gradient for the color legend
