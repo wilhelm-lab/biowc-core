@@ -269,12 +269,14 @@ export class BiowcLineplot extends LitElement {
       .flat();
 
     const minY =
-      !this._metaDataAttr.curveMinY && allCurveYValues.length > 0
+      typeof this._metaDataAttr.curveMinY !== 'number' &&
+      allCurveYValues.length > 0
         ? Math.min(...allCurveYValues)
         : this._metaDataAttr.curveMinY;
 
     const maxY =
-      !this._metaDataAttr.curveMaxY && allCurveYValues.length > 0
+      typeof this._metaDataAttr.curveMaxY !== 'number' &&
+      allCurveYValues.length > 0
         ? Math.max(...allCurveYValues)
         : this._metaDataAttr.curveMaxY;
 
