@@ -14,6 +14,7 @@ export class BiowcScatter extends LitElement {
   @property({ attribute: false })
   height: number = 400;
 
+  // TODO: This is actually not a public property, refactor.
   @property({ attribute: false })
   valuesInCommon: {
     id: string;
@@ -69,6 +70,9 @@ export class BiowcScatter extends LitElement {
   colorByGradientLegendTitle: string = '';
 
   @property({ attribute: false })
+  colorGradientSteps: number = 100;
+
+  @property({ attribute: false })
   xLabel: string = '';
 
   @property({ attribute: false })
@@ -118,6 +122,22 @@ export class BiowcScatter extends LitElement {
   // https://gist.github.com/mbostock/3019563
   margin = { top: 20, right: 20, bottom: 30, left: 30, xAxis: 30, yAxis: 45 };
 
+  private svgGroup:
+    | d3v6.Selection<SVGGElement, unknown, HTMLElement, any>
+    | undefined;
+
+  private x: ScaleLinear<number, number> | undefined;
+
+  private y: ScaleLinear<number, number> | undefined;
+
+  private datumIdToColorValue: { [key: string]: number } = {};
+
+  private colorGradient: {
+    value: number;
+    valueRelative: number;
+    color: string;
+  }[] = [];
+
   render(): HTMLTemplateResult {
     this.valuesInCommon = this._getValuesInCommon();
     return html`
@@ -151,14 +171,7 @@ export class BiowcScatter extends LitElement {
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
-    if (this.useColorGradient) {
-      // Determine the color anchors if not defined
-      if (!this.colorGradientAnchors || this.colorGradientAnchors.length < 2) {
-        this._initColorGradientAnchors();
-      }
-    } else if (!this._areCategoricalColorsDefined())
-      // Init categorical colors if not defined
-      this._initCategoricalColors();
+    this._setColors();
 
     // Optionally, add trendline to list of auxiliary lines
     if (this.showTrendline) {
@@ -275,10 +288,7 @@ export class BiowcScatter extends LitElement {
       // .style('fill', '#69b3a2')
       .attr('fill', d =>
         this.useColorGradient
-          ? this._computeColorForValue(
-              this.colorsByGradient.find(c => c[this.idKey] === d.id)!
-                .colorValue
-            )
+          ? this._getColorFromGradient(d.id)!
           : this.colorsByCategory[d.category]
       )
       .attr('opacity', this.dotOpacity || 1)
@@ -296,20 +306,15 @@ export class BiowcScatter extends LitElement {
       );
   }
 
-  private _addHighlights(
-    x: ScaleLinear<number, number>,
-    y: ScaleLinear<number, number>,
-    svg: d3v6.Selection<SVGGElement, unknown, HTMLElement, any>
-  ) {
-    svg
-      .selectAll('.highlight-ring')
+  private _addHighlights() {
+    this.svgGroup!.selectAll('.highlight-ring')
       .data(
         this.valuesInCommon.filter(dot => this.highlightedDots.includes(dot.id))
       )
       .join('circle')
       .attr('class', 'highlight-ring')
-      .attr('cx', d => x(d.xValue))
-      .attr('cy', d => y(d.yValue))
+      .attr('cx', d => this.x!(d.xValue))
+      .attr('cy', d => this.y!(d.yValue))
       .attr('r', this.dotSize + this.highlightAddedSize)
       .attr('fill', 'none')
       .attr('stroke', this.highlightColor || 'yellow')
@@ -399,7 +404,7 @@ export class BiowcScatter extends LitElement {
       .attr('width', this.width!)
       .attr('height', this.height);
 
-    const svgGroup = svg
+    this.svgGroup = svg
       .append('g')
       .attr(
         'transform',
@@ -416,14 +421,14 @@ export class BiowcScatter extends LitElement {
       this.xMax
     );
 
-    const x = d3v6
+    this.x = d3v6
       .scaleLinear()
       .domain([minValueX, maxValueX])
       .range([0, widthRelativeToMargin]);
-    svgGroup
+    this.svgGroup
       .append('g')
       .attr('transform', `translate(0,${heightRelativeToMargin})`)
-      .call(d3v6.axisBottom(x));
+      .call(d3v6.axisBottom(this.x));
 
     // Add Y axis
     const minValueY = Math.min(
@@ -435,11 +440,11 @@ export class BiowcScatter extends LitElement {
       this.yMax
     );
 
-    const y = d3v6
+    this.y = d3v6
       .scaleLinear()
       .domain([minValueY, maxValueY])
       .range([heightRelativeToMargin, 0]);
-    svgGroup.append('g').call(d3v6.axisLeft(y));
+    this.svgGroup.append('g').call(d3v6.axisLeft(this.y));
 
     // remove tooltip if it exists from a previous render
     mainDiv.select('div.tooltip').remove();
@@ -475,13 +480,12 @@ export class BiowcScatter extends LitElement {
         .style('opacity', 0); // don't care about position!
     };
 
-    this._addLines(svgGroup, x, y);
+    this._addLines(this.svgGroup, this.x, this.y);
 
-    this._addHighlights(x, y, svgGroup);
-    this._addDots(tipMouseover, tipMouseout, x, y, svgGroup);
+    this._addDots(tipMouseover, tipMouseout, this.x, this.y, this.svgGroup);
 
     // add the x Axis Label
-    svgGroup
+    this.svgGroup
       .append('text')
       .attr(
         'transform',
@@ -493,7 +497,7 @@ export class BiowcScatter extends LitElement {
       .text(`${this.xLabel}`);
 
     // add the y Axis Label
-    svgGroup
+    this.svgGroup
       .append('text')
       .attr(
         'transform',
@@ -593,33 +597,16 @@ export class BiowcScatter extends LitElement {
       .attr('height', 20)
       .style('fill', 'url(#color-legend-linear-gradient)');
 
-    const steps = 100;
-    const gradientMin = Math.min(
-      ...this.colorGradientAnchors.map(anchor => anchor.value)
-    );
-    const gradientMax = Math.max(
-      ...this.colorGradientAnchors.map(anchor => anchor.value)
-    );
-
-    const gradientRange = Array.from(
-      { length: steps + 1 },
-      (_, i) => i / steps
-    );
-
     const colorLegendXAxisScale = d3v6.scalePoint();
     const colorLegendXAxis = d3v6.axisBottom(colorLegendXAxisScale);
 
     linearGradient
       .selectAll('stop')
-      .data(gradientRange)
+      .data(this.colorGradient)
       .enter()
       .append('stop')
-      .attr('offset', gradientFraction => gradientFraction)
-      .attr('stop-color', gradientFraction =>
-        this._computeColorForValue(
-          gradientMin + gradientFraction * (gradientMax - gradientMin)
-        )
-      );
+      .attr('offset', d => d.valueRelative)
+      .attr('stop-color', d => d.color);
 
     colorLegendXAxisScale
       .domain(
@@ -712,6 +699,43 @@ export class BiowcScatter extends LitElement {
     ];
   }
 
+  private _calculateColorGradient() {
+    this.colorGradient = [];
+    const gradientMin = Math.min(
+      ...this.colorGradientAnchors.map(anchor => anchor.value)
+    );
+    const gradientMax = Math.max(
+      ...this.colorGradientAnchors.map(anchor => anchor.value)
+    );
+
+    const stepWidth = (gradientMax - gradientMin) / this.colorGradientSteps;
+
+    for (let i = 0; i <= this.colorGradientSteps; i += 1) {
+      this.colorGradient.push({
+        value: gradientMin + i * stepWidth,
+        valueRelative: i / this.colorGradientSteps,
+        color: this._computeColorForValue(gradientMin + i * stepWidth),
+      });
+    }
+  }
+
+  /* eslint-disable consistent-return */
+  private _getColorFromGradient(id: string) {
+    const colorValue = this.datumIdToColorValue[id];
+    // The color gradient is sorted in ascending order, so we return the color of the last value smaller than our colorValue
+    // Unless the colorValue is out of bounds, then we return the color of the respective boundary
+    if (colorValue <= this.colorGradient[0].value)
+      return this.colorGradient[0].color;
+    if (colorValue >= this.colorGradient[this.colorGradient.length - 1].value)
+      return this.colorGradient[this.colorGradient.length - 1].color;
+
+    for (let i = 0; i < this.colorGradient.length; i += 1) {
+      if (colorValue < this.colorGradient[i].value)
+        return this.colorGradient[i - 1].color;
+    }
+  }
+  /* eslint-enable consistent-return */
+
   private _computeColorForValue(colorValue: number) {
     // When using a color gradient, determine which node a color gets by...
     // ...first checking between which two anchors its color value lies...
@@ -741,14 +765,36 @@ export class BiowcScatter extends LitElement {
     )(colorValueRelative);
   }
 
+  private _setColors() {
+    if (this.useColorGradient) {
+      // Determine the color anchors if not defined
+      if (!this.colorGradientAnchors || this.colorGradientAnchors.length < 2) {
+        this._initColorGradientAnchors();
+      }
+      this._calculateColorGradient();
+
+      // Convert the colorsByGradient into a dictionary to enable O(1) access
+      // We could change the input property so that it has to be supplied in this format directly,
+      // But I wanted to keep it consistent with the other input properties.
+      this.datumIdToColorValue = {};
+      this.colorsByGradient.forEach(d => {
+        this.datumIdToColorValue[d[this.idKey]] = d.colorValue;
+      });
+    } else if (!this._areCategoricalColorsDefined()) {
+      // Init categorical colors if not defined
+      this._initCategoricalColors();
+    }
+  }
+
   protected updated(_changedProperties: PropertyValues) {
     if (
       _changedProperties.has('xValues') ||
-      _changedProperties.has('yValues') ||
-      _changedProperties.has('highlightedDots')
+      _changedProperties.has('yValues')
     ) {
-      if (!this._areCategoricalColorsDefined()) this._initCategoricalColors();
+      this._setColors();
       this._plotScatter();
     }
+
+    if (_changedProperties.has('highlightedDots')) this._addHighlights();
   }
 }

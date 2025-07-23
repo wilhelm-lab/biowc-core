@@ -1,0 +1,1 @@
+{"version":3,"file":"download-button.js","sourceRoot":"","sources":["../../src/download-button.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,cAAc,EAAE,MAAM,qBAAqB,CAAC;AAErD,MAAM,CAAC,cAAc,CAAC,MAAM,CAAC,iBAAiB,EAAE,cAAc,CAAC,CAAC","sourcesContent":["import { DownloadButton } from './DownloadButton.js';\n\nwindow.customElements.define('download-button', DownloadButton);\n"]}
