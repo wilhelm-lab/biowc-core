@@ -458,9 +458,20 @@ export class BiowcScatter extends LitElement {
       e: MouseEvent,
       d: { id: string; xValue: number; yValue: number }
     ) => {
-      const htmlElement = `<pre>${d.id}:
+      let htmlElement = `<pre>${d.id}:
   ${this.xValueKey} = ${parseFloat(d.xValue.toFixed(3))},
-  ${this.yValueKey} = ${parseFloat(d.yValue.toFixed(3))}</pre>`;
+  ${this.yValueKey} = ${parseFloat(d.yValue.toFixed(3))}`;
+
+      if (this.useColorGradient) {
+        htmlElement += `
+  ${this.colorByGradientLegendTitle} = ${this.datumIdToColorValue[d.id].toFixed(
+          3
+        )}
+`;
+      }
+
+      htmlElement += '</pre>';
+
       tooltip
         .html(htmlElement)
         .style('left', `${e.offsetX + 45}px`)
@@ -586,7 +597,7 @@ export class BiowcScatter extends LitElement {
       .attr('x', 0)
       .attr('y', 25)
       .attr('font-size', this.legendFontSize!)
-      .text(this.colorByGradientLegendTitle);
+      .text(`${this.colorByGradientLegendTitle}:`);
 
     // Generate the linear gradient for the color legend
     // (https://www.visualcinnamon.com/2016/05/smooth-color-legend-d3-svg-gradient/)

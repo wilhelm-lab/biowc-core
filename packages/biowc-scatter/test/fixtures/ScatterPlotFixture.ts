@@ -48,7 +48,7 @@ export default {
       { value: 0, color: '#9a9a9a' },
       { value: 1, color: '#058f23' },
     ],
-    colorByGradientLegendTitle: 'Hue:',
+    colorByGradientLegendTitle: 'Hue',
     dotOpacity: 0.8,
     showTrendline: false,
     showLegend: true,
