@@ -696,7 +696,7 @@ export class BiowcScatter extends LitElement {
       ...new Set(this.categories.map(cat => cat.category)),
     ];
 
-    if (!this.colorsByCategory) this.colorsByCategory = {};
+    this.colorsByCategory = {};
 
     allCategories.forEach((cat: string | number, i: number) => {
       this.colorsByCategory[cat] =
