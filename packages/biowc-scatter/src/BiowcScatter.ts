@@ -683,11 +683,11 @@ export class BiowcScatter extends LitElement {
     const allCategories = new Set(this.categories.map(cat => cat.category));
     const allCategoriesWithColors = new Set(Object.keys(this.colorsByCategory));
 
-    // Check for set equality
-    return (
-      allCategories.size === allCategoriesWithColors.size &&
-      new Set([...allCategoriesWithColors, ...allCategoriesWithColors]).size ===
-        allCategories.size
+    // Check that every category has a color, i.e. check that all categories are at least a subset of all categories that have colors
+    // It may happen that some colors are not used so the two sets might not be equal
+
+    return [...allCategories].every(val =>
+      [...allCategoriesWithColors].includes(<string>val)
     );
   }
 

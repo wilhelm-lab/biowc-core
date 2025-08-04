@@ -35,7 +35,7 @@ export default {
       B: '#0d62d2',
       C: '#a80086',
     },
-    useColorGradient: true,
+    useColorGradient: false,
     colorsByGradient: [
       { 'Sample name': 'sample1', colorValue: -1 },
       { 'Sample name': 'sample2', colorValue: -0.3 },
