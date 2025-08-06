@@ -7,7 +7,7 @@
     "Julian Müller",
     "Katharina Neuhaus"
   ],
-  "version": "0.2.2",
+  "version": "0.3.0",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "exports": {
