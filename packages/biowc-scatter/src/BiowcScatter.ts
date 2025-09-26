@@ -231,6 +231,15 @@ export class BiowcScatter extends LitElement {
 
     // If we are coloring by gradient, the user will want the highest values to be on top
     // So we sort low to high, so that these values will be drawn last
+
+    // Convert the colorsByGradient into a dictionary to enable O(1) access
+    // We could change the input property so that it has to be supplied in this format directly,
+    // But I wanted to keep it consistent with the other input properties.
+    this.datumIdToColorValue = {};
+    this.colorsByGradient.forEach(d => {
+      this.datumIdToColorValue[d[this.idKey]] = d.colorValue;
+    });
+
     if (this.useColorGradient) {
       valuesInCommon.sort(
         (a, b) =>
@@ -801,14 +810,6 @@ export class BiowcScatter extends LitElement {
         this._initColorGradientAnchors();
       }
       this._calculateColorGradient();
-
-      // Convert the colorsByGradient into a dictionary to enable O(1) access
-      // We could change the input property so that it has to be supplied in this format directly,
-      // But I wanted to keep it consistent with the other input properties.
-      this.datumIdToColorValue = {};
-      this.colorsByGradient.forEach(d => {
-        this.datumIdToColorValue[d[this.idKey]] = d.colorValue;
-      });
     } else if (!this._areCategoricalColorsDefined()) {
       // Init categorical colors if not defined
       this._initCategoricalColors();
