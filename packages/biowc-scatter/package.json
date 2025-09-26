@@ -6,7 +6,7 @@
   "contributors": [
     "Julian Mueller"
   ],
-  "version": "0.3.3",
+  "version": "0.3.4",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "exports": {
