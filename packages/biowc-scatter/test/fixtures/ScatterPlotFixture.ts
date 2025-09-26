@@ -11,7 +11,7 @@ export default {
       { 'Sample name': 'sample2', x_value: 3 },
       { 'Sample name': 'sample3', x_value: 2.5 },
       { 'Sample name': 'sample4', x_value: 3 },
-      { 'Sample name': 'sample5', x_value: 2 },
+      { 'Sample name': 'sample5', x_value: 1.1 },
     ],
     yLabel: 'abundance Gene_Y',
     yValues: [
@@ -19,7 +19,7 @@ export default {
       { 'Sample name': 'sample2', y_value: 2 },
       { 'Sample name': 'sample3', y_value: 0.4 },
       { 'Sample name': 'sample4', y_value: 3.012893 },
-      { 'Sample name': 'sample5', y_value: -2.5 },
+      { 'Sample name': 'sample5', y_value: 0.9 },
     ],
     categories: [
       { 'Sample name': 'sample1', category: 'B' },
@@ -35,13 +35,13 @@ export default {
       B: '#0d62d2',
       C: '#a80086',
     },
-    useColorGradient: false,
+    useColorGradient: true,
     colorsByGradient: [
-      { 'Sample name': 'sample1', colorValue: -1 },
+      { 'Sample name': 'sample1', colorValue: 1 },
       { 'Sample name': 'sample2', colorValue: -0.3 },
-      { 'Sample name': 'sample3', colorValue: -0 },
+      { 'Sample name': 'sample3', colorValue: -0.8 },
       { 'Sample name': 'sample4', colorValue: 0.5 },
-      { 'Sample name': 'sample5', colorValue: 1 },
+      { 'Sample name': 'sample5', colorValue: -1 },
     ],
     colorGradientAnchors: [
       { value: -1, color: '#e8ab00' },

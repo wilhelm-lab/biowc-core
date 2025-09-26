@@ -228,6 +228,22 @@ export class BiowcScatter extends LitElement {
         });
       }
     }
+
+    // If we are coloring by gradient, the user will want the highest values to be on top
+    // So we sort low to high, so that these values will be drawn last
+    if (this.useColorGradient) {
+      valuesInCommon.sort((a, b) => {
+        // this.colorsByGradient[a[this.idKey]] - this.colorsByGradient[b[this.idKey]]
+        const aColorValue =
+          this.colorsByGradient.find(d => d[this.idKey] === a.id)?.colorValue ||
+          -Infinity;
+        const bColorValue =
+          this.colorsByGradient.find(d => d[this.idKey] === b.id)?.colorValue ||
+          -Infinity;
+        return aColorValue - bColorValue;
+      });
+    }
+
     return valuesInCommon;
   }
 
