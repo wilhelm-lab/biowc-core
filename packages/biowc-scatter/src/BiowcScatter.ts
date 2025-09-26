@@ -826,6 +826,11 @@ export class BiowcScatter extends LitElement {
       this._plotScatter();
     }
 
-    if (_changedProperties.has('highlightedDots')) this._addHighlights();
+    if (
+      _changedProperties.has('highlightedDots') ||
+      _changedProperties.has('useColorGradient')
+    ) {
+      this._addHighlights();
+    }
   }
 }
